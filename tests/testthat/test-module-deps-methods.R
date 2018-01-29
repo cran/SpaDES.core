@@ -165,16 +165,16 @@ test_that("3 levels of parent and child modules load and show correctly", {
   }, add = TRUE)
 
   suppressMessages({
-    newModule("grandpar1", ".", type = "parent",
+    newModule("grandpar1", tmpdir, type = "parent",
               children = c("child1", "child2", "par1", "par2"), open = FALSE)
-    newModule("par1", ".", type = "parent", children = c("child4", "child3"), open = FALSE)
-    newModule("par2", ".", type = "parent", children = c("child5", "child6"), open = FALSE)
-    newModule("child1", ".", open = FALSE)
-    newModule("child2", ".", open = FALSE)
-    newModule("child3", ".", open = FALSE)
-    newModule("child4", ".", open = FALSE)
-    newModule("child5", ".", open = FALSE)
-    newModule("child6", ".", open = FALSE)
+    newModule("par1", tmpdir, type = "parent", children = c("child4", "child3"), open = FALSE)
+    newModule("par2", tmpdir, type = "parent", children = c("child5", "child6"), open = FALSE)
+    newModule("child1", tmpdir, open = FALSE)
+    newModule("child2", tmpdir, open = FALSE)
+    newModule("child3", tmpdir, open = FALSE)
+    newModule("child4", tmpdir, open = FALSE)
+    newModule("child5", tmpdir, open = FALSE)
+    newModule("child6", tmpdir, open = FALSE)
   })
 
   fileName <- "child2/child2.R"
@@ -197,7 +197,7 @@ test_that("3 levels of parent and child modules load and show correctly", {
   xxx1 <- gsub(xxx, pattern = "timeunit = 'year'", replacement = "timeunit = 'month'")
   cat(xxx1, file = fileName, sep = "\n")
 
-  mySim <- simInit(modules = list("grandpar1"), paths = list(modulePath = "."))
+  mySim <- simInit(modules = list("grandpar1"), paths = list(modulePath = tmpdir))
   mg <- moduleGraph(mySim, FALSE)
   expect_true(is(mg, "list"))
   expect_true(is(mg$graph, "igraph"))
