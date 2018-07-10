@@ -41,7 +41,7 @@ if (getRversion() >= "3.1.0") {
 #'   determines time unit \tab takes time units of modules
 #'       and how they fit together \tab \code{times} or automatic \cr
 #'   runs \code{.inputObjects} functions \tab from every module
-#'     \emph{in the module order as determined above} \tab automatic
+#'     \emph{in the module order as determined above} \tab automatic \cr
 #'   }
 #' }
 #'
@@ -57,8 +57,7 @@ if (getRversion() >= "3.1.0") {
 #'
 #' We implement a discrete event simulation in a more modular fashion so it is
 #' easier to add modules to the simulation. We use S4 classes and methods,
-#' and use \code{data.table} instead of \code{data.frame} to implement the event
-#' queue (because it is much faster).
+#' and fast lists to manage the event queue.
 #'
 #' \code{paths} specifies the location of the module source files,
 #' the data input files, and the saving output files. If no paths are specified
@@ -73,6 +72,27 @@ if (getRversion() >= "3.1.0") {
 #'
 #'   \item \code{inputPath}: \code{getOption("spades.outputPath")}.
 #' }
+#'
+#' @section Parsing and Checking Code:
+#'
+#' The \code{simInit} function will attempt to find usage of sim$xxx
+#' or sim[['xxx']] on either side of the assignement "<-" operator.
+#' It will compare these to the module metadata, specifically
+#' \code{inputObjects} for cases where objects or "gotten" from the
+#' simList and \code{outputObjects} for cases where objects are
+#' assigned to the simList.
+#'
+#' It will also attempt to find potential, common function name conflicts
+#' with things like scale and stack (both in base and raster), and
+#' Plot (in quickPlot and some modules).
+#'
+#' \emph{This code checking is young and may get false positives and
+#' false negatives -- i.e., miss things}. It also takes computational
+#' time, which may be undesireable in operational code.
+#' To turn off checking (i.e.,
+#' if there are too many false positives and negatives), set
+#' the option \code{spades.moduleCodeChecks} to \code{FALSE},
+#' e.g., \code{options(spades.moduleCodeChecks = FALSE)}
 #'
 #' @section Caching:
 #'
@@ -312,6 +332,21 @@ setMethod(
 
     # user modules
     modulesLoaded <- list()
+    # create simList object for the simulation
+    sim <- new("simList")
+    sim@.envir[["._startClockTime"]] <- Sys.time()
+    # Make a temporary place to store parsed module files
+    sim@.envir[[".parsedFiles"]] <- new.env(parent = sim@.envir)
+    on.exit(rm(".parsedFiles", envir = sim@.envir), add = TRUE )
+    paths(sim) <- paths #paths accessor does important stuff
+
+    names(modules) <- unlist(modules)
+
+    # identify childModules, recursively
+    childModules <- .identifyChildModules(sim = sim, modules = modules)
+    modules <- as.list(unique(unlist(childModules))) # flat list of all modules
+    names(modules) <- unlist(modules)
+
     modules <- modules[!sapply(modules, is.null)] %>%
       lapply(., `attributes<-`, list(parsed = FALSE))
 
@@ -326,14 +361,7 @@ setMethod(
     dotParamsChar <- list(".savePath", ".saveObjects")
     dotParams <- append(dotParamsChar, dotParamsReal)
 
-    # create simList object for the simulation
-    sim <- new("simList")
 
-    # Make a temporary place to store parsed module files
-    sim@.envir[[".parsedFiles"]] <- new.env(parent = sim@.envir)
-    on.exit(rm(".parsedFiles", envir = sim@.envir), add = TRUE )
-
-    paths(sim) <- paths #paths accessor does important stuff
     sim@modules <- modules  ## will be updated below
 
     reqdPkgs <- packages(modules=unlist(modules), paths = paths(sim)$modulePath,
@@ -348,56 +376,54 @@ setMethod(
 
     allTimeUnits <- FALSE
 
-    findSmallestTU <- function(sim, mods) {
-      out <- lapply(.parseModulePartial(sim, mods,
-                                        defineModuleElement = "childModules",
-                                        envir = sim@.envir[[".parsedFiles"]]), as.list)
-      isParent <- lapply(out, length) > 0
-      tu <- .parseModulePartial(sim, mods, defineModuleElement = "timeunit",
+    findSmallestTU <- function(sim, mods, childModules) { # recursive function
+      out <- mods
+
+      modsForTU <- names(childModules)
+      stillFinding <- TRUE
+      recurseLevel <- 1
+      # Time unit could be NA, in which case, it should find the smallest one that is inside a parent... if none there, then inside grandparent etc.
+      while (stillFinding && length(modsForTU)) {
+
+        tu <- .parseModulePartial(sim, as.list(modsForTU), defineModuleElement = "timeunit",
                                 envir = sim@.envir[[".parsedFiles"]])
-      hasTU <- !is.na(tu)
-      out[hasTU] <- tu[hasTU]
-      if (!all(hasTU)) {
-        out[!isParent] <- tu[!isParent]
-        while (any(isParent & !hasTU)) {
-          for (i in which(isParent & !hasTU)) {
-            out[[i]] <- findSmallestTU(sim, as.list(unlist(out[i])))
-            isParent[i] <- FALSE
-          }
-        }
+        hasTU <- !is.na(tu)
+        innerNames <- .findModuleName(childModules, recursive = recurseLevel)
+        modsForTU <- innerNames[nzchar(names(innerNames))]
+        stillFinding <- all(!hasTU)
+        recurseLevel <- recurseLevel + 1 # if there were no time units at the first level of module, go into next level
+
       }
-      minTimeunit(as.list(unlist(out)))
+      if (!exists("tu", inherits = FALSE)) {
+        return(list("year")) # default
+      }
+      minTU <- minTimeunit(as.list(unlist(tu)))
+      if (isTRUE(is.na(minTU[[1]]))) {
+        minTU[[1]] <- "year"
+      }
+      return(minTU)
     }
 
     # recursive function to extract parent and child structures
-    buildModuleGraph <- function(sim, mods) {
-      out <- lapply(.parseModulePartial(sim, modules = mods, defineModuleElement = "childModules",
-                                        envir = sim@.envir[[".parsedFiles"]]), as.list)
-      isParent <- lapply(out, length) > 0
-      to <- unlist(lapply(out, function(x) {
-          if (length(x) == 0) {
-            names(x)
-          } else {
-            x
-          }
-      }))
+    buildModuleGraph <- function(sim, mods, childModules) {
+      # provide childModules
+      out <- childModules
+      isParent <- unlist(lapply(out, function(x) length(x) > 1))
+      from <- rep(names(out)[isParent], unlist(lapply(out[isParent], length)))
+      to <- unlist(lapply(out, function(x) names(x)))
       if (is.null(to))
         to <- character(0)
-      from <- rep(names(out), unlist(lapply(out, length)))
       outDF <- data.frame(from = from, to = to, stringsAsFactors = FALSE)
-      while (any(isParent)) {
-        for (i in which(isParent)) {
-          outDF <- rbind(outDF, buildModuleGraph(sim, as.list(unlist(out[i]))))
-          isParent[i] <- FALSE
-        }
-      }
+      aa <- lapply(childModules[isParent], function(x) buildModuleGraph(sim, mods, x))
+      aa <- rbindlist(aa)
+      outDF <- rbind(outDF, aa)
       outDF
     }
 
     ## run this only once, at the highest level of the hierarchy, so before the parse tree happens
-    moduleGraph <- buildModuleGraph(sim, modules(sim))
+    moduleGraph <- as.data.frame(buildModuleGraph(sim, modules(sim), childModules = childModules))
 
-    timeunits <- findSmallestTU(sim, modules(sim))
+    timeunits <- findSmallestTU(sim, modules(sim), childModules)
 
     if (length(timeunits) == 0) timeunits <- list(moduleDefaults$timeunit) # no timeunits or no modules at all
 
@@ -463,7 +489,7 @@ setMethod(
     # Force SpaDES.core to front of search path
     #.modifySearchPath("SpaDES.core", skipNamespacing = FALSE)
 
-    rm(".userSuppliedObjNames", envir=envir(sim))
+    #rm(".userSuppliedObjNames", envir=envir(sim))
     ## add name to depends
     if (!is.null(names(sim@depends@dependencies))) {
       names(sim@depends@dependencies) <- sim@depends@dependencies %>%
@@ -747,3 +773,80 @@ setMethod(
 
     return(invisible(sim))
 })
+
+
+#' Put simInit and spades together
+#'
+#' This may allow for more efficient Caching. This passes all
+#' arguments to simInit, then the created \code{simList} is passed
+#' to \code{spades}
+#'
+#' @param ... Passed to simInit
+#' @export
+#' @rdname simInit
+simInitAndSpades <- function(...) {
+  simIn <- simInit(...)
+  spades(simIn)
+}
+
+
+#' Identify Child Modules from a recursive list
+#'
+#' There can be parents, grandparents, etc
+#'
+#' @rdname identifyChildModules
+#' @param sim simList
+#' @param modules List of module names
+#' @keywords internal
+#' @return list of \code{modules} will flat named list of all module names (children, parents etc.) and
+#'         \code{childModules} a non flat named list of only the childModule names.
+.identifyChildModules <- function(sim, modules) {
+  modulesToSearch <- modules
+  if (any(duplicated(modules))) {
+    message("Duplicate module, ", modules[duplicated(modules)], ", specified. Skipping loading it twice.")
+  }
+  if (length(modules) > 0) {
+    #isParent <- unlist(lapply(modulesToSearch, function(x) length(x)>0))
+    modulesToSearch <- lapply(.parseModulePartial(sim, modulesToSearch,
+                                                     defineModuleElement = "childModules",
+                                                     envir = sim@.envir[[".parsedFiles"]]),
+                                 as.list)
+    isParent <- unlist(lapply(modulesToSearch, function(x) length(x)>1))
+
+    modulesToSearch[isParent] <- lapply(modulesToSearch[isParent], function(x) .identifyChildModules(sim = sim, modules = x))
+    modulesToSearch2 <- as.list(names(modulesToSearch[!isParent]))
+    names(modulesToSearch2) <- names(modulesToSearch[!isParent])
+    modulesToSearch[!isParent] <- modulesToSearch2
+  }
+  return(modulesToSearch)
+}
+
+#' Identify module names up to a given recursive level
+#'
+#' With children, parents, grandparents, etc, there can be severl "layers" of recursion.
+#' Some functions need to evaluate the outer level for a value, if found, they don't need
+#' to proceed further. If not found, increment one more level of recursion, etc.
+#'
+#' @param recursive Numeric. The depth of recursion, where 0 is only top level, 1 is 1 level in etc.
+#' @param modules (Nested) Named list of module names
+#' @return Character vector of modules names
+#'
+#' @keywords internal
+#' @rdname findModuleName
+.findModuleName <- function(modList, recursive = 0) {
+  isParent <- unlist(lapply(modList, function(x) length(x) > 1))
+  parentNames <- lapply(modList, function(x) x)
+  parentNames <- if (any(unlist(isParent))) {
+    if (recursive) {
+      parentNamesInside <- lapply(modList[isParent], .findModuleName, recursive = recursive - 1)
+      c(names(isParent[isParent]), unlist(parentNamesInside))
+    } else {
+      names(isParent)
+    }
+  } else {
+    names(isParent)
+  }
+
+  return(parentNames)
+}
+

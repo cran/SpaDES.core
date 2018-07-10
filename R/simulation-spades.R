@@ -41,7 +41,9 @@ if (getRversion() >= "3.1.0") {
 #'
 doEvent <- function(sim, debug, notOlderThan) {
   if (missing(debug)) debug <- FALSE
-  if (!inherits(sim, "simList")) {
+  #if (!inherits(sim, "simList")) stop("sim must be a simList")
+  #if (!is(sim, "simList")) stop("sim must be a simList")
+  if (class(sim) != "simList") { # faster than `is` and `inherits`
     stop("doEvent can only accept a simList object")
   }
 
@@ -51,11 +53,11 @@ doEvent <- function(sim, debug, notOlderThan) {
   if (length(sim@current) == 0) {
     # get next event from the queue and remove it from the queue
     if (length(sim@events)) {
-      sim@current <- sim@events[[1]]
-      sim@events <- sim@events[-1]
+      slot(sim, "current") <- sim@events[[1]]
+      slot(sim, "events") <- sim@events[-1]
     } else {
       # no more events, return empty event list
-      sim@current <- list()
+      slot(sim, "current") <- list()
     }
   }
 
@@ -65,15 +67,25 @@ doEvent <- function(sim, debug, notOlderThan) {
   if  (length(cur) == 0) {
     sim@simtimes[["current"]] <- sim@simtimes[["end"]] + 1
   } else {
+
+    # if the current time is greater than end time, then don't run it
     if (cur[["eventTime"]] <= sim@simtimes[["end"]]) {
+      fnEnv <- sim@.envir[[cur[["moduleName"]]]]
       # update current simulated time
       sim@simtimes[["current"]] <- cur[["eventTime"]]
 
       # call the module responsible for processing this event
       moduleCall <- paste("doEvent", cur[["moduleName"]], sep = ".")
 
-      # check the module call for validity
-      if (!(all(unlist(lapply(debug, identical, FALSE))))) {
+      # if debug is TRUE
+      if (is.null(attr(sim, "needDebug"))) {
+        attr(sim, "needDebug") <- if (length(debug) > 1) {
+          !(all(unlist(lapply(debug, identical, FALSE))))
+        } else {
+          !identical(debug, FALSE)
+        }
+      }
+      if (attr(sim, "needDebug")) {
         for (i in seq_along(debug)) {
           if (isTRUE(debug[[i]]) | debug[[i]] == "current" | debug[[i]] == "step") {
             if (length(cur) > 0) {
@@ -103,7 +115,6 @@ doEvent <- function(sim, debug, notOlderThan) {
           } else if (grepl(debug[[i]], pattern = "\\(")) {
             print(eval(parse(text = debug[[i]])))
           } else if (any(debug[[i]] %in% cur[c("moduleName", "eventType")])) {
-            fnEnv <- sim@.envir[[cur[["moduleName"]]]] # paste0(cur[["moduleName"]], "Fns")]]
             if(is.environment(fnEnv)) {
               if (all(debug %in% cur[c("moduleName", "eventType")])) {
                 debugonce(get(paste0("doEvent.", cur[["moduleName"]]), envir = fnEnv))
@@ -117,11 +128,13 @@ doEvent <- function(sim, debug, notOlderThan) {
         }
       }
 
+      # if the moduleName exists in the simList -- i.e,. go ahead with doEvent
       if (cur[["moduleName"]] %in% sim@modules) {
         if (cur[["moduleName"]] %in% core) {
           sim <- get(moduleCall)(sim, cur[["eventTime"]],
-                                 cur[["eventType"]], FALSE)
+                                 cur[["eventType"]])
         } else {
+
           # for future caching of modules
           cacheIt <- FALSE
           a <- sim@params[[cur[["moduleName"]]]][[".useCache"]]
@@ -144,34 +157,27 @@ doEvent <- function(sim, debug, notOlderThan) {
           }
 
           # This is to create a namespaced module call
-          .modifySearchPath(sim@depends@dependencies[[cur[["moduleName"]]]]@reqdPkgs,
-                            removeOthers = FALSE)
+          if (!.pkgEnv[["skipNamespacing"]])
+            .modifySearchPath(sim@depends@dependencies[[cur[["moduleName"]]]]@reqdPkgs,
+                              removeOthers = FALSE)
 
-          if (cacheIt) { # means that a module or event is to be cached
-            objNam <- sim@depends@dependencies[[cur[["moduleName"]]]]@outputObjects$objectName
-            moduleSpecificObjects <-
-              c(ls(sim@.envir, all.names = TRUE, pattern = cur[["moduleName"]]), # functions in the main .envir that are prefixed with moduleName
-                ls(sim@.envir[[cur[["moduleName"]]]], all.names = TRUE), # functions in the namespaced location
-                na.omit(objNam)) # objects outputted by module
-            moduleSpecificOutputObjects <- objNam
-            classOptions <- list(events = FALSE, current=FALSE, completed=FALSE, simtimes=FALSE,
-                                 params = sim@params[[cur[["moduleName"]]]],
-                                 modules = cur[["moduleName"]])
-            sim <- Cache(FUN = get(moduleCall, envir = sim@.envir[[cur[["moduleName"]]]]), #[[paste0(cur[["moduleName"]], "Fns")]]),
-                         sim = sim,
-                         eventTime = cur[["eventTime"]], eventType = cur[["eventType"]],
-                         debug = FALSE,
-                         objects = moduleSpecificObjects,
-                         notOlderThan = notOlderThan,
-                         outputObjects = moduleSpecificOutputObjects,
-                         classOptions = classOptions,
-                         cacheRepo = sim@paths[["cachePath"]],
-                         userTags = c("function:doEvent"))
+          quotedFnCall <- if (cacheIt) { # means that a module or event is to be cached
+            quote(Cache(FUN = get(moduleCall, envir = fnEnv),
+                                       sim = sim,
+                                       eventTime = cur[["eventTime"]], eventType = cur[["eventType"]],
+                                       objects = moduleSpecificObjects,
+                                       notOlderThan = notOlderThan,
+                                       outputObjects = moduleSpecificOutputObjects,
+                                       classOptions = classOptions,
+                                       cacheRepo = sim@paths[["cachePath"]],
+                                       userTags = c("function:doEvent")))
           } else {
-            sim <- get(moduleCall,
-                       envir = sim@.envir[[cur[["moduleName"]]]])( #[[paste0(cur[["moduleName"]], "Fns")]]
-                         sim, cur[["eventTime"]], cur[["eventType"]], FALSE)
+            quote(get(moduleCall,
+                      envir = fnEnv)(sim, cur[["eventTime"]], cur[["eventType"]]))
           }
+          sim <- .runEvent(sim, cacheIt, debug,
+                           quotedFnCall = quotedFnCall,
+                           moduleCall, fnEnv, cur, notOlderThan)
         }
       } else {
         stop(
@@ -184,41 +190,51 @@ doEvent <- function(sim, debug, notOlderThan) {
       }
 
       # add to list of completed events
-      lenCompl <- length(sim@completed)
-      if (lenCompl) {
-        # next 4 lines replace sim@completed <- append(sim@completed, list(cur)), which gets slower with size of sim@completed
-        # sim@completed <- append(sim@completed, list(cur))
-        #   following does not: it is more or less O(1). Algorithm from: https://stackoverflow.com/questions/17046336/here-we-go-again-append-an-element-to-a-list-in-r?lq=1
-        #   it basically increases size of list by *2 every time it fills up
-        sim@.envir[["._completedCounter"]] <- sim@.envir[["._completedCounter"]] + 1
-        # This gets slower as it gets larger. So sad.
-        if(sim@.envir[["._completedCounter"]]==sim@.envir[["._completedSize"]]) {
-          sim@.envir[["._completedSize"]] <- sim@.envir[["._completedSize"]] * 2
-          length(sim@completed) <- sim@.envir[["._completedSize"]]
-        }
-        sim@completed[sim@.envir[["._completedCounter"]]] <- list(cur)
+      if (.pkgEnv[["spades.keepCompleted"]]) { # can skip it with option
+        if (!is.null(attr(sim, "completedCounter"))) { # use attr(sim, "completedCounter")
+                            #instead of sim@.envir because collisions with parallel sims from same sim object
 
-        if (lenCompl > getOption("spades.nCompleted")) {
-          sim@completed <- sim@completed[(lenCompl+1) - getOption("spades.nCompleted"):(lenCompl+1)]
+          # next section replaces sim@completed <- append(sim@completed, list(cur)),
+          # which gets slower with size of sim@completed
+          # sim@completed <- append(sim@completed, list(cur))
+          #   following does not: it is more or less O(1). Algorithm from: https://stackoverflow.com/questions/17046336/here-we-go-again-append-an-element-to-a-list-in-r?lq=1
+          #   it basically increases size of list by *2 every time it fills up
+          attr(sim, "completedCounter") <- attr(sim, "completedCounter") + 1
+
+          # increase length of list by doubling as it grows
+          if(attr(sim, "completedCounter")==attr(sim, "completedSize")) {
+            lenCompl <- length(sim@completed)
+            if (lenCompl > .pkgEnv[["spades.nCompleted"]]) { # we are above desired
+              if (attr(sim, "completedCounter") >= lenCompl ) { # We can now cull earlier ones
+                keepFrom <- lenCompl - .pkgEnv[["spades.nCompleted"]]
+                sim@completed <- sim@completed[keepFrom:lenCompl] # keep 10000 of them, from lenCompl - nCompleted to current
+                attr(sim, "completedSize") <- length(sim@completed)
+                attr(sim, "completedCounter") <- attr(sim, "completedSize")
+              }
+            }
+            attr(sim, "completedSize") <- attr(sim, "completedSize") * 2
+            length(sim@completed) <- attr(sim, "completedSize")
+          }
+          sim@completed[attr(sim, "completedCounter")] <- list(cur)
+
+        } else {
+          attr(sim, "completedCounter") <- 1
+          attr(sim, "completedSize") <- 2
+          sim@completed <- list(cur)
         }
-      } else {
-        sim@.envir[["._completedCounter"]] <- 1
-        sim@.envir[["._completedSize"]] <- 2
-        sim@completed <- list(cur)
       }
 
       # current event completed, replace current with empty
-      sim@current <- list()
+      slot(sim, "current") <- list()
 
     } else {
       # update current simulated time and event
       sim@simtimes[["current"]] <- sim@simtimes[["end"]] + 1
-      if (length(sim@events)) {
-        # i.e., if no more events
-        sim@events <- append(list(sim@current), sim@events)
-        sim@current <- list()
-      }
+      # i.e., if no more events
+      slot(sim, "events") <- append(list(sim@current), sim@events)
+      slot(sim, "current") <- list()
     }
+
   }
   return(invisible(sim))
 }
@@ -275,17 +291,26 @@ scheduleEvent <- function(sim,
                           eventTime,
                           moduleName,
                           eventType,
-                          eventPriority) {
-  if (!class(sim)=="simList") stop("sim must be a simList")
+                          eventPriority = .pkgEnv$.normalVal) {
+  #if (!inherits(sim, "simList")) stop("sim must be a simList")
   #if (!is(sim, "simList")) stop("sim must be a simList")
-  if (!is.numeric(eventTime)) stop(paste(
-    "Invalid or missing eventTime. eventTime must be a numeric. This is usually",
-    "caused by an attempt to scheduleEvent at time NULL",
-    "or by using an undefined parameter."
-  ))
+
+  if (class(sim) != "simList") stop("sim must be a simList") # faster than `is` and `inherits`
+
+  if (!is.numeric(eventTime)) {
+    if (is.na(eventTime)) {
+      eventTime <- NA_real_
+    } else {
+      stop(paste(
+        "Invalid or missing eventTime. eventTime must be a numeric.",
+        "This is usually caused by an attempt to scheduleEvent at time NULL",
+        "or by using an undefined parameter."
+      ))
+    }
+  }
   if (!is.character(eventType)) stop("eventType must be a character")
   if (!is.character(moduleName)) stop("moduleName must be a character")
-  if (missing(eventPriority)) eventPriority <- .pkgEnv$.normalVal
+  #if (missing(eventPriority)) eventPriority <- .pkgEnv$.normalVal
   if (!is.numeric(eventPriority)) stop("eventPriority must be a numeric")
 
   if (length(eventTime)) {
@@ -342,9 +367,9 @@ scheduleEvent <- function(sim,
 
       # put new event into event queue
       if (numEvents == 0L) {
-        sim@events <- newEventList
+        slot(sim, "events") <- newEventList
       } else {
-        sim@events <- append(sim@events, newEventList)
+        slot(sim, "events") <- append(sim@events, newEventList)
         needSort <- TRUE
         if (eventTimeInSeconds>sim@events[[numEvents]][[1]]) {
           needSort <- FALSE
@@ -354,7 +379,7 @@ scheduleEvent <- function(sim,
         if (needSort) {
           ord <- order(unlist(lapply(sim@events, function(x) x$eventTime)),
                        unlist(lapply(sim@events, function(x) x$eventPriority)))
-          sim@events <- sim@events[ord]
+          slot(sim, "events") <- sim@events[ord]
         }
       }
     }
@@ -444,18 +469,41 @@ scheduleEvent <- function(sim,
 #' the same mechanism, but it can be used with replication.
 #' See also the vignette on caching for examples.
 #'
-#' If \code{debug} is specified, it can be a logical or character vector.
-#' If not specified, the package option \code{spades.debug} is used.
-#' In all cases, something will be printed to the console immediately before each
-#' event is being executed.
-#' If \code{TRUE}, then the event immediately following will be printed as it
-#' runs (equivalent to \code{current(sim)}).
-#' If a character string, then it can be one of the many \code{simList} accessors,
-#' such as \code{events}, \code{params}, \code{"simList"} (print the entire simList),
-#' or any R expression.
-#' If an R expression it will be evaluated with access to the \code{sim} object.
-#' If this is more than one character string, then all will be printed to the
-#' screen in their sequence.
+#' @section \code{debug}:
+#'
+#' If \code{debug} is specified and is not \code{FALSE}, 2 things will happen:
+#' 1) there can be messages sent to console, such as events as they pass by, and
+#' 2) (experimental still) if there is an error, it will attempt to open a browser
+#' in the event where the error occurred. You can edit, and then press \code{c} to continue
+#' or \code{Q} to quit, plus all other normal interactive browser tools.
+#' \code{c} will trigger a reparse and events will continue as scheduled, starting
+#' with the one just edited. There may be some unexpected consequences if the
+#' \code{simList} objects had already been changed before the error occurred.
+#' \code{debug} can be a logical or character vector.
+#'
+#' If not specified in the function call, the package
+#' option \code{spades.debug} is used. The following
+#' options for debug are available:
+#'
+#' \tabular{ll}{
+#'   \code{TRUE} \tab the event immediately following will be printed as it
+#' runs (equivalent to \code{current(sim)}).\cr
+#'   function name (as character string) \tab If a function, then it will be run on the
+#'                                            simList, e.g., "time" will run
+#'                                            \code{time(sim)} at each event.\cr
+#'   moduleName (as character string) \tab All calls to that module will be entered
+#'                                         interactively\cr
+#'   eventName (as character string) \tab All calls that have that event name (in any module)
+#'                                        will be entered interactively\cr
+#'   \code{c(<moduleName>, <eventName>)}  \tab Only the event in that specified module
+#'                                             will be entered into. \cr
+#'   Any other R expression  \tab Will be evaluated with access to the simList as 'sim'.
+#'                                If this is more than one character string, then all will
+#'                                be printed to the screen in their sequence. \cr
+#' }
+#'
+#'
+#'
 #'
 #' @note The debug option is primarily intended to facilitate building simulation
 #' models by the user.
@@ -530,11 +578,17 @@ setMethod(
                         notOlderThan,
                         ...) {
     .pkgEnv$searchPath <- search()
+    .pkgEnv[["spades.browserOnError"]] <-
+      (interactive() & !identical(debug, FALSE) & getOption("spades.browserOnError"))
+    .pkgEnv[["spades.nCompleted"]] <- getOption("spades.nCompleted")
+    .pkgEnv[["skipNamespacing"]] <- !getOption("spades.switchPkgNamespaces")
+    .pkgEnv[["spades.keepCompleted"]] <- getOption("spades.keepCompleted", TRUE)
 
     # timeunits gets accessed every event -- this should only be needed once per simList
     sim@.envir$.timeunits <- timeunits(sim)
     on.exit({
-      .modifySearchPath(.pkgEnv$searchPath, removeOthers = TRUE)
+      if (!.pkgEnv[["skipNamespacing"]])
+        .modifySearchPath(.pkgEnv$searchPath, removeOthers = TRUE)
       rm(".timeunits", envir = sim@.envir)
     })
 
@@ -640,3 +694,49 @@ setMethod(
       )
     }
   })
+
+
+.runEvent <- function(sim, cacheIt, debug, quotedFnCall, moduleCall, fnEnv, cur, notOlderThan) {
+  if (cacheIt) { # means that a module or event is to be cached
+    objNam <- sim@depends@dependencies[[cur[["moduleName"]]]]@outputObjects$objectName
+    moduleSpecificObjects <-
+      c(ls(sim@.envir, all.names = TRUE, pattern = cur[["moduleName"]]), # functions in the main .envir that are prefixed with moduleName
+        ls(fnEnv, all.names = TRUE), # functions in the namespaced location
+        na.omit(objNam)) # objects outputted by module
+    moduleSpecificOutputObjects <- objNam
+    classOptions <- list(events = FALSE, current=FALSE, completed=FALSE, simtimes=FALSE,
+                         params = sim@params[[cur[["moduleName"]]]],
+                         modules = cur[["moduleName"]])
+  }
+  if (.pkgEnv[["spades.browserOnError"]]) {
+    sim <- .runEventWithBrowser(sim, quotedFnCall, moduleCall, fnEnv, cur)
+  } else {
+    sim <- eval(quotedFnCall)
+  }
+  sim
+}
+
+.runEventWithBrowser <- function(sim, quotedFnCall, moduleCall, fnEnv, cur) {
+  canContinue <- TRUE
+  numTries <- 0
+  while(canContinue) {
+    out <- try(eval(quotedFnCall))
+    if (isTRUE(is(out, "try-error"))) {
+      numTries <- numTries + 1
+      if (numTries > 1) {
+        tmp <- .parseConditional(filename = sim@.envir[[cur$moduleName]]$._sourceFilename)
+        eval(tmp[["parsedFile"]][!tmp[["defineModuleItem"]]],
+             envir = sim@.envir[[cur[["moduleName"]]]])
+        numTries <- 0
+      } else {
+        message("There was an error in the code in the ", moduleCall,
+                ". Entering browser. You can correct it and press c to continue",
+                " or Q to quit")
+        debugonce(get(moduleCall, envir = fnEnv))
+      }
+    } else {
+      canContinue <- FALSE
+    }
+  }
+  sim <- out
+}

@@ -4,7 +4,7 @@ test_that("simList object initializes correctly", {
   params <- list(
     .globals = list(burnStats = "npixelsburned", stackName = "landscape")
   )
-  modules <- list("randomLandscapes", "caribouMovement", "fireSpread")
+  modules <- list("randomLandscapes", "fireSpread", "caribouMovement")
   paths <- list(modulePath = system.file("sampleModules", package = "SpaDES.core"))
 
   mySim <- simInit(times, params, modules, objects = list(), paths)
@@ -14,13 +14,18 @@ test_that("simList object initializes correctly", {
   w <- getOption("width")
   options(width = 100L)
   out <- utils::capture.output(show(mySim))
-  expect_equal(length(out), 75)
+
+  # data.table v1.11.0 no longer prints "NULL" data.table.
+  # See bug fix 8 in https://github.com/Rdatatable/data.table/blob/master/NEWS.md
+  nline <- if (out[60] == "NULL") 75 else 73
+
+  expect_equal(length(out), nline)
   options(width = w); rm(w)
 
   ### SLOT .envir
   expect_is(envir(mySim), "environment")
   expect_is(objs(mySim), "list")
-  expect_equal(sort(names(objs(mySim))),
+  expect_equal(sort(names(objs(mySim, all.names = TRUE))),
                sort(names(as(mySim, "simList_")@.list)))
   expect_equivalent(mySim, as(as(mySim, "simList_"), "simList"))
   expect_equal(ls(mySim), objects(mySim))
@@ -226,6 +231,7 @@ test_that("simList test all signatures", {
     N <- 256L
     successes <- logical(N)
     argsTested <- vector("list", length = N)
+    bb <- options("spades.moduleCodeChecks" = FALSE)
     for (i in 1L:N) {
       li <- list(
         {if (i %% 2 ^ 1 == 0) times = times},                   # nolint
@@ -251,6 +257,8 @@ test_that("simList test all signatures", {
 
     # needs paths and params; many defaults are fine
     expect_equal(sum(successes, na.rm = TRUE), 192)
+    options("spades.moduleCodeChecks" = bb[[1]])
+
   }
 })
 
