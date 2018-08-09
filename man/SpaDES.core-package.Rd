@@ -17,7 +17,8 @@ include additional functionality by running user-built simulation modules.
 Included are numerous tools to visualize various spatial data formats,
 as well as non-spatial data. Much work has been done to speed up the core
 of the DES, with current benchmarking as low as 700 microseconds overhead for
-each event (including queuing, sorting, spawning event etc.).
+each event (including queuing, sorting, spawning event etc.) or 180 microseconds
+if there is no sorting
 
 Bug reports: \url{https://github.com/PredictiveEcology/SpaDES.core/issues}
 
@@ -253,7 +254,7 @@ the suggested \code{SpaDES.tools} package, and are summarized below.}
 
   \tabular{ll}{
     \code{\link[SpaDES.tools]{crw}} \tab Simple correlated random walk function\cr
-    \code{\link[SpaDES.tools]{heading}} \tab Determines the heading between SpatialPoints*\cr
+    \code{\link[SpaDES.tools]{heading}} \tab Determines the heading between \code{SpatialPoints*}\cr
     \code{\link[quickPlot]{makeLines}} \tab Makes \code{SpatialLines} object for, e.g., drawing arrows\cr
     \code{\link[SpaDES.tools]{move}} \tab A meta function that can currently only take "crw"\cr
     \code{\link[SpaDES.tools]{specificNumPerPatch}} \tab Initiate a specific number of agents per patch\cr
@@ -318,7 +319,7 @@ the suggested \code{SpaDES.tools} package, and are summarized below.}
 
   \tabular{ll}{
     \code{\link[SpaDES.tools]{agentLocation}} \tab Agent location\cr
-    \code{\link[SpaDES.tools]{initiateAgents}} \tab Initiate agents into a SpatialPointsDataFrame\cr
+    \code{\link[SpaDES.tools]{initiateAgents}} \tab Initiate agents into a \code{SpatialPointsDataFrame}\cr
     \code{\link[SpaDES.tools]{numAgents}} \tab Number of agents\cr
     \code{\link[SpaDES.tools]{probInit}} \tab Probability of initiating an agent or event\cr
     \code{\link[SpaDES.tools]{transitions}} \tab Transition probability\cr
@@ -510,11 +511,11 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Alex M Chubaty \email{alex.chubaty@gmail.com}
+\strong{Maintainer}: Alex M Chubaty \email{alex.chubaty@gmail.com} (https://orcid.org/0000-0001-7146-8135)
 
 Authors:
 \itemize{
-  \item Eliot J B McIntire \email{eliot.mcintire@canada.ca}
+  \item Eliot J B McIntire \email{eliot.mcintire@canada.ca} (https://orcid.org/0000-0002-6914-8316)
 }
 
 Other contributors:
