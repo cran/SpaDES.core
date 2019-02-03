@@ -172,7 +172,6 @@ options(spades.moduleCodeChecks = FALSE)
 library(igraph) # for %>%
 library(SpaDES.core)
 if (require(SpaDES.tools) && require(RandomFields)) {
-
   parameters <- list(
     .globals = list(stackName = "landscape", burnStats = "nPixelsBurned"),
     .progress = list(NA),
@@ -245,8 +244,10 @@ depsEdgeList(mySim, FALSE)      # all object dependency relationships
 clearPlot()
 moduleDiagram(mySim)            # simplified visual representation of modules
 
-clearPlot()
-moduleDiagram(mySim, showParents = TRUE) # similar, but showing parent module grouping
+try({
+  clearPlot()
+  moduleDiagram(mySim, showParents = TRUE) # similar, but showing parent module grouping
+})
 
 # detailed visual representation of objects
 objectDiagram(mySim, width = 720)

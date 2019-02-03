@@ -191,8 +191,12 @@ test_that("3 levels of parent and child modules load and show correctly", {
   xxx1 <- gsub(xxx, pattern = "timeunit = 'year'", replacement = "timeunit = 'month'")
   cat(xxx1, file = fileName, sep = "\n")
 
-  if ((Sys.info()[['sysname']] == "Darwin") && (Sys.which("glpsol") == "")) {
-    skip("GLPK not available on macOS")
+  if (Sys.which("glpsol") == "") {
+    if (Sys.info()[['sysname']] == "Darwin") {
+      skip("GLPK not available on macOS")
+    } else if (Sys.info()[['sysname']] == "Linux") {
+      skip("GLPK not available on Linux")
+    }
   } else {
     mySim <- simInit(modules = list("grandpar1"), paths = list(modulePath = tmpdir))
     mg <- moduleGraph(mySim, FALSE)
@@ -200,8 +204,8 @@ test_that("3 levels of parent and child modules load and show correctly", {
     expect_true(is(mg$graph, "igraph"))
     expect_true(is(mg$communities, "communities"))
     expect_true(length(unique(mg$communities$member)) == 3)
-    expect_true(any(communities(mg$communities)[['1']] %in% "grandpar1"))
-    expect_true(identical(communities(mg$communities)[['1']],
+    expect_true(any(grepl("grandpar1", communities(mg$communities)[['1']])))
+    expect_true(identical(basename(communities(mg$communities)[['1']]),
                           c("grandpar1", "par1", "par2", "child1", "child2")))
   }
 })

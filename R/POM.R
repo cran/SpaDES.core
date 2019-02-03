@@ -190,7 +190,7 @@ setGeneric(
            sterr = FALSE, ..., objFnCompare = "MAD", optimControl = NULL,
            NaNRetries = NA, logObjFnVals = FALSE, weights, useLog = FALSE) {
     standardGeneric("POM")
-  })
+})
 
 #' @rdname POM
 setMethod(
@@ -222,7 +222,7 @@ setMethod(
 
     whParamsByMod <- unlist(lapply(whParams, na.omit))
     names(whParamsByMod) <- unlist(lapply(names(whModules), function(nam) {
-      rep(nam, sum(grepl(pattern = nam, names(whParamsByMod))))
+      rep(nam, sum(grepl(pattern = paste0("^", nam, "[0-9]"), names(whParamsByMod))))
     }))
 
     if (missing(objects)) {
@@ -235,7 +235,7 @@ setMethod(
 
     if (missing(objFn)) {
       objFn1 <- function(par, objects, sim, whModules, whParams,
-                        whParamsByMod, parallelType, weights, useLog) {
+                         whParamsByMod, parallelType, weights, useLog) {
         keepGoing <- TRUE
         tryNum <- 1
         while (keepGoing) {
@@ -280,7 +280,6 @@ setMethod(
                 warning(paste0(names(outputObjects)[x],
                                " or its pattern is zero or negative; not using log"))
               }
-
             }
             if (objFnCompare == "MAD") {
               if (useLog[x]) {
@@ -306,7 +305,6 @@ setMethod(
             outStandard <- out / dataObjVal
             out <- list(raw = out, standardized = outStandard, value = outObj)
             return(out)
-
           })
           objectiveResStd <- unlist(lapply(objectiveRes, function(x) x[["standardized"]]))
           objectiveResW <- objectiveResStd * weights
@@ -332,7 +330,6 @@ setMethod(
           cat("\n")
           if (deoptimArgs$control$parallelType > 0  | (logObjFnVals != "objectiveFnValues.txt"))
             sink()
-
         }
         return(sumObj)
       }
@@ -350,7 +347,6 @@ setMethod(
           }
         }
         return(outTry)
-
       }
       userSuppliedObjFn <- FALSE
     } else {
@@ -439,11 +435,9 @@ setMethod(
 
       print(params)
       output <- do.call("DEoptim", deoptimArgs)
-
     } else {
       if (!is.null(list(...)$hessian) | sterr)
-        deoptimArgs <- append(deoptimArgs,
-                              list(hessian = TRUE))
+        deoptimArgs <- append(deoptimArgs, list(hessian = TRUE))
 
       if (optimizer == "genoud") {
         if (!is.null(cl)) {

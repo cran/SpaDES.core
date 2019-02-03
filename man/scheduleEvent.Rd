@@ -5,7 +5,7 @@
 \title{Schedule a simulation event}
 \usage{
 scheduleEvent(sim, eventTime, moduleName, eventType,
-  eventPriority = .pkgEnv$.normalVal)
+  eventPriority = .pkgEnv$.normalVal, .skipChecks = FALSE)
 }
 \arguments{
 \item{sim}{A \code{simList} simulation object.}
@@ -13,7 +13,8 @@ scheduleEvent(sim, eventTime, moduleName, eventType,
 \item{eventTime}{A numeric specifying the time of the next event.}
 
 \item{moduleName}{A character string specifying the module from which to
-call the event.}
+call the event. If missing, it will use
+\code{currentModule(sim)}}
 
 \item{eventType}{A character string specifying the type of event from
 within the module.}
@@ -21,6 +22,9 @@ within the module.}
 \item{eventPriority}{A numeric specifying the priority of the event.
 Lower number means higher priority.
 See \code{\link{priority}}.}
+
+\item{.skipChecks}{Logical. If \code{TRUE}, then internal checks that arguments match
+expected types are skipped. Should only be used if speed is critical.}
 }
 \value{
 Returns the modified \code{simList} object.
@@ -51,7 +55,7 @@ Matloff, N. (2011). The Art of R Programming (ch. 7.8.3).
             Retrieved from \url{https://www.nostarch.com/artofr.htm}
 }
 \seealso{
-\code{\link{priority}}
+\code{\link{priority}}, \code{\link{scheduleConditionalEvent}}
 }
 \author{
 Alex Chubaty

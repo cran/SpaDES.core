@@ -218,15 +218,14 @@ setMethod(
     x$childModules <- if (is.null(x$childModules)) {
       moduleDefaults$childModules
     } else {
-      if (isTRUE(is.na(x$childModules))) {
+      if (any(is.na(x$childModules))) {
         moduleDefaults$childModules
       } else {
         x$childModules %>% as.character() %>% na.omit() %>% as.character() # nolint
       }
     }
 
-
-    x$authors <- if (is.null(x$authors) || is.na(x$authors)) {
+    x$authors <- if (is.null(x$authors) || any(is.na(x$authors))) {
       moduleDefaults$authors
     } else {
       as.person(x$authors)
@@ -252,13 +251,13 @@ setMethod(
       }
     }
 
-    x$timeframe <- if (is.null(x$timeframe) || is.na(x$timeframe)) {
+    x$timeframe <- if (is.null(x$timeframe) || any(is.na(x$timeframe))) {
       eval(moduleDefaults$timeframe)
     } else if (!is.numeric.POSIXt(x$timeframe)) {
       as.POSIXlt(x$timeframe)
     } %>% `[`(1:2) # nolint
 
-    if (is.null(x$timeunit) || is.na(x$timeunit)) {
+    if (is.null(x$timeunit) || any(is.na(x$timeunit))) {
       x$timeunit <- moduleDefaults$timeunit
     }
 
