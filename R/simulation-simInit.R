@@ -98,7 +98,6 @@ if (getRversion() >= "3.1.0") {
 #'
 #' Using caching with \code{SpaDES} is vital when building re-usable and reproducible content.
 #' Please see the vignette dedicated to this topic.
-#' See \url{https://CRAN.R-project.org/package=SpaDES/vignettes/iii-cache.html}.
 #'
 #' @note
 #' Since the objects in the \code{simList} are passed-by-reference, it is useful
@@ -1139,13 +1138,12 @@ simInitAndExperiment <- function(times, params, modules, objects, paths, inputs,
       }
     }
   } else {
-    message("All requierd input Objects provided; skipping .inputObjects")
+    message("All required input Objects provided; skipping .inputObjects")
   }
 
   sim@current <- list()
   return(sim)
 }
-
 
 .timesDefault <- function() list(start = 0, end = 10)
 .paramsDefault <- function() list()

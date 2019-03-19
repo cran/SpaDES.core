@@ -104,6 +104,7 @@ test_that("test module-level cache", {
   }, add = TRUE)
 
   tmpfile <- tempfile(fileext = ".pdf")
+  tmpfile1 <- tempfile(fileext = ".pdf")
   expect_true(file.create(tmpfile))
   tmpfile <- normPath(tmpfile)
 
@@ -133,21 +134,21 @@ test_that("test module-level cache", {
   dev.off()
 
   expect_true(file.info(tmpfile)$size > 20000)
-  unlink(tmpfile)
+  unlink(tmpfile, force = TRUE)
 
   landscapeMaps1 <- raster::dropLayer(sims$landscape, "Fires")
   fireMap1 <- sims$landscape$Fires
 
   # The cached version will be identical for both events (init and plot),
   # but will not actually complete the plot, because plotting isn't cacheable
-  pdf(tmpfile)
+  pdf(tmpfile1)
   mess1 <- capture_output(sims <- spades(Copy(mySim), debug = FALSE))
   dev.off()
 
-  if (!identical(Sys.info()[["sysname"]], "Windows")) ## TODO: TEMPORARY to avoid random CRAN fail
-    expect_true(file.info(tmpfile)$size < 10000)
+  if (!identical(Sys.info()[["sysname"]], "Windows") || interactive()) ## TODO: TEMPORARY to avoid random CRAN fail
+    expect_true(file.info(tmpfile1)$size < 10000)
 
-  unlink(tmpfile)
+  unlink(tmpfile1)
 
   expect_true(any(grepl(pattern = "Using cached copy of randomLandscapes module", mess1)))
   landscapeMaps2 <- raster::dropLayer(sims$landscape, "Fires")
@@ -225,10 +226,11 @@ test_that("test .robustDigest for simLists", {
   try(clearCache(x = tmpCache, ask = FALSE), silent = TRUE)
 
   mess1 <- capture_messages(do.call(simInit, args))
-  expect_true(all(grepl("Running .input|module code|Setting|Paths|using dataPath", mess1)))
+  msgGrep <- "Running .input|module code|Setting|Paths|using dataPath|There is no similar item in the cacheRepo"
+  expect_true(all(grepl(msgGrep, mess1)))
 
-  expect_message(do.call(simInit, args),
-                 regexp = "Running .input|Using cached copy|module code|Setting|Paths")
+  msgGrep <- "Running .input|Using cached copy|module code|Setting|Paths"
+  expect_message(do.call(simInit, args), regexp = msgGrep)
 
   # make change to .inputObjects code -- should rerun .inputObjects
   xxx <- readLines(fileName)
@@ -238,9 +240,8 @@ test_that("test .robustDigest for simLists", {
   xxx[editBelowLine + 1] <- newCode
   cat(xxx, file = fileName, sep = "\n")
 
-  expect_message(do.call(simInit, args),
-                 regexp = "Running .input|module code|Setting|Paths|using dataPath",
-                 all = TRUE)
+  msgGrep <- "Running .input|module code|Setting|Paths|using dataPath|There is no similar item in the cacheRepo"
+  expect_message(do.call(simInit, args), regexp = msgGrep, all = TRUE)
 
   # make change elsewhere (i.e., not .inputObjects code) -- should NOT rerun .inputObjects
   xxx <- readLines(fileName)
@@ -250,8 +251,8 @@ test_that("test .robustDigest for simLists", {
   xxx[editBelowLine + 1] <- newCode
   cat(xxx, file = fileName, sep = "\n")
 
-  expect_message(do.call(simInit, args),
-                 regexp = "Running .input|loading cached result|module code")
+  msgGrep <- "Running .input|loading cached result|module code"
+  expect_message(do.call(simInit, args), regexp = msgGrep)
 
   # In some other location, test during spades call
   newModule(modName, path = tmpdir, open = FALSE)
@@ -259,9 +260,7 @@ test_that("test .robustDigest for simLists", {
   args$params <- list(test = list(.useCache = c(".inputObjects", "init")))
   bbb <- do.call(simInit, args)
   expect_silent(spades(bbb, debug = FALSE))
-  expect_output(spades(bbb),
-                 regexp = "Using cached copy of init",
-                 all = TRUE)
+  expect_output(spades(bbb), regexp = "Using cached copy of init", all = TRUE)
 
   # make a change in Init function
   xxx <- readLines(fileName)
@@ -276,9 +275,7 @@ test_that("test .robustDigest for simLists", {
 
   # should NOT use Cached copy, so no message
   expect_silent(spades(bbb, debug = FALSE))
-  expect_output(spades(bbb),
-                regexp = "Using cached copy of init",
-                all = TRUE)
+  expect_output(spades(bbb), regexp = "Using cached copy of init", all = TRUE)
 })
 
 test_that("test .checkCacheRepo with function as reproducible.cachePath", {
