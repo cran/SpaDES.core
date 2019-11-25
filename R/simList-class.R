@@ -1,4 +1,3 @@
-################################################################################
 #' The \code{simList} class
 #'
 #' Contains the minimum components of a \code{SpaDES} simulation.
@@ -20,7 +19,8 @@
 #' class. All other slots are the same.
 #' Thus, \code{simList} is identical to \code{simList_}, except that the former
 #' uses an environment for objects and the latter uses a list.
-#' The class \code{simList_} is only used internally.
+#' The class \code{simList_} is only used internally when saving/loading, because
+#' saving/loading a list behaves more reliably than saving/loading an environment.
 #'
 #' @slot modules    List of character names specifying which modules to load.
 #'
@@ -93,19 +93,16 @@
 #'   \code{eventPriority} \tab The priority given to the event. \cr
 #' }
 #'
-#' @aliases simList
-#' @rdname simList-class
-#' @rdname simList
-#' @importFrom data.table as.data.table data.table
-#' @include helpers.R misc-methods.R module-dependencies-class.R
-#'
 #' @references Matloff, N. (2011). The Art of R Programming (ch. 7.8.3).
 #'             San Francisco, CA: No Starch Press, Inc..
 #'             Retrieved from \url{https://www.nostarch.com/artofr.htm}
 #'
+#' @aliases simList
 #' @author Alex Chubaty and Eliot McIntire
 #' @exportClass simList
-#'
+#' @importFrom data.table as.data.table data.table
+#' @include helpers.R misc-methods.R module-dependencies-class.R
+#' @rdname simList-class
 setClass(
   "simList",
   contains = "environment",
@@ -137,11 +134,9 @@ setClass(
 #' @export
 #' @include misc-methods.R
 #' @rdname initialize-method
-#'
 setMethod("initialize",
           signature(.Object = "simList"),
           definition = function(.Object, ...) {
-
             sn <- slotNames(.Object)
             dots <- list(...)
             slotsProvided <- sn %in% names(dots)
@@ -149,29 +144,28 @@ setMethod("initialize",
               slot(.Object, ss) <- dots[[ss]]
             }
 
-
             expected <- c("modules", "params", "depends", "simtimes",
-              "inputs", "outputs", "paths")
+                          "inputs", "outputs", "paths")
             haves <- na.omit(match(sn[!slotsProvided], expected))
-            if (any(1==haves))
+            if (any(1 == haves))
               .Object@modules = as.list(NULL)
 
-            if (any(2==haves))
+            if (any(2 == haves))
               .Object@params = list(
                 .checkpoint = list(interval = NA_real_, file = NULL),
                 .progress = list(type = NULL, interval = NULL)
               )
-            if (any(3==haves))
+            if (any(3 == haves))
               .Object@depends = .emptySimDeps #new(".simDeps", dependencies = list(NULL))
-            if (any(4==haves))
+            if (any(4 == haves))
               .Object@simtimes = list(
                 current = 0.00, start = 0.00, end = 1.00, timeunit = NA_character_
               )
-            if (any(5==haves))
+            if (any(5 == haves))
               .Object@inputs = .fileTableInDF
-            if (any(6==haves))
+            if (any(6 == haves))
               .Object@outputs = .fileTableOutDF
-            if (any(7==haves))
+            if (any(7 == haves))
               .Object@paths = .paths()
 
             .Object@completed <- new.env(parent = emptyenv())
@@ -180,31 +174,14 @@ setMethod("initialize",
             .Object@.xData <- new.env(parent = emptyenv())
             .Object@.envir <- .Object@.xData
             attr(.Object@.xData, "name") <- "sim"
-            #
-            return(.Object)
-          })
 
+            return(.Object)
+})
 
 ################################################################################
-#' The \code{simList_} class
-#'
-#' Internal use only. Used when saving/loading a \code{simList}.
-#'
-#' This is identical to class \code{simList}, except that the \code{.xData} slot
-#' is replaced by a \code{.Data} containing a list to store the objects from the
-#' environment contained within the \code{simList}.
-#' Saving/loading a list behaves more reliably than saving/loading an environment.
-#'
-#' @inheritParams simList
-#'
-#' @seealso \code{\link{simList}}
-#'
 #' @aliases simList_
-#' @keywords internal
-#' @rdname simList_-class
-#'
-#' @author Alex Chubaty
-#'
+#' @aliases simList_-class
+#' @rdname simList-class
 setClass("simList_",
          contains = "list",
          slots = list(

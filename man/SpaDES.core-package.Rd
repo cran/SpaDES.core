@@ -18,8 +18,8 @@ Included are numerous tools to visualize various spatial data formats,
 as well as non-spatial data. Much work has been done to speed up the core
 of the DES, with current benchmarking as low as 56 microseconds overhead for
 each event (including scheduling, sorting event queue, spawning event etc.) or
-38 microseconds if there is no sorting (i.e., no sorting occurs under simple
-conditions). Under most event conditions, therefore, the DES itself will contribute
+38 microseconds if there is no sorting (i.e., no sorting occurs under simple conditions).
+Under most event conditions, therefore, the DES itself will contribute
 very minimally compared to the content of the events, which may often be
 milliseconds to many seconds each event.
 
@@ -43,7 +43,10 @@ A collection of top-level functions for doing spatial discrete event simulation.
   \tabular{ll}{
     \code{\link{simInit}} \tab Initialize a new simulation\cr
     \code{\link{spades}} \tab Run a discrete event simulation\cr
-    \code{\link{experiment}} \tab Run multiple \code{\link{spades}} calls\cr
+    \code{experiment} \tab In \code{SpaDES.experiment} package.
+                                  Run multiple \code{\link{spades}} calls\cr
+    \code{experiment2} \tab In \code{SpaDES.experiment} package.
+                                  Run multiple \code{\link{spades}} calls\cr
   }
 }
 
@@ -108,7 +111,8 @@ of a \code{\link{simList}} object are summarized further below.
      \code{\link{modulePath}} \tab Global simulation module path.\cr
      \code{\link{inputPath}} \tab Global simulation input path.\cr
      \code{\link{outputPath}} \tab Global simulation output path.\cr
-     \code{\link{paths}} \tab Global simulation paths (cache, modules, inputs, outputs).\cr
+     \code{\link{rasterPath}} \tab Global simulation temporary raster path.\cr
+     \code{\link{paths}} \tab Global simulation paths (cache, modules, inputs, outputs, rasters).\cr
   }
 }
 
@@ -532,25 +536,25 @@ These can be found with \code{file.path(find.package("SpaDES.core"), "sampleModu
 \seealso{
 Useful links:
 \itemize{
-  \item \url{http://spades-core.predictiveecology.org/}
+  \item \url{https://spades-core.predictiveecology.org/}
   \item \url{https://github.com/PredictiveEcology/SpaDES.core}
   \item Report bugs at \url{https://github.com/PredictiveEcology/SpaDES.core/issues}
 }
 
 }
 \author{
-\strong{Maintainer}: Alex M Chubaty \email{alex.chubaty@gmail.com} (0000-0001-7146-8135)
+\strong{Maintainer}: Alex M Chubaty \email{alex.chubaty@gmail.com} (\href{https://orcid.org/0000-0001-7146-8135}{ORCID})
 
 Authors:
 \itemize{
-  \item Eliot J B McIntire \email{eliot.mcintire@canada.ca} (0000-0002-6914-8316)
+  \item Eliot J B McIntire \email{eliot.mcintire@canada.ca} (\href{https://orcid.org/0000-0002-6914-8316}{ORCID})
 }
 
 Other contributors:
 \itemize{
   \item Yong Luo \email{yluo1@lakeheadu.ca} [contributor]
   \item Steve Cumming \email{Steve.Cumming@sbf.ulaval.ca} [contributor]
-  \item Ceres Barros \email{cbarros@mail.ubc.ca} (0000-0003-4036-977X) [contributor]
+  \item Ceres Barros \email{cbarros@mail.ubc.ca} (\href{https://orcid.org/0000-0003-4036-977X}{ORCID}) [contributor]
   \item Her Majesty the Queen in Right of Canada, as represented by the Minister of Natural Resources Canada [copyright holder]
 }
 
