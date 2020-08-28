@@ -16,6 +16,22 @@
 
 <title>01 Introduction to SpaDES</title>
 
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
 
 
 <style type="text/css">code{white-space: pre;}</style>
@@ -304,7 +320,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1 class="title toc-ignore">01 Introduction to <code>SpaDES</code></h1>
 <h4 class="author">Alex M. Chubaty</h4>
 <h4 class="author">Eliot J. B. McIntire</h4>
-<h4 class="date">May 15 2020</h4>
+<h4 class="date">August 27 2020</h4>
 
 
 <div id="TOC">
@@ -562,19 +578,19 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1>References</h1>
 <div id="refs" class="references">
 <div id="ref-sp:2013">
-<p>Bivand, Roger S, Edzer J Pebesma, and Virgilio Gomez-Rubio. 2013. <em>Applied spatial data analysis with R</em>. Second edi. NY: Springer. <a href="http://www.asdar-book.org/">http://www.asdar-book.org/</a>.</p>
+<p>Bivand, Roger S, Edzer J Pebesma, and Virgilio Gomez-Rubio. 2013. <em>Applied spatial data analysis with R</em>. Second edi. NY: Springer. <a href="https://asdar-book.org/">https://asdar-book.org/</a>.</p>
 </div>
 <div id="ref-Eddelbuettel:2013Rcpp">
 <p>Eddelbuettel, Dirk. 2013. <em>Seamless R and C++ Integration with Rcpp</em>. New York, NY: Springer.</p>
 </div>
 <div id="ref-Eddelbuettel:2011Rcpp">
-<p>Eddelbuettel, Dirk, and Romain Francois. 2011. “Rcpp : Seamless R and C++ Integration.” <em>Journal of Statistical Software</em> 40 (8): 1–18. <a href="http://www.jstatsoft.org/v40/i08/">http://www.jstatsoft.org/v40/i08/</a>.</p>
+<p>Eddelbuettel, Dirk, and Romain Francois. 2011. “Rcpp : Seamless R and C++ Integration.” <em>Journal of Statistical Software</em> 40 (8): 1–18. <a href="https://www.jstatsoft.org/v40/i08/">https://www.jstatsoft.org/v40/i08/</a>.</p>
 </div>
 <div id="ref-Fall:2001em">
 <p>Fall, Andrew, and Joseph Fall. 2001. “A domain-specific language for models of landscape dynamics.” <em>Ecological Modelling</em> 141: 1–18.</p>
 </div>
 <div id="ref-Grimm:2005bk">
-<p>Grimm, Volker, and Steven F Railsback. 2005. <em>Individual-based modelling and ecology</em>. Princeton, NJ: Princeton University Press. <a href="http://www.humboldt.edu/ecomodel/documents/Grimm-Railsback05.pdf">http://www.humboldt.edu/ecomodel/documents/Grimm-Railsback05.pdf</a>.</p>
+<p>Grimm, Volker, and Steven F Railsback. 2005. <em>Individual-based modelling and ecology</em>. Princeton, NJ: Princeton University Press.</p>
 </div>
 <div id="ref-Grimm2005science">
 <p>Grimm, Volker, Eloy Revilla, Uta Berger, Florian Jeltsch, Wolf M Mooij, Steven F Railsback, Hans-Hermann Thulke, Jacob Weiner, Thorsten Wiegand, and Donald L DeAngelis. 2005. “Pattern-oriented modeling of agent-based complex systems: lessons from ecology.” <em>Science</em> 310 (5750): 987–91. <a href="https://doi.org/10.1126/science.1116681">https://doi.org/10.1126/science.1116681</a>.</p>
@@ -592,15 +608,15 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p>Thiele, Jan C, and Volker Grimm. 2015. “Replicating and breaking models: good for you and good for ecology.” <em>Oikos</em>. <a href="https://doi.org/10.1111/oik.02170">https://doi.org/10.1111/oik.02170</a>.</p>
 </div>
 <div id="ref-NetLogo">
-<p>Wilensky, U. 1999. “NetLogo.” Evanston, IL: Center for Connected Learning; Computer-Based Modeling, Northwestern University. <a href="http://ccl.northwestern.edu/netlogo">http://ccl.northwestern.edu/netlogo</a>.</p>
+<p>Wilensky, U. 1999. “NetLogo.” Evanston, IL: Center for Connected Learning; Computer-Based Modeling, Northwestern University. <a href="https://ccl.northwestern.edu/netlogo/">https://ccl.northwestern.edu/netlogo/</a>.</p>
 </div>
 </div>
 </div>
 <div class="footnotes">
 <hr />
 <ol>
-<li id="fn1"><p><a href="http://julialang.org" class="uri">http://julialang.org</a><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
-<li id="fn2"><p><a href="http://PredictiveEcology.org/benchmarking" class="uri">http://PredictiveEcology.org/benchmarking</a><a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+<li id="fn1"><p><a href="https://julialang.org" class="uri">https://julialang.org</a><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p><a href="http://PredictiveEcology.org/benchmarking/" class="uri">http://PredictiveEcology.org/benchmarking/</a><a href="#fnref2" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
 

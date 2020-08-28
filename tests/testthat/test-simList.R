@@ -38,9 +38,9 @@ test_that("simList object initializes correctly (1)", {
   options(width = 100L)
   out <- utils::capture.output(show(mySim))
 
-  # data.table v1.11.0 no longer prints "NULL" data.table.
-  # See bug fix 8 in https://github.com/Rdatatable/data.table/blob/master/NEWS.md
-  nline <- if (out[60] == "NULL") 75 else 73
+  ## data.table v1.11.0 no longer prints "NULL" data.table.
+  ## See bug fix 8 in https://github.com/Rdatatable/data.table/blob/master/NEWS.md
+  nline <- if (out[60] == "NULL") 72 else 70
 
   expect_equal(length(out), nline)
   options(width = w); rm(w)
@@ -223,6 +223,8 @@ test_that("simList object initializes correctly (2)", {
 })
 
 test_that("simList test all signatures", {
+  skip_on_cran()
+
   testInitOut <- testInit(opts = list(spades.moduleCodeChecks = FALSE))
 
   on.exit({
@@ -328,6 +330,7 @@ test_that("simList test all signatures", {
 })
 
 test_that("childModule bug test -- created infinite loop of 'Duplicated...'", {
+  skip_on_cran()
   ## Test resulting from bug found by Greg Paradis April 7, 2019
   testInitOut <- testInit("raster")
   on.exit({
@@ -347,6 +350,8 @@ test_that("childModule bug test -- created infinite loop of 'Duplicated...'", {
 })
 
 test_that("test that module directory exists, but not files", {
+  skip_on_cran()
+
   ## Test resulting from bug found by Eliot McIntire April 28, 2019
   testInitOut <- testInit("raster")
   on.exit({

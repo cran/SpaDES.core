@@ -8,7 +8,6 @@ test_that("misc tests", {
   expect_error(needInstall("httr", minVersion = "100000.4.1"), "httr\\(>=")
   expect_silent(needInstall("reproducible"))
   expect_error(needInstall("httr2", minVersion = "1.4.1"), "install\\.packages")
-
 })
 
 test_that(".emptyEventList tests", {
@@ -25,7 +24,6 @@ test_that(".emptyEventList tests", {
   expect_false(identical(.singleEventListDT, b))
   expect_null(key(b))
   expect_true(identical(unname(as.matrix(b)), unname(as.matrix(b1))))
-
 })
 
 test_that("modify search path", {
@@ -53,8 +51,6 @@ test_that("modify search path", {
   detach("package:crayon")
   spPost2 <- search()
   expect_false(any(grep(pkgToAttach[1], spPost2) == 2L))
-
-
 })
 
 test_that("test all.equal.simList", {
@@ -74,5 +70,4 @@ test_that("test all.equal.simList", {
   b2 <- s2$._firstEventClockTime
   expect_true(all.equal(a1, b1))
   expect_true(all.equal(a2, b2))
-
 })
