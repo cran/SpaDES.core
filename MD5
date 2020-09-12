@@ -1,6 +1,6 @@
-c55952263e3dea10c8596e6e446df80f *DESCRIPTION
+5407e9e70f683876a7bb2b2a9a0c2a63 *DESCRIPTION
 fad02cb53d6837b8f752e95f5f027b51 *NAMESPACE
-afdcab810475d96f3699efc257bdd961 *NEWS.md
+05e933dac5230ccbf19f6095fe632cc9 *NEWS.md
 9d4f0a5df0c28c6aa8a6d9b7859599e3 *R/cache.R
 cab21abf48860fb70ca3c2eee7bf1bde *R/check.R
 e0c52f531c88a6e72929beb4435b52a7 *R/checkpoint.R
@@ -30,7 +30,7 @@ bd6200d9b53945e0e5ae4a26a5bfc5d2 *R/plotting.R
 28f75ce037dbd3be85a1b9ce8bf37507 *R/project-template.R
 5da0bbd851a24288ed8172a0501032d5 *R/restart.R
 88fc69e7502c3f0c87a609c0d3b0dda3 *R/save.R
-15fc10fa9c7e28546734ef5c3bec0ca0 *R/simList-accessors.R
+b40f664e4a9a7feab66a84c8c8b4b8dc *R/simList-accessors.R
 64649b931e1d643c596db4cb9bb3f6e6 *R/simList-class.R
 ea762c55eeb5b7187dcba71a68cd2358 *R/simulation-parseModule.R
 7025a7b652df70852e907b8ace9ec887 *R/simulation-simInit.R
@@ -46,16 +46,16 @@ e11abd3b94e992303d8c0df4d6523814 *build/vignette.rds
 b3330f726dbf7e6f417aec5704a8cf6b *inst/WORDLIST
 f45de51eb065528771f1cf865a17e519 *inst/doc/i-introduction.R
 f95dcd2e895c3d5abfa7b2c90215dd8f *inst/doc/i-introduction.Rmd
-f7e523b24f28fe1d457a413926c11e11 *inst/doc/i-introduction.html
+77e3efb89cbd0447647451d17dbb0263 *inst/doc/i-introduction.html
 62d913fc32edf1c5d6cf3bf94cc57931 *inst/doc/ii-modules.R
 e9d8ff1f22758d8d861af1c7090f8af0 *inst/doc/ii-modules.Rmd
-4c13a9e9582595561694f230f8dbf865 *inst/doc/ii-modules.html
+9be1ac89faad6ed881c500e695b27ab7 *inst/doc/ii-modules.html
 ca5e84cceb264f25c39f1052362f82a8 *inst/doc/iii-cache.R
 202ec9cf39e63c1a73f10b5493cf1765 *inst/doc/iii-cache.Rmd
-87b3aa1f9547ea4b1aac426925f376ca *inst/doc/iii-cache.html
+57e876b388bbd4ea9e8722b5d6c96161 *inst/doc/iii-cache.html
 cb4d96cb8743c91bd40d819b93d11bd6 *inst/doc/iv-advanced.R
 11bdd02f24c3116c6adfb83532088a75 *inst/doc/iv-advanced.Rmd
-5e21cdd97d43f527e5960a2d2377594f *inst/doc/iv-advanced.html
+caf68c242d5fab8a6d1c576199562402 *inst/doc/iv-advanced.html
 89edeeb9ecfea1e99a34ac290d45273d *inst/examples/example_inputs.R
 2ea94f88cde0ef791152fbd3bad2fc35 *inst/examples/example_moduleMetadata.R
 f09064a9daad3117b0a5b8cb463e0f7f *inst/examples/example_moduleParamsInputsOuputs.R
@@ -80,7 +80,7 @@ b46fba7ce58a30e2934f6681f3d7f7fb *inst/templates/render-module-rmd.yaml.template
 0521c9a6c07e3cc795c0e9f500c2fa33 *inst/templates/test-template.R.template
 b14873b66b2ef3d0b4a09961a77a3010 *inst/templates/unitTests.R.template
 14ae5039970f9ddb09acae46fc1834a7 *man/Copy.Rd
-765951c1d1633f3bad8e69709aa08f27 *man/Plot.Rd
+c6671c808424cd796197ef631ee7e377 *man/Plot.Rd
 cd244aefed9aac28e331028474860002 *man/SpaDES.core-package.Rd
 65c6932947044561a1dc34844daa2c92 *man/addChangedAttr.Rd
 40d4c8595453b2a0ccda10cba7943797 *man/addDepends.Rd
@@ -199,7 +199,7 @@ f10047f6f4d5178125a575fcb0d87407 *man/show-method.Rd
 87809e0bf67d4c1f20ff53c0f35931fb *man/simList-accessors-envir.Rd
 89d08e4aef5fc319bd3b5aaf91b705a7 *man/simList-accessors-events.Rd
 7450b145f4ae3a62d5d2a92391ae3063 *man/simList-accessors-inputs.Rd
-1963ff0cd38cae3d314cc70dcb256e69 *man/simList-accessors-metadata.Rd
+d81872fdd561b6a908e338466017a71b *man/simList-accessors-metadata.Rd
 0b6311d4ae5775fd8d83d9352d79c09e *man/simList-accessors-modules.Rd
 13a66c3173649420582d5dc838c8b7e5 *man/simList-accessors-outputs.Rd
 adfc2a416751b1f91dc754493d27ed65 *man/simList-accessors-paths.Rd
