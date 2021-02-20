@@ -33,7 +33,6 @@
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
@@ -157,7 +156,7 @@ div.csl-indent {
 <h1 class="title toc-ignore">01 Introduction to <code>SpaDES</code></h1>
 <h4 class="author">Alex M. Chubaty</h4>
 <h4 class="author">Eliot J. B. McIntire</h4>
-<h4 class="date">January 06 2021</h4>
+<h4 class="date">February 19 2021</h4>
 
 
 <div id="TOC">
@@ -260,7 +259,7 @@ div.csl-indent {
 <h2 number="1.5"><span class="header-section-number">1.5</span> <code>SpaDES</code> demos and sample modules</h2>
 <p>The PDF format does not allow us to demonstrate the simulation visualization components of this package, so we invite you to run the sample simulation provided in this vignette, and to view the source code for the sample modules included in this package.</p>
 <p>This demo loads three sample modules provided with the packages: 1) <code>randomLandscapes</code>, 2) <code>fireSpread</code>, and 3) <code>caribouMovement</code>. These sample modules, respectively, highlight several keys features of the package: 1) the import, update, and plotting of raster map layers; 2) the computational speed of modeling spatial spread processes; and 3) the implementation of an agent-based (a.k.a., individual-based) model.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;SpaDES.core&quot;</span>)</span>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(SpaDES.core)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>demoSim <span class="ot">&lt;-</span> <span class="fu">suppressMessages</span>(<span class="fu">simInit</span>(</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">times =</span> <span class="fu">list</span>(<span class="at">start =</span> <span class="dv">0</span>, <span class="at">end =</span> <span class="dv">100</span>),</span>
@@ -430,7 +429,7 @@ Bivand, Roger S, Edzer J Pebesma, and Virgilio Gomez-Rubio. 2013. <em><span clas
 Eddelbuettel, Dirk. 2013. <em><span class="nocase">Seamless R and C++ Integration with Rcpp</span></em>. New York, NY: Springer.
 </div>
 <div id="ref-Eddelbuettel:2011Rcpp" class="csl-entry">
-Eddelbuettel, Dirk, and Romain Francois. 2011. <span>“<span class="nocase">Rcpp : Seamless R and C++ Integration</span>.”</span> <em>Journal Of Statistical Software</em> 40 (8): 1–18. <a href="https://www.jstatsoft.org/v40/i08/">https://www.jstatsoft.org/v40/i08/</a>.
+Eddelbuettel, Dirk, and Romain Francois. 2011. <span>“<span class="nocase">Rcpp : Seamless R and C++ Integration</span>.”</span> <em>Journal Of Statistical Software</em> 40 (8): 1–18.
 </div>
 <div id="ref-Fall:2001em" class="csl-entry">
 Fall, Andrew, and Joseph Fall. 2001. <span>“<span class="nocase">A domain-specific language for models of landscape dynamics</span>.”</span> <em>Ecological Modelling</em> 141: 1–18.

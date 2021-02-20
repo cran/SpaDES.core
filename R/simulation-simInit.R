@@ -181,7 +181,9 @@ utils::globalVariables(".")
 #' @include simulation-parseModule.R
 #' @include priority.R
 #' @importFrom reproducible basename2
+#' @importFrom utils compareVersion
 #' @importFrom Require Require trimVersionNumber
+#' @importFrom utils compareVersion
 #' @rdname simInit
 #'
 #' @references Matloff, N. (2011). The Art of R Programming (ch. 7.8.3).
@@ -407,20 +409,29 @@ setMethod(
                          envir = sim@.xData[[".parsedFiles"]])
 
     # Load only needed packages -- compare to current search path
-    loadedPkgs <- search();
     uniqueReqdPkgs <- unique(unlist(reqdPkgs))
-    neededPkgs <- uniqueReqdPkgs %in% gsub(".*:", "", loadedPkgs)
-    names(neededPkgs) <- uniqueReqdPkgs
 
-    if (sum(!neededPkgs) > 0) {
-      allPkgs <- c(unique(names(neededPkgs)[!neededPkgs], "SpaDES.core"))
+    if (length(uniqueReqdPkgs)) {
+      allPkgs <- unique(c(uniqueReqdPkgs, "SpaDES.core"))
       if (getOption("spades.useRequire")) {
-        Require(allPkgs)
+        Require(allPkgs, upgrade = FALSE)
       } else {
-        # clean up github identified repos
-        allPkgs <- gsub(".*\\/+(.+)(@.*)",  "\\1", allPkgs)
-        allPkgs <- gsub(".*\\/+(.+)",  "\\1", allPkgs)
+        loadedPkgs <- search();
+        neededPkgs <- uniqueReqdPkgs %in% gsub(".*:", "", loadedPkgs)
+        names(neededPkgs) <- uniqueReqdPkgs
+        allPkgs <- unique(c(names(neededPkgs)[!neededPkgs], "SpaDES.core"))
+        versionSpecs <- Require::getPkgVersions(allPkgs)
+        if (any(versionSpecs$hasVersionSpec)) {
+          out11 <- lapply(which(versionSpecs$hasVersionSpec), function(iii) {
+            comp <- compareVersion(as.character(packageVersion(versionSpecs$Package[iii])),
+                                   versionSpecs$versionSpec[iii])
+            if (comp < 0)
+              warning(versionSpecs$Package[iii], " needs to be updated to at least ",
+                      versionSpecs$versionSpec[iii])
+          })
 
+        }
+        allPkgs <- unique(Require::extractPkgName(allPkgs))
         loadedPkgs <- lapply(trimVersionNumber(allPkgs), require, character.only = TRUE)
       }
     }
@@ -616,6 +627,7 @@ setMethod(
     # Make local activeBindings to mod
     lapply(as.character(sim@modules), function(mod) {
       makeModActiveBinding(sim = sim, mod = mod)
+      # sim$.mods$caribouMovement$mod <- list()
     })
 
     lapply(sim@modules, function(mod) {

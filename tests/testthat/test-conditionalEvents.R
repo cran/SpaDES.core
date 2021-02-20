@@ -1,6 +1,8 @@
 if (interactive()) library(testthat)
 
 test_that("simulation runs with simInit and spades", {
+  skip_if_not_installed("RandomFields")
+
   testInitOut <- testInit(opts = list(spades.moduleCodeChecks = FALSE))
   on.exit({
     testOnExit(testInitOut)
@@ -16,8 +18,9 @@ test_that("simulation runs with simInit and spades", {
   rootPth2 <- file.path(tmpCache, modules[[2]]) %>%
     checkPath(., create = TRUE)
 
-  file.copy(grep(modules[[1]], files, value = TRUE), file.path(rootPth1, paste0(modules[[1]], ".R")))
-  file.copy(grep(modules[[2]], files, value = TRUE), file.path(rootPth2, paste0(modules[[2]], ".R")))
+  file.copy(grep(modules[[1]], files, value = TRUE),
+            file.path(rootPth1, paste0(modules[[1]], ".R")))
+  file.copy(grep(modules[[2]], files, value = TRUE), rootPth2)
 
   times <- list(start = 0.0, end = 0.0, timeunit = "year")
   params <- list(
@@ -85,6 +88,4 @@ test_that("simulation runs with simInit and spades", {
   mySimOut2 <- spades(mySimOut, debug = FALSE)
   expect_true(!exists("._conditionalEvents", envir = mySimOut))
   expect_true(NROW(completed(mySimOut2)[eventType == "event2"]) == 1)
-
-
 })

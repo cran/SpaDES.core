@@ -12,8 +12,8 @@ Description: Provides the core framework for a discrete event system (DES) to
     and tools for visualizing and understanding the DES project.
 URL: https://spades-core.predictiveecology.org/,
         https://github.com/PredictiveEcology/SpaDES.core
-Date: 2021-01-06
-Version: 1.0.5
+Date: 2021-02-18
+Version: 1.0.6
 Authors@R: c(
     person("Alex M", "Chubaty", email = "alex.chubaty@gmail.com",
     role = c("aut", "cre"), comment = c(ORCID = "0000-0001-7146-8135")),
@@ -47,18 +47,19 @@ Collate: 'module-dependencies-class.R' 'misc-methods.R' 'environment.R'
         'helpers.R' 'simList-class.R' 'cache.R' 'check.R' 'priority.R'
         'checkpoint.R' 'code-checking.R' 'copy.R' 'debugging.R'
         'downloadData.R' 'simulation-parseModule.R'
-        'simulation-simInit.R' 'load.R' 'memory.R' 'modActiveBinding.R'
-        'module-define.R' 'module-dependencies-methods.R'
-        'module-repository.R' 'module-template.R' 'moduleCoverage.R'
-        'moduleMetadata.R' 'objectSynonyms.R' 'options.R' 'times.R'
-        'simList-accessors.R' 'plotting-diagrams.R' 'plotting.R'
-        'progress.R' 'project-template.R' 'reexports.R' 'restart.R'
-        'save.R' 'simulation-spades.R' 'spades-classes.R'
+        'simulation-simInit.R' 'load.R' 'memory-leaks.R' 'memory.R'
+        'modActiveBinding.R' 'module-define.R'
+        'module-dependencies-methods.R' 'module-repository.R'
+        'module-template.R' 'moduleCoverage.R' 'moduleMetadata.R'
+        'objectSynonyms.R' 'options.R' 'times.R' 'simList-accessors.R'
+        'plotting-diagrams.R' 'plotting.R' 'progress.R'
+        'project-template.R' 'reexports.R' 'restart.R' 'save.R'
+        'simulation-spades.R' 'spades-classes.R'
         'spades-core-deprecated.R' 'spades-core-package.R'
         'suppliedElsewhere.R' 'zzz.R'
 RoxygenNote: 7.1.1
 NeedsCompilation: no
-Packaged: 2021-01-07 03:39:09 UTC; achubaty
+Packaged: 2021-02-19 19:49:16 UTC; achubaty
 Author: Alex M Chubaty [aut, cre] (<https://orcid.org/0000-0001-7146-8135>),
   Eliot J B McIntire [aut] (<https://orcid.org/0000-0002-6914-8316>),
   Yong Luo [ctb],
@@ -68,4 +69,4 @@ Author: Alex M Chubaty [aut, cre] (<https://orcid.org/0000-0001-7146-8135>),
     Minister of Natural Resources Canada [cph]
 Maintainer: Alex M Chubaty <alex.chubaty@gmail.com>
 Repository: CRAN
-Date/Publication: 2021-01-07 20:20:14 UTC
+Date/Publication: 2021-02-20 05:50:23 UTC

@@ -1,6 +1,10 @@
 ## ----setup, include=FALSE-----------------------------------------------------
-knitr::opts_chunk$set(echo = TRUE)
-options(spades.moduleCodeChecks = FALSE)
+RFavailable <- isTRUE(require(SpaDES.tools) && require(RandomFields))
+
+knitr::opts_chunk$set(eval = RFavailable)
+
+options("spades.moduleCodeChecks" = FALSE,
+        "spades.useRequire" = FALSE)
 
 ## ----module-metadata, eval=FALSE, echo=TRUE-----------------------------------
 #  ## sample module metadata for the default `randomLandscapes` module
@@ -41,44 +45,44 @@ options(spades.moduleCodeChecks = FALSE)
 #    )
 #  ))
 
-## ----passing-params, eval=FALSE, echo=TRUE------------------------------------
-#  library(SpaDES.core)
-#  
-#  outputDir <- file.path(tempdir(), "simOutputs")
-#  times <- list(start = 0.0, end = 20.0)
-#  parameters <- list(
-#    .globals = list(stackName = "landscape", burnStats = "nPixelsBurned"),
-#    .progress = list(NA),
-#    randomLandscapes = list(nx = 100L, ny = 100L, inRAM = TRUE),
-#    fireSpread = list(
-#      nFires = 10L, spreadprob = 0.225, its = 1e6, persistprob = 0,
-#      returnInterval = 10, startTime = 0,
-#      .plotInitialTime = 0, .plotInterval = 10
-#    ),
-#    caribouMovement = list(
-#      N = 100L, moveInterval = 1, torus = TRUE,
-#      .plotInitialTime = 1, .plotInterval = 1
-#    )
-#  )
-#  modules <- list("randomLandscapes", "fireSpread", "caribouMovement")
-#  objects <- list()
-#  paths <- list(modulePath = system.file("sampleModules", package = "SpaDES.core"),
-#                outputPath = outputDir)
-#  
-#  mySim <- simInit(times = times, params = parameters, modules = modules,
-#                   objects = objects, paths = paths)
-#  
-#  # Access parameters
-#  params(mySim)               # shows all parameters
-#  P(mySim)                    # same, but more concise
-#  P(mySim, "caribouMovement") # only parameters in caribouMovement
-#  P(mySim)$caribouMovement    # same
-#  P(mySim)$caribouMovement$N  # Only one parameter
-#  
-#  # If used within the module source code, then module name can be omitted:
-#  # This will return NULL here, but will return the actual value if used
-#  # in a module
-#  P(mySim)$N  # Only one parameter
+## ----passing-params, eval=RFavailable, echo=TRUE------------------------------
+library(SpaDES.core)
+
+outputDir <- file.path(tempdir(), "simOutputs")
+times <- list(start = 0.0, end = 20.0)
+parameters <- list(
+  .globals = list(stackName = "landscape", burnStats = "nPixelsBurned"),
+  .progress = list(NA),
+  randomLandscapes = list(nx = 100L, ny = 100L, inRAM = TRUE),
+  fireSpread = list(
+    nFires = 10L, spreadprob = 0.225, its = 1e6, persistprob = 0,
+    returnInterval = 10, startTime = 0,
+    .plotInitialTime = 0, .plotInterval = 10
+  ),
+  caribouMovement = list(
+    N = 100L, moveInterval = 1, torus = TRUE,
+    .plotInitialTime = 1, .plotInterval = 1
+  )
+)
+modules <- list("randomLandscapes", "fireSpread", "caribouMovement")
+objects <- list()
+paths <- list(modulePath = system.file("sampleModules", package = "SpaDES.core"),
+              outputPath = outputDir)
+
+mySim <- simInit(times = times, params = parameters, modules = modules,
+                 objects = objects, paths = paths)
+
+# Access parameters
+params(mySim)               # shows all parameters
+P(mySim)                    # same, but more concise
+P(mySim, "caribouMovement") # only parameters in caribouMovement
+P(mySim)$caribouMovement    # same
+P(mySim)$caribouMovement$N  # Only one parameter
+
+# If used within the module source code, then module name can be omitted:
+# This will return NULL here, but will return the actual value if used
+# in a module
+P(mySim)$N  # Only one parameter
 
 ## ----event-types, echo=TRUE, eval=FALSE---------------------------------------
 #  ## sample event type definitions from the default `randomLandscapes` module
@@ -168,41 +172,38 @@ options(spades.moduleCodeChecks = FALSE)
 #    }
 #  }
 
-## ----sim-eventDiagram, eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE----
-library(igraph) # for %>%
+## ----sim-eventDiagram, eval=RFavailable, echo=FALSE, message=FALSE, warning=FALSE----
+library(magrittr)
 library(SpaDES.core)
-if (require(SpaDES.tools) && require(RandomFields)) {
-  parameters <- list(
-    .globals = list(stackName = "landscape", burnStats = "nPixelsBurned"),
-    .progress = list(NA),
-    randomLandscapes = list(nx = 100L, ny = 100L, inRAM = TRUE),
-    fireSpread = list(nFires = 10L, spreadprob = 0.225, its = 1e6,
-                      persistprob = 0, returnInterval = 1, startTime = 0,
-                      .plotInitialTime = 0, .plotInterval = 10),
-    caribouMovement = list(N = 100L, moveInterval = 1, torus = TRUE,
-                           .plotInitialTime = 1, .plotInterval = 1)
-  )
-  
-  ftmp <- tempfile("spades_vignetteOutputs", fileext = ".pdf")
-  pdf(ftmp)
-  clearPlot()
-  mySim <- simInit(
-    times = list(start = 0.0, end = 2.0, timeunit = "year"),
-    params = parameters,
-    modules = list("randomLandscapes", "fireSpread", "caribouMovement"),
-    objects = list(),
-    paths = list(modulePath = system.file("sampleModules", package = "SpaDES.core"))
-    ) %>% 
-    spades()
-  dev.off()
-  unlink(ftmp)
-}
 
-## ----eventDiagram, echo=FALSE, eval=TRUE, fig.height=10, fig.width=7----------
-if (require(SpaDES.tools) && require(RandomFields))  {
-  # overview of the events in the simulation
-  eventDiagram(mySim, "0000-06-01", n = 200, width = 720)
-}
+parameters <- list(
+  .globals = list(stackName = "landscape", burnStats = "nPixelsBurned"),
+  .progress = list(NA),
+  randomLandscapes = list(nx = 100L, ny = 100L, inRAM = TRUE),
+  fireSpread = list(nFires = 10L, spreadprob = 0.225, its = 1e6,
+                    persistprob = 0, returnInterval = 1, startTime = 0,
+                    .plotInitialTime = 0, .plotInterval = 10),
+  caribouMovement = list(N = 100L, moveInterval = 1, torus = TRUE,
+                         .plotInitialTime = 1, .plotInterval = 1)
+)
+
+ftmp <- tempfile("spades_vignetteOutputs", fileext = ".pdf")
+pdf(ftmp)
+clearPlot()
+mySim <- simInit(
+  times = list(start = 0.0, end = 2.0, timeunit = "year"),
+  params = parameters,
+  modules = list("randomLandscapes", "fireSpread", "caribouMovement"),
+  objects = list(),
+  paths = list(modulePath = system.file("sampleModules", package = "SpaDES.core"))
+  ) %>% 
+  spades()
+dev.off()
+unlink(ftmp)
+
+## ----eventDiagram, echo=FALSE, eval=RFavailable, fig.height=10, fig.width=7----
+# overview of the events in the simulation
+eventDiagram(mySim, "0000-06-01", n = 200, width = 720)
 
 ## ----checksums, eval=FALSE----------------------------------------------------
 #  ## 1. specify your module here
@@ -225,7 +226,7 @@ if (require(SpaDES.tools) && require(RandomFields))  {
 #            to = file.path('path/to/my/moduleDir', moduleName, 'data', 'CHECKSUMS.txt'),
 #            overwrite = TRUE)
 
-## ----module-object-diagrams, eval=TRUE, echo=TRUE, message=FALSE, fig.width=7----
+## ----module-object-diagrams, eval=RFavailable, echo=TRUE, message=FALSE, fig.width=7----
 library(SpaDES.core)
 
 times <- list(start = 0.0, end = 20)
@@ -248,8 +249,7 @@ moduleDiagram(mySim, showParents = TRUE) # similar, but showing parent module gr
 # detailed visual representation of objects
 objectDiagram(mySim, width = 720)
 
-## ----checkpoints, echo=TRUE, eval=TRUE, message=FALSE-------------------------
-
+## ----checkpoints, echo=TRUE, eval=RFavailable, message=FALSE------------------
 # initialize a new simulation, setting the checkpoint interval and filename.
 times <- list(start = 0, end = 30)
 parameters <- list(
@@ -267,7 +267,7 @@ mySim <- simInit(times = times, params = parameters, modules = modules, paths = 
 checkpointFile(mySim)
 checkpointInterval(mySim)
 
-## ----progress, echo=TRUE, eval=TRUE, message=FALSE----------------------------
+## ----progress, echo=TRUE, eval=RFavailable, message=FALSE---------------------
 # initialize a new simulation, setting the progress parameters
 mySim <- simInit(times = list(start = 0.0, end = 100.0),
                  params = list(.globals = list(stackName = "landscape"),
@@ -279,7 +279,7 @@ mySim <- simInit(times = list(start = 0.0, end = 100.0),
 progressType(mySim)
 progressInterval(mySim)
 
-## ----load-save, echo=TRUE, eval=TRUE, message=FALSE---------------------------
+## ----load-save, echo=TRUE, eval=RFavailable, message=FALSE--------------------
 # initialize a new simulation, setting the load and save parameters
 library(data.table)
 
@@ -396,6 +396,6 @@ unlink(ftmp)
 ## ----module-group-dl, eval=FALSE----------------------------------------------
 #  downloadModule("SpaDES_sampleModules")
 
-## ----cleanup, eval=TRUE, echo=FALSE-------------------------------------------
+## ----cleanup, eval=RFavailable, echo=FALSE------------------------------------
 unlink(outputDir, recursive = TRUE)
 

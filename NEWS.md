@@ -1,6 +1,22 @@
 Known issues: https://github.com/PredictiveEcology/SpaDES.core/issues
 
-version 1.0.4
+version 1.0.6
+=============
+
+## new features
+* more informative message re: module package versions when `spades.useRequire = FALSE` (#141)
+* now detects user-created memory leaks when a user adds a closure or formula to the `sim`
+
+## dependencies
+* no changes
+
+## bug fixes
+* use `try()` with `communities()` to skip tests on systems without `igraph` GLPK support.
+* prevent package (re)installation during examples, tests, vignettes.
+* fix failures on R-devel caused by `RandomFields` being unavailable.
+* minor bug fixes
+
+version 1.0.5
 =============
 
 ## new features

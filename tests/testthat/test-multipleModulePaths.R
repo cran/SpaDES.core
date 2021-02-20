@@ -1,6 +1,8 @@
 if (interactive()) library(testthat)
 
 test_that("simulation runs with simInit and spades", {
+  skip_if_not_installed("RandomFields")
+
   testInitOut <- testInit(opts = list(spades.moduleCodeChecks = FALSE))
   on.exit({
     testOnExit(testInitOut)
@@ -17,7 +19,7 @@ test_that("simulation runs with simInit and spades", {
     checkPath(., create = TRUE)
 
   file.copy(grep(modules[[1]], files, value = TRUE), file.path(rootPth1, paste0(modules[[1]], ".R")))
-  file.copy(grep(modules[[2]], files, value = TRUE), file.path(rootPth2, paste0(modules[[2]], ".R")))
+  file.copy(grep(modules[[2]], files, value = TRUE), rootPth2)
 
   times <- list(start = 0.0, end = 2, timeunit = "year")
   params <- list(
