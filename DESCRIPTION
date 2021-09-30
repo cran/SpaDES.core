@@ -12,21 +12,22 @@ Description: Provides the core framework for a discrete event system (DES) to
     and tools for visualizing and understanding the DES project.
 URL: https://spades-core.predictiveecology.org/,
         https://github.com/PredictiveEcology/SpaDES.core
-Date: 2021-06-08
-Version: 1.0.8
+Date: 2021-09-28
+Version: 1.0.9
 Authors@R: c(
     person("Alex M", "Chubaty", email = "alex.chubaty@gmail.com",
-    role = c("aut", "cre"), comment = c(ORCID = "0000-0001-7146-8135")),
+           role = c("aut", "cre"), comment = c(ORCID = "0000-0001-7146-8135")),
     person("Eliot J B", "McIntire", email = "eliot.mcintire@canada.ca",
-    role = c("aut"), comment = c(ORCID = "0000-0002-6914-8316")),
+           role = c("aut"), comment = c(ORCID = "0000-0002-6914-8316")),
     person("Yong", "Luo", email = "yluo1@lakeheadu.ca",
-    role = c("ctb")),
+           role = c("ctb")),
     person("Steve", "Cumming", email = "Steve.Cumming@sbf.ulaval.ca",
-    role = c("ctb")),
+           role = c("ctb")),
     person("Ceres", "Barros", email = "cbarros@mail.ubc.ca",
-    role = c("ctb"), comment = c(ORCID = "0000-0003-4036-977X")),
-    person("Her Majesty the Queen in Right of Canada, as represented by the Minister of Natural Resources Canada",
-    role = "cph")
+           role = c("ctb"), comment = c(ORCID = "0000-0003-4036-977X")),
+    person(paste("Her Majesty the Queen in Right of Canada,",
+                 "as represented by the Minister of Natural Resources Canada"),
+           role = "cph")
     )
 Depends: R (>= 3.6), quickPlot (>= 0.1.4), reproducible (>= 1.2.7)
 Imports: crayon, data.table (>= 1.11.0), fastdigest, igraph (>= 1.0.1),
@@ -57,9 +58,9 @@ Collate: 'Plots.R' 'module-dependencies-class.R' 'misc-methods.R'
         'save.R' 'saveLoadSimList.R' 'simulation-spades.R'
         'spades-classes.R' 'spades-core-deprecated.R'
         'spades-core-package.R' 'suppliedElsewhere.R' 'zzz.R'
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 NeedsCompilation: no
-Packaged: 2021-06-09 14:23:52 UTC; achubaty
+Packaged: 2021-09-30 13:33:23 UTC; achubaty
 Author: Alex M Chubaty [aut, cre] (<https://orcid.org/0000-0001-7146-8135>),
   Eliot J B McIntire [aut] (<https://orcid.org/0000-0002-6914-8316>),
   Yong Luo [ctb],
@@ -69,4 +70,4 @@ Author: Alex M Chubaty [aut, cre] (<https://orcid.org/0000-0001-7146-8135>),
     Minister of Natural Resources Canada [cph]
 Maintainer: Alex M Chubaty <alex.chubaty@gmail.com>
 Repository: CRAN
-Date/Publication: 2021-06-10 09:10:02 UTC
+Date/Publication: 2021-09-30 14:20:06 UTC

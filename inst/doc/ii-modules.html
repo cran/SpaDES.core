@@ -15,8 +15,8 @@
 
 <title>02 Building SpaDES modules</title>
 
-<script src="ii-modules_files/header-attrs-2.8/header-attrs.js"></script>
-<script src="ii-modules_files/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="ii-modules_files/header-attrs-2.11/header-attrs.js"></script>
+<script src="ii-modules_files/htmlwidgets-1.5.4/htmlwidgets.js"></script>
 <script src="ii-modules_files/d3-3.3.8/d3.min.js"></script>
 <script src="ii-modules_files/dagre-0.4.0/dagre-d3.min.js"></script>
 <link href="ii-modules_files/mermaid-0.3.0/dist/mermaid.css" rel="stylesheet" />
@@ -148,7 +148,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <h1 class="title toc-ignore">02 Building <code>SpaDES</code> modules</h1>
 <h4 class="author">Alex M. Chubaty</h4>
-<h4 class="date">June 09 2021</h4>
+<h4 class="date">September 30 2021</h4>
 
 
 <div id="TOC">
@@ -469,17 +469,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>                 <span class="at">objects =</span> objects, <span class="at">paths =</span> paths)</span></code></pre></div>
 <pre><code>## Setting:
 ##   options(
-##     spades.outputPath = &#39;/tmp/RtmpFmpOfH/simOutputs&#39;
-##     spades.modulePath = &#39;/tmp/RtmpDI24RR/Rinst24c3b7744afee/SpaDES.core/sampleModules&#39;
+##     spades.outputPath = &#39;/tmp/RtmptsMbu9/simOutputs&#39;
+##     spades.modulePath = &#39;/tmp/RtmpcgNHd6/Rinst383f425e7459d4/SpaDES.core/sampleModules&#39;
 ##   )</code></pre>
 <pre><code>## Paths set to:
 ##   options(
-##     rasterTmpDir = &#39;/tmp/RtmpFmpOfH/raster&#39;
-##     reproducible.cachePath = &#39;/tmp/RtmpFmpOfH/Require/cache&#39;
-##     spades.inputPath = &#39;/tmp/RtmpUdjwYM/SpaDES/inputs&#39;
-##     spades.outputPath = &#39;/tmp/RtmpFmpOfH/simOutputs&#39;
-##     spades.modulePath = &#39;/tmp/RtmpDI24RR/Rinst24c3b7744afee/SpaDES.core/sampleModules&#39;
+##     rasterTmpDir = &#39;/tmp/RtmptsMbu9/raster&#39;
+##     reproducible.cachePath = &#39;/tmp/RtmptsMbu9/Require/cache&#39;
+##     spades.inputPath = &#39;/tmp/RtmpNK26Cb/SpaDES/inputs&#39;
+##     spades.outputPath = &#39;/tmp/RtmptsMbu9/simOutputs&#39;
+##     spades.modulePath = &#39;/tmp/RtmpcgNHd6/Rinst383f425e7459d4/SpaDES.core/sampleModules&#39;
 ##   )</code></pre>
+<pre><code>## options(&#39;spades.useRequire&#39; = FALSE), so not checking minimum package version requirements</code></pre>
 <pre><code>## Loading required package: RColorBrewer</code></pre>
 <pre><code>## Loading required package: raster</code></pre>
 <pre><code>## Loading required package: grid</code></pre>
@@ -489,431 +490,115 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 
 ##     gpar</code></pre>
 <pre><code>## defineParameter: &#39;.useCache&#39; is not of specified type &#39;logical&#39;.</code></pre>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Access parameters</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">params</span>(mySim)               <span class="co"># shows all parameters</span></span></code></pre></div>
-<pre><code>## $.checkpoint
-## $.checkpoint$interval
-## [1] NA
-## 
-## $.checkpoint$file
-## NULL
-## 
-## 
-## $.progress
-## $.progress$type
-## [1] NA
-## 
-## $.progress$interval
-## [1] NA
-## 
-## 
-## $.globals
-## $.globals$stackName
-## [1] &quot;landscape&quot;
-## 
-## $.globals$burnStats
-## [1] &quot;nPixelsBurned&quot;
-## 
-## 
-## $randomLandscapes
-## $randomLandscapes$inRAM
-## [1] TRUE
-## 
-## $randomLandscapes$nx
-## [1] 100
-## 
-## $randomLandscapes$ny
-## [1] 100
-## 
-## $randomLandscapes$stackName
-## [1] &quot;landscape&quot;
-## 
-## $randomLandscapes$.plotInitialTime
-## [1] 0
-## attr(,&quot;unit&quot;)
-## [1] &quot;month&quot;
-## 
-## $randomLandscapes$.plotInterval
-## [1] NA
-## 
-## $randomLandscapes$.saveInitialTime
-## [1] NA
-## 
-## $randomLandscapes$.saveInterval
-## [1] NA
-## 
-## $randomLandscapes$.seed
-## list()
-## 
-## $randomLandscapes$.useCache
-## [1] FALSE
-## 
-## 
-## $fireSpread
-## $fireSpread$stackName
-## [1] &quot;landscape&quot;
-## 
-## $fireSpread$nFires
-## [1] 10
-## 
-## $fireSpread$its
-## [1] 1e+06
-## 
-## $fireSpread$persistprob
-## [1] 0
-## 
-## $fireSpread$returnInterval
-## [1] 10
-## 
-## $fireSpread$spreadprob
-## [1] 0.225
-## 
-## $fireSpread$startTime
-## [1] 0
-## 
-## $fireSpread$.plotInitialTime
-## [1] 0
-## 
-## $fireSpread$.plotInterval
-## [1] 10
-## 
-## $fireSpread$.saveInitialTime
-## [1] NA
-## 
-## $fireSpread$.saveInterval
-## [1] NA
-## 
-## $fireSpread$.seed
-## list()
-## 
-## 
-## $caribouMovement
-## $caribouMovement$stackName
-## [1] &quot;landscape&quot;
-## 
-## $caribouMovement$moveInitialTime
-## [1] 1
-## attr(,&quot;unit&quot;)
-## [1] &quot;month&quot;
-## 
-## $caribouMovement$moveInterval
-## [1] 1
-## 
-## $caribouMovement$N
-## [1] 100
-## 
-## $caribouMovement$torus
-## [1] TRUE
-## 
-## $caribouMovement$.plotInitialTime
-## [1] 1
-## 
-## $caribouMovement$.plotInterval
-## [1] 1
-## 
-## $caribouMovement$.saveInitialTime
-## [1] NA
-## 
-## $caribouMovement$.saveInterval
-## [1] NA
-## 
-## $caribouMovement$.seed
-## list()</code></pre>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">P</span>(mySim)                    <span class="co"># same, but more concise</span></span></code></pre></div>
-<pre><code>## $.checkpoint
-## $.checkpoint$interval
-## [1] NA
-## 
-## $.checkpoint$file
-## NULL
-## 
-## 
-## $.progress
-## $.progress$type
-## [1] NA
-## 
-## $.progress$interval
-## [1] NA
-## 
-## 
-## $.globals
-## $.globals$stackName
-## [1] &quot;landscape&quot;
-## 
-## $.globals$burnStats
-## [1] &quot;nPixelsBurned&quot;
-## 
-## 
-## $randomLandscapes
-## $randomLandscapes$inRAM
-## [1] TRUE
-## 
-## $randomLandscapes$nx
-## [1] 100
-## 
-## $randomLandscapes$ny
-## [1] 100
-## 
-## $randomLandscapes$stackName
-## [1] &quot;landscape&quot;
-## 
-## $randomLandscapes$.plotInitialTime
-## [1] 0
-## attr(,&quot;unit&quot;)
-## [1] &quot;month&quot;
-## 
-## $randomLandscapes$.plotInterval
-## [1] NA
-## 
-## $randomLandscapes$.saveInitialTime
-## [1] NA
-## 
-## $randomLandscapes$.saveInterval
-## [1] NA
-## 
-## $randomLandscapes$.seed
-## list()
-## 
-## $randomLandscapes$.useCache
-## [1] FALSE
-## 
-## 
-## $fireSpread
-## $fireSpread$stackName
-## [1] &quot;landscape&quot;
-## 
-## $fireSpread$nFires
-## [1] 10
-## 
-## $fireSpread$its
-## [1] 1e+06
-## 
-## $fireSpread$persistprob
-## [1] 0
-## 
-## $fireSpread$returnInterval
-## [1] 10
-## 
-## $fireSpread$spreadprob
-## [1] 0.225
-## 
-## $fireSpread$startTime
-## [1] 0
-## 
-## $fireSpread$.plotInitialTime
-## [1] 0
-## 
-## $fireSpread$.plotInterval
-## [1] 10
-## 
-## $fireSpread$.saveInitialTime
-## [1] NA
-## 
-## $fireSpread$.saveInterval
-## [1] NA
-## 
-## $fireSpread$.seed
-## list()
-## 
-## 
-## $caribouMovement
-## $caribouMovement$stackName
-## [1] &quot;landscape&quot;
-## 
-## $caribouMovement$moveInitialTime
-## [1] 1
-## attr(,&quot;unit&quot;)
-## [1] &quot;month&quot;
-## 
-## $caribouMovement$moveInterval
-## [1] 1
-## 
-## $caribouMovement$N
-## [1] 100
-## 
-## $caribouMovement$torus
-## [1] TRUE
-## 
-## $caribouMovement$.plotInitialTime
-## [1] 1
-## 
-## $caribouMovement$.plotInterval
-## [1] 1
-## 
-## $caribouMovement$.saveInitialTime
-## [1] NA
-## 
-## $caribouMovement$.saveInterval
-## [1] NA
-## 
-## $caribouMovement$.seed
-## list()</code></pre>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">P</span>(mySim, <span class="st">&quot;caribouMovement&quot;</span>) <span class="co"># only parameters in caribouMovement</span></span></code></pre></div>
-<pre><code>## $stackName
-## [1] &quot;landscape&quot;
-## 
-## $moveInitialTime
-## [1] 1
-## attr(,&quot;unit&quot;)
-## [1] &quot;month&quot;
-## 
-## $moveInterval
-## [1] 1
-## 
-## $N
-## [1] 100
-## 
-## $torus
-## [1] TRUE
-## 
-## $.plotInitialTime
-## [1] 1
-## 
-## $.plotInterval
-## [1] 1
-## 
-## $.saveInitialTime
-## [1] NA
-## 
-## $.saveInterval
-## [1] NA
-## 
-## $.seed
-## list()</code></pre>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">P</span>(mySim)<span class="sc">$</span>caribouMovement    <span class="co"># same</span></span></code></pre></div>
-<pre><code>## $stackName
-## [1] &quot;landscape&quot;
-## 
-## $moveInitialTime
-## [1] 1
-## attr(,&quot;unit&quot;)
-## [1] &quot;month&quot;
-## 
-## $moveInterval
-## [1] 1
-## 
-## $N
-## [1] 100
-## 
-## $torus
-## [1] TRUE
-## 
-## $.plotInitialTime
-## [1] 1
-## 
-## $.plotInterval
-## [1] 1
-## 
-## $.saveInitialTime
-## [1] NA
-## 
-## $.saveInterval
-## [1] NA
-## 
-## $.seed
-## list()</code></pre>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">P</span>(mySim)<span class="sc">$</span>caribouMovement<span class="sc">$</span>N  <span class="co"># Only one parameter</span></span></code></pre></div>
-<pre><code>## [1] 100</code></pre>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># If used within the module source code, then module name can be omitted:</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This will return NULL here, but will return the actual value if used</span></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="co"># in a module</span></span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="fu">P</span>(mySim)<span class="sc">$</span>N  <span class="co"># Only one parameter</span></span></code></pre></div>
-<pre><code>## NULL</code></pre>
+<pre><code>## The following .globals were used:</code></pre>
+<pre><code>##              module    global</code></pre>
+<pre><code>## 1:  caribouMovement stackName</code></pre>
+<pre><code>## 2:       fireSpread stackName</code></pre>
+<pre><code>## 3: randomLandscapes stackName</code></pre>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Access parameters</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">P</span>(mySim)                    <span class="co"># shows all parameters</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="fu">P</span>(mySim, <span class="at">module =</span> <span class="st">&quot;caribouMovement&quot;</span>) <span class="co"># only parameters in caribouMovement module</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="fu">P</span>(mySim)<span class="sc">$</span>caribouMovement    <span class="co"># same</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="fu">P</span>(mySim)<span class="sc">$</span>caribouMovement<span class="sc">$</span>N  <span class="co"># Only one parameter</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="do">## If used within the module source code, then module name can be omitted:</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="do">## This will return NULL here, but will return the actual value if used</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="do">## in a module</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="fu">P</span>(mySim)<span class="sc">$</span>N  <span class="co"># Only one parameter if used within a module</span></span></code></pre></div>
 </div>
 </div>
 <div id="event-types" class="section level3" number="2.2.2">
 <h3 number="2.2.2"><span class="header-section-number">2.2.2</span> Event types</h3>
 <p>Each module may contain an arbitrary number of event types. Each of these event types are defined within the <code>doEvent.moduleName</code> call, and are wrapped in a simple <code>if</code>/<code>else</code> stanza that matches the called event type (NOTE: when several event types are defined, <code>switch</code>/<code>case</code> can faster than <code>if</code>/<code>else</code>). To keep the <code>doEvent.moduleName</code> code block as clear and readable as possible, keep the definitions of each event type minimal, using functions (defined outside of the block) for the details of what is happening for each event.</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="do">## sample event type definitions from the default `randomLandscapes` module</span></span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>doEvent.randomLandscapes <span class="ot">&lt;-</span> <span class="cf">function</span>(sim, eventTime, eventType, <span class="at">debug =</span> <span class="cn">FALSE</span>) {</span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (eventType <span class="sc">==</span> <span class="st">&quot;init&quot;</span>) {</span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># do stuff for this event</span></span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>    sim <span class="ot">&lt;-</span> <span class="fu">randomLandscapesInit</span>(sim)</span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># schedule the next events</span></span>
-<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>    sim <span class="ot">&lt;-</span> <span class="fu">scheduleEvent</span>(sim, <span class="fu">params</span>(sim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>.plotInitialTime,</span>
-<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>                         <span class="st">&quot;randomLandscapes&quot;</span>, <span class="st">&quot;plot&quot;</span>)</span>
-<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>    sim <span class="ot">&lt;-</span> <span class="fu">scheduleEvent</span>(sim, <span class="fu">params</span>(sim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>.saveInitialTime,</span>
-<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>                         <span class="st">&quot;randomLandscapes&quot;</span>, <span class="st">&quot;save&quot;</span>)</span>
-<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (eventType<span class="sc">==</span><span class="st">&quot;plot&quot;</span>) {</span>
-<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># do stuff for this event</span></span>
-<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">Plot</span>(sim[[<span class="fu">globals</span>(sim)<span class="sc">$</span>stackName]])</span>
-<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># schedule the next event</span></span>
-<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a>    sim <span class="ot">&lt;-</span> <span class="fu">scheduleEvent</span>(sim, <span class="fu">time</span>(sim) <span class="sc">+</span></span>
-<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a>                           <span class="fu">params</span>(sim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>.plotInterval,</span>
-<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a>                         <span class="st">&quot;randomLandscapes&quot;</span>, <span class="st">&quot;plot&quot;</span>)</span>
-<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (eventType <span class="sc">==</span> <span class="st">&quot;save&quot;</span>) {</span>
-<span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># do stuff for this event</span></span>
-<span id="cb30-23"><a href="#cb30-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">saveFiles</span>(sim)</span>
-<span id="cb30-24"><a href="#cb30-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-25"><a href="#cb30-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># schedule the next event</span></span>
-<span id="cb30-26"><a href="#cb30-26" aria-hidden="true" tabindex="-1"></a>    sim <span class="ot">&lt;-</span> <span class="fu">scheduleEvent</span>(sim, <span class="fu">time</span>(sim) <span class="sc">+</span></span>
-<span id="cb30-27"><a href="#cb30-27" aria-hidden="true" tabindex="-1"></a>                           <span class="fu">params</span>(sim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>.saveInterval,</span>
-<span id="cb30-28"><a href="#cb30-28" aria-hidden="true" tabindex="-1"></a>                         <span class="st">&quot;randomLandscapes&quot;</span>, <span class="st">&quot;save&quot;</span>)</span>
-<span id="cb30-29"><a href="#cb30-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-30"><a href="#cb30-30" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
-<span id="cb30-31"><a href="#cb30-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">warning</span>(<span class="fu">paste</span>(<span class="st">&quot;Undefined event type: </span><span class="sc">\&#39;</span><span class="st">&quot;</span>,</span>
-<span id="cb30-32"><a href="#cb30-32" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">events</span>(sim)[<span class="dv">1</span>, <span class="st">&quot;eventType&quot;</span>, <span class="at">with =</span> <span class="cn">FALSE</span>],</span>
-<span id="cb30-33"><a href="#cb30-33" aria-hidden="true" tabindex="-1"></a>                  <span class="st">&quot;</span><span class="sc">\&#39;</span><span class="st"> in module </span><span class="sc">\&#39;</span><span class="st">&quot;</span>,</span>
-<span id="cb30-34"><a href="#cb30-34" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">events</span>(sim)[<span class="dv">1</span>, <span class="st">&quot;moduleName&quot;</span>, <span class="at">with =</span> <span class="cn">FALSE</span>],</span>
-<span id="cb30-35"><a href="#cb30-35" aria-hidden="true" tabindex="-1"></a>                  <span class="st">&quot;</span><span class="sc">\&#39;</span><span class="st">&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>))</span>
-<span id="cb30-36"><a href="#cb30-36" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb30-37"><a href="#cb30-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">invisible</span>(sim))</span>
-<span id="cb30-38"><a href="#cb30-38" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="do">## sample event type definitions from the default `randomLandscapes` module</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>doEvent.randomLandscapes <span class="ot">&lt;-</span> <span class="cf">function</span>(sim, eventTime, eventType, <span class="at">debug =</span> <span class="cn">FALSE</span>) {</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (eventType <span class="sc">==</span> <span class="st">&quot;init&quot;</span>) {</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># do stuff for this event</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    sim <span class="ot">&lt;-</span> <span class="fu">randomLandscapesInit</span>(sim)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># schedule the next events</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>    sim <span class="ot">&lt;-</span> <span class="fu">scheduleEvent</span>(sim, <span class="fu">params</span>(sim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>.plotInitialTime,</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>                         <span class="st">&quot;randomLandscapes&quot;</span>, <span class="st">&quot;plot&quot;</span>)</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>    sim <span class="ot">&lt;-</span> <span class="fu">scheduleEvent</span>(sim, <span class="fu">params</span>(sim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>.saveInitialTime,</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>                         <span class="st">&quot;randomLandscapes&quot;</span>, <span class="st">&quot;save&quot;</span>)</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (eventType<span class="sc">==</span><span class="st">&quot;plot&quot;</span>) {</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># do stuff for this event</span></span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">Plot</span>(sim[[<span class="fu">globals</span>(sim)<span class="sc">$</span>stackName]])</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># schedule the next event</span></span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>    sim <span class="ot">&lt;-</span> <span class="fu">scheduleEvent</span>(sim, <span class="fu">time</span>(sim) <span class="sc">+</span></span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>                           <span class="fu">params</span>(sim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>.plotInterval,</span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>                         <span class="st">&quot;randomLandscapes&quot;</span>, <span class="st">&quot;plot&quot;</span>)</span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (eventType <span class="sc">==</span> <span class="st">&quot;save&quot;</span>) {</span>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># do stuff for this event</span></span>
+<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">saveFiles</span>(sim)</span>
+<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># schedule the next event</span></span>
+<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a>    sim <span class="ot">&lt;-</span> <span class="fu">scheduleEvent</span>(sim, <span class="fu">time</span>(sim) <span class="sc">+</span></span>
+<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a>                           <span class="fu">params</span>(sim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>.saveInterval,</span>
+<span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a>                         <span class="st">&quot;randomLandscapes&quot;</span>, <span class="st">&quot;save&quot;</span>)</span>
+<span id="cb25-29"><a href="#cb25-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-30"><a href="#cb25-30" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb25-31"><a href="#cb25-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">warning</span>(<span class="fu">paste</span>(<span class="st">&quot;Undefined event type: </span><span class="sc">\&#39;</span><span class="st">&quot;</span>,</span>
+<span id="cb25-32"><a href="#cb25-32" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">events</span>(sim)[<span class="dv">1</span>, <span class="st">&quot;eventType&quot;</span>, <span class="at">with =</span> <span class="cn">FALSE</span>],</span>
+<span id="cb25-33"><a href="#cb25-33" aria-hidden="true" tabindex="-1"></a>                  <span class="st">&quot;</span><span class="sc">\&#39;</span><span class="st"> in module </span><span class="sc">\&#39;</span><span class="st">&quot;</span>,</span>
+<span id="cb25-34"><a href="#cb25-34" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">events</span>(sim)[<span class="dv">1</span>, <span class="st">&quot;moduleName&quot;</span>, <span class="at">with =</span> <span class="cn">FALSE</span>],</span>
+<span id="cb25-35"><a href="#cb25-35" aria-hidden="true" tabindex="-1"></a>                  <span class="st">&quot;</span><span class="sc">\&#39;</span><span class="st">&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>))</span>
+<span id="cb25-36"><a href="#cb25-36" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb25-37"><a href="#cb25-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">invisible</span>(sim))</span>
+<span id="cb25-38"><a href="#cb25-38" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 <div id="event-functions" class="section level3" number="2.2.3">
 <h3 number="2.2.3"><span class="header-section-number">2.2.3</span> Event functions</h3>
 <p>Event functions should be defined below the <code>doEvent.moduleName</code> code block and follow the naming convention <code>modulenameEventtype()</code>. Keep these function definitions as short and clean as possible (you can further modularize your functions by calling additional subroutines).</p>
 <p>Functions should get and return objects in the simulation environment (<code>envir</code>), rather than pass them as function arguments. This mostly allows for function definitions to be simpler, <em>i.e.</em>, they just take the one <code>sim</code> argument if parameters are passed within the <code>simInit</code> call. Accessing objects in the <code>envir</code> is similar to accessing items in a list, <em>i.e.</em>, <code>sim[["object"]]</code> or <code>sim$object</code> can be used, in addition to <code>get("object", envir=envir(sim))</code>. Likewise, simulation functions (<em>i.e.</em>, those defined in modules) are also accessed using the <code>$</code> accessor (<em>e.g.</em>, <code>sim$myFunction()</code>).</p>
 <p>Note that every module requires an <code>"init"</code> event type, which defines the initialization of the module; however, this <code>init</code> event need not do a whole lot (<em>i.e.</em>, it can be a stub). As such, the <code>modulenameInit()</code> function is required for initialization. Modules may also include <code>"save"</code> and <code>"plot"</code> events, though these are optional.</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="do">## sample event functions from the default `randomLandscapes` module</span></span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(raster)</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">require</span>(SpaDES.tools)) {</span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>  randomLandscapesInit <span class="ot">&lt;-</span> <span class="cf">function</span>(sim) {</span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">is.null</span>(<span class="fu">params</span>(sim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>inRAM)) {</span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>      inMemory <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
-<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
-<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>      inMemory <span class="ot">&lt;-</span> <span class="fu">params</span>(sim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>inRAM</span>
-<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Give dimensions of dummy raster</span></span>
-<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>    nx <span class="ot">&lt;-</span> <span class="fu">params</span>(sim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>nx</span>
-<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>    ny <span class="ot">&lt;-</span> <span class="fu">params</span>(sim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>ny</span>
-<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>    r <span class="ot">&lt;-</span> <span class="fu">raster</span>(<span class="at">nrows =</span> ny, <span class="at">ncols =</span> nx, <span class="at">xmn =</span> <span class="sc">-</span>nx<span class="sc">/</span><span class="dv">2</span>, <span class="at">xmx =</span> nx<span class="sc">/</span><span class="dv">2</span>,</span>
-<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>                <span class="at">ymn =</span> <span class="sc">-</span>ny<span class="sc">/</span><span class="dv">2</span>, <span class="at">ymx =</span> ny<span class="sc">/</span><span class="dv">2</span>)</span>
-<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>    speedup <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="dv">1</span>, nx<span class="sc">/</span><span class="fl">5e2</span>)</span>
-<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Make dummy maps for testing of models</span></span>
-<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>    DEM <span class="ot">&lt;-</span> <span class="fu">gaussMap</span>(template, <span class="at">scale =</span> <span class="dv">300</span>, <span class="at">var =</span> <span class="fl">0.03</span>,</span>
-<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>                    <span class="at">speedup =</span> speedup, <span class="at">inMemory =</span> inMemory)</span>
-<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>    DEM[] <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">getValues</span>(DEM), <span class="dv">1</span>) <span class="sc">*</span> <span class="dv">1000</span></span>
-<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a>    forestAge <span class="ot">&lt;-</span> <span class="fu">gaussMap</span>(template, <span class="at">scale =</span> <span class="dv">10</span>, <span class="at">var =</span> <span class="fl">0.1</span>,</span>
-<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a>                          <span class="at">speedup =</span> speedup, <span class="at">inMemory =</span> inMemory)</span>
-<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>    forestAge[] <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">getValues</span>(forestAge), <span class="dv">1</span>) <span class="sc">*</span> <span class="dv">20</span></span>
-<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a>    percentPine <span class="ot">&lt;-</span> <span class="fu">gaussMap</span>(template, <span class="at">scale =</span> <span class="dv">50</span>, <span class="at">var =</span> <span class="dv">1</span>,</span>
-<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a>                            <span class="at">speedup =</span> speedup, <span class="at">inMemory =</span> inMemory)</span>
-<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a>    percentPine[] <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">getValues</span>(percentPine), <span class="dv">1</span>)</span>
-<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Scale them as needed</span></span>
-<span id="cb31-29"><a href="#cb31-29" aria-hidden="true" tabindex="-1"></a>    forestAge <span class="ot">&lt;-</span> forestAge <span class="sc">/</span> <span class="fu">maxValue</span>(forestAge) <span class="sc">*</span> <span class="dv">100</span></span>
-<span id="cb31-30"><a href="#cb31-30" aria-hidden="true" tabindex="-1"></a>    percentPine <span class="ot">&lt;-</span> percentPine <span class="sc">/</span> <span class="fu">maxValue</span>(percentPine) <span class="sc">*</span> <span class="dv">100</span></span>
-<span id="cb31-31"><a href="#cb31-31" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb31-32"><a href="#cb31-32" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Make layers that are derived from other layers</span></span>
-<span id="cb31-33"><a href="#cb31-33" aria-hidden="true" tabindex="-1"></a>    habitatQuality <span class="ot">&lt;-</span> (DEM <span class="sc">+</span> <span class="dv">10</span> <span class="sc">+</span> (forestAge <span class="sc">+</span> <span class="fl">2.5</span>) <span class="sc">*</span> <span class="dv">10</span>) <span class="sc">/</span> <span class="dv">100</span></span>
-<span id="cb31-34"><a href="#cb31-34" aria-hidden="true" tabindex="-1"></a>    habitatQuality <span class="ot">&lt;-</span> habitatQuality <span class="sc">/</span> <span class="fu">maxValue</span>(habitatQuality)</span>
-<span id="cb31-35"><a href="#cb31-35" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb31-36"><a href="#cb31-36" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Stack them into a single stack and assign to sim envir</span></span>
-<span id="cb31-37"><a href="#cb31-37" aria-hidden="true" tabindex="-1"></a>    mapStack <span class="ot">&lt;-</span> <span class="fu">stack</span>(DEM, forestAge, habitatQuality, percentPine)</span>
-<span id="cb31-38"><a href="#cb31-38" aria-hidden="true" tabindex="-1"></a>    <span class="fu">names</span>(mapStack) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;DEM&quot;</span>, <span class="st">&quot;forestAge&quot;</span>, <span class="st">&quot;habitatQuality&quot;</span>, <span class="st">&quot;percentPine&quot;</span>)</span>
-<span id="cb31-39"><a href="#cb31-39" aria-hidden="true" tabindex="-1"></a>    <span class="fu">setColors</span>(mapStack) <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">DEM =</span> <span class="fu">brewer.pal</span>(<span class="dv">9</span>, <span class="st">&quot;YlOrBr&quot;</span>),</span>
-<span id="cb31-40"><a href="#cb31-40" aria-hidden="true" tabindex="-1"></a>                                <span class="at">forestAge =</span> <span class="fu">brewer.pal</span>(<span class="dv">9</span>, <span class="st">&quot;BuGn&quot;</span>),</span>
-<span id="cb31-41"><a href="#cb31-41" aria-hidden="true" tabindex="-1"></a>                                <span class="at">habitatQuality =</span> <span class="fu">brewer.pal</span>(<span class="dv">8</span>, <span class="st">&quot;Spectral&quot;</span>),</span>
-<span id="cb31-42"><a href="#cb31-42" aria-hidden="true" tabindex="-1"></a>                                <span class="at">percentPine =</span> <span class="fu">brewer.pal</span>(<span class="dv">9</span>, <span class="st">&quot;Greens&quot;</span>))</span>
-<span id="cb31-43"><a href="#cb31-43" aria-hidden="true" tabindex="-1"></a>    sim[[<span class="fu">globals</span>(sim)<span class="sc">$</span>stackName]] <span class="ot">&lt;-</span> mapStack</span>
-<span id="cb31-44"><a href="#cb31-44" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">invisible</span>(sim))</span>
-<span id="cb31-45"><a href="#cb31-45" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb31-46"><a href="#cb31-46" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="do">## sample event functions from the default `randomLandscapes` module</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(raster)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">require</span>(SpaDES.tools)) {</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  randomLandscapesInit <span class="ot">&lt;-</span> <span class="cf">function</span>(sim) {</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">is.null</span>(<span class="fu">params</span>(sim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>inRAM)) {</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>      inMemory <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>      inMemory <span class="ot">&lt;-</span> <span class="fu">params</span>(sim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>inRAM</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Give dimensions of dummy raster</span></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>    nx <span class="ot">&lt;-</span> <span class="fu">params</span>(sim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>nx</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>    ny <span class="ot">&lt;-</span> <span class="fu">params</span>(sim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>ny</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>    r <span class="ot">&lt;-</span> <span class="fu">raster</span>(<span class="at">nrows =</span> ny, <span class="at">ncols =</span> nx, <span class="at">xmn =</span> <span class="sc">-</span>nx<span class="sc">/</span><span class="dv">2</span>, <span class="at">xmx =</span> nx<span class="sc">/</span><span class="dv">2</span>,</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>                <span class="at">ymn =</span> <span class="sc">-</span>ny<span class="sc">/</span><span class="dv">2</span>, <span class="at">ymx =</span> ny<span class="sc">/</span><span class="dv">2</span>)</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>    speedup <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="dv">1</span>, nx<span class="sc">/</span><span class="fl">5e2</span>)</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Make dummy maps for testing of models</span></span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>    DEM <span class="ot">&lt;-</span> <span class="fu">gaussMap</span>(template, <span class="at">scale =</span> <span class="dv">300</span>, <span class="at">var =</span> <span class="fl">0.03</span>,</span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>                    <span class="at">speedup =</span> speedup, <span class="at">inMemory =</span> inMemory)</span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>    DEM[] <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">getValues</span>(DEM), <span class="dv">1</span>) <span class="sc">*</span> <span class="dv">1000</span></span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>    forestAge <span class="ot">&lt;-</span> <span class="fu">gaussMap</span>(template, <span class="at">scale =</span> <span class="dv">10</span>, <span class="at">var =</span> <span class="fl">0.1</span>,</span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>                          <span class="at">speedup =</span> speedup, <span class="at">inMemory =</span> inMemory)</span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>    forestAge[] <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">getValues</span>(forestAge), <span class="dv">1</span>) <span class="sc">*</span> <span class="dv">20</span></span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>    percentPine <span class="ot">&lt;-</span> <span class="fu">gaussMap</span>(template, <span class="at">scale =</span> <span class="dv">50</span>, <span class="at">var =</span> <span class="dv">1</span>,</span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>                            <span class="at">speedup =</span> speedup, <span class="at">inMemory =</span> inMemory)</span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>    percentPine[] <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">getValues</span>(percentPine), <span class="dv">1</span>)</span>
+<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Scale them as needed</span></span>
+<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a>    forestAge <span class="ot">&lt;-</span> forestAge <span class="sc">/</span> <span class="fu">maxValue</span>(forestAge) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb26-29"><a href="#cb26-29" aria-hidden="true" tabindex="-1"></a>    percentPine <span class="ot">&lt;-</span> percentPine <span class="sc">/</span> <span class="fu">maxValue</span>(percentPine) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb26-30"><a href="#cb26-30" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-31"><a href="#cb26-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Make layers that are derived from other layers</span></span>
+<span id="cb26-32"><a href="#cb26-32" aria-hidden="true" tabindex="-1"></a>    habitatQuality <span class="ot">&lt;-</span> (DEM <span class="sc">+</span> <span class="dv">10</span> <span class="sc">+</span> (forestAge <span class="sc">+</span> <span class="fl">2.5</span>) <span class="sc">*</span> <span class="dv">10</span>) <span class="sc">/</span> <span class="dv">100</span></span>
+<span id="cb26-33"><a href="#cb26-33" aria-hidden="true" tabindex="-1"></a>    habitatQuality <span class="ot">&lt;-</span> habitatQuality <span class="sc">/</span> <span class="fu">maxValue</span>(habitatQuality)</span>
+<span id="cb26-34"><a href="#cb26-34" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-35"><a href="#cb26-35" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Stack them into a single stack and assign to sim envir</span></span>
+<span id="cb26-36"><a href="#cb26-36" aria-hidden="true" tabindex="-1"></a>    mapStack <span class="ot">&lt;-</span> <span class="fu">stack</span>(DEM, forestAge, habitatQuality, percentPine)</span>
+<span id="cb26-37"><a href="#cb26-37" aria-hidden="true" tabindex="-1"></a>    <span class="fu">names</span>(mapStack) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;DEM&quot;</span>, <span class="st">&quot;forestAge&quot;</span>, <span class="st">&quot;habitatQuality&quot;</span>, <span class="st">&quot;percentPine&quot;</span>)</span>
+<span id="cb26-38"><a href="#cb26-38" aria-hidden="true" tabindex="-1"></a>    <span class="fu">setColors</span>(mapStack) <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">DEM =</span> <span class="fu">brewer.pal</span>(<span class="dv">9</span>, <span class="st">&quot;YlOrBr&quot;</span>),</span>
+<span id="cb26-39"><a href="#cb26-39" aria-hidden="true" tabindex="-1"></a>                                <span class="at">forestAge =</span> <span class="fu">brewer.pal</span>(<span class="dv">9</span>, <span class="st">&quot;BuGn&quot;</span>),</span>
+<span id="cb26-40"><a href="#cb26-40" aria-hidden="true" tabindex="-1"></a>                                <span class="at">habitatQuality =</span> <span class="fu">brewer.pal</span>(<span class="dv">8</span>, <span class="st">&quot;Spectral&quot;</span>),</span>
+<span id="cb26-41"><a href="#cb26-41" aria-hidden="true" tabindex="-1"></a>                                <span class="at">percentPine =</span> <span class="fu">brewer.pal</span>(<span class="dv">9</span>, <span class="st">&quot;Greens&quot;</span>))</span>
+<span id="cb26-42"><a href="#cb26-42" aria-hidden="true" tabindex="-1"></a>    sim[[<span class="fu">globals</span>(sim)<span class="sc">$</span>stackName]] <span class="ot">&lt;-</span> mapStack</span>
+<span id="cb26-43"><a href="#cb26-43" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">invisible</span>(sim))</span>
+<span id="cb26-44"><a href="#cb26-44" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb26-45"><a href="#cb26-45" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 <div id="event-diagram" class="section level3" number="2.2.4">
 <h3 number="2.2.4"><span class="header-section-number">2.2.4</span> Event diagram</h3>
@@ -921,8 +606,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Simulation time is presented on the x-axis, starting at date <code>startDate</code>. Each module appears in a colour-coded row, within which each event for that module is displayed corresponding to the sequence of events for that module. Note that only the start time of the event is meaningful is these figures: the width of the bar associated with a particular module’s event corresponds to the module’s timestep unit, not the event’s “duration”.</p>
 <pre><code>## png 
 ##   2</code></pre>
-<div id="htmlwidget-18ef3d98359b4b5b9c59" style="width:720px;height:1326px;" class="DiagrammeR html-widget"></div>
-<script type="application/json" data-for="htmlwidget-18ef3d98359b4b5b9c59">{"x":{"diagram":"gantt\ndateFormat  YYYY-MM-DD\ntitle SpaDES event diagram\nsection  checkpoint \n init:done,checkpoint1,0-06-01,0-06-07\nsection  save \n init:done,save1,0-06-01,0-06-07\nsection  load \n init:done,load1,0-06-01,0-06-07\nsection  randomLandscapes \n init:done,randomLandscapes1,0-06-01,0-06-07\nplot:crit,randomLandscapes2,0-06-01,0-06-07\nsection  fireSpread \n init:done,fireSpread1,0-06-01,0-06-07\nburn:active,fireSpread2,0-06-01,0-06-07\nstats:active,fireSpread3,0-06-01,0-06-07\nplot.init:active,fireSpread4,0-06-01,0-06-07\nburn:active,fireSpread5,1-06-01,1-06-07\nstats:active,fireSpread6,1-06-01,1-06-07\nburn:active,fireSpread7,2-06-01,2-06-07\nstats:active,fireSpread8,2-06-01,2-06-07\nsection  caribouMovement \n init:done,caribouMovement1,0-06-01,0-06-07\nplot.init:active,caribouMovement2,0-07-01,0-07-07\nplot:crit,caribouMovement3,0-07-31,0-08-07\nplot:crit,caribouMovement4,0-08-31,0-09-06\nplot:crit,caribouMovement5,0-09-30,0-10-07\nplot:crit,caribouMovement6,0-10-31,0-11-06\nplot:crit,caribouMovement7,0-11-30,0-12-06\nplot:crit,caribouMovement8,0-12-31,1-01-06\nplot:crit,caribouMovement9,1-01-30,1-02-05\nplot:crit,caribouMovement10,1-03-01,1-03-08\nplot:crit,caribouMovement11,1-04-01,1-04-07\nplot:crit,caribouMovement12,1-05-01,1-05-08\nmove:active,caribouMovement13,1-06-01,1-06-07\nplot:crit,caribouMovement14,1-06-01,1-06-07\nmove:active,caribouMovement15,1-07-01,1-07-07\nplot:crit,caribouMovement16,1-07-01,1-07-07\nmove:active,caribouMovement17,1-08-01,1-08-07\nplot:crit,caribouMovement18,1-08-01,1-08-07\nmove:active,caribouMovement19,1-08-31,1-09-06\nplot:crit,caribouMovement20,1-08-31,1-09-06\nmove:active,caribouMovement21,1-10-01,1-10-07\nplot:crit,caribouMovement22,1-10-01,1-10-07\nmove:active,caribouMovement23,1-10-31,1-11-06\nplot:crit,caribouMovement24,1-10-31,1-11-06\nmove:active,caribouMovement25,1-11-30,1-12-07\nplot:crit,caribouMovement26,1-11-30,1-12-07\nmove:active,caribouMovement27,1-12-31,2-01-06\nplot:crit,caribouMovement28,1-12-31,2-01-06\nmove:active,caribouMovement29,2-01-30,2-02-06\nplot:crit,caribouMovement30,2-01-30,2-02-06\nmove:active,caribouMovement31,2-03-02,2-03-08\nplot:crit,caribouMovement32,2-03-02,2-03-08\nmove:active,caribouMovement33,2-04-01,2-04-07\nplot:crit,caribouMovement34,2-04-01,2-04-07\nmove:active,caribouMovement35,2-05-02,2-05-08\nplot:crit,caribouMovement36,2-05-02,2-05-08\nmove:active,caribouMovement37,2-06-01,2-06-07\nplot:crit,caribouMovement38,2-06-01,2-06-07\n"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-b39b9c321ede94f22b08" style="width:720px;height:1326px;" class="DiagrammeR html-widget"></div>
+<script type="application/json" data-for="htmlwidget-b39b9c321ede94f22b08">{"x":{"diagram":"gantt\ndateFormat  YYYY-MM-DD\ntitle SpaDES event diagram\nsection  checkpoint \n init:done,checkpoint1,0-06-01,0-06-07\nsection  save \n init:done,save1,0-06-01,0-06-07\nsection  load \n init:done,load1,0-06-01,0-06-07\nsection  randomLandscapes \n init:done,randomLandscapes1,0-06-01,0-06-07\nplot:crit,randomLandscapes2,0-06-01,0-06-07\nsection  fireSpread \n init:done,fireSpread1,0-06-01,0-06-07\nburn:active,fireSpread2,0-06-01,0-06-07\nstats:active,fireSpread3,0-06-01,0-06-07\nplot.init:active,fireSpread4,0-06-01,0-06-07\nburn:active,fireSpread5,1-06-01,1-06-07\nstats:active,fireSpread6,1-06-01,1-06-07\nburn:active,fireSpread7,2-06-01,2-06-07\nstats:active,fireSpread8,2-06-01,2-06-07\nsection  caribouMovement \n init:done,caribouMovement1,0-06-01,0-06-07\nplot.init:active,caribouMovement2,0-07-01,0-07-07\nplot:crit,caribouMovement3,0-07-31,0-08-07\nplot:crit,caribouMovement4,0-08-31,0-09-06\nplot:crit,caribouMovement5,0-09-30,0-10-07\nplot:crit,caribouMovement6,0-10-31,0-11-06\nplot:crit,caribouMovement7,0-11-30,0-12-06\nplot:crit,caribouMovement8,0-12-31,1-01-06\nplot:crit,caribouMovement9,1-01-30,1-02-05\nplot:crit,caribouMovement10,1-03-01,1-03-08\nplot:crit,caribouMovement11,1-04-01,1-04-07\nplot:crit,caribouMovement12,1-05-01,1-05-08\nmove:active,caribouMovement13,1-06-01,1-06-07\nplot:crit,caribouMovement14,1-06-01,1-06-07\nmove:active,caribouMovement15,1-07-01,1-07-07\nplot:crit,caribouMovement16,1-07-01,1-07-07\nmove:active,caribouMovement17,1-08-01,1-08-07\nplot:crit,caribouMovement18,1-08-01,1-08-07\nmove:active,caribouMovement19,1-08-31,1-09-06\nplot:crit,caribouMovement20,1-08-31,1-09-06\nmove:active,caribouMovement21,1-10-01,1-10-07\nplot:crit,caribouMovement22,1-10-01,1-10-07\nmove:active,caribouMovement23,1-10-31,1-11-06\nplot:crit,caribouMovement24,1-10-31,1-11-06\nmove:active,caribouMovement25,1-11-30,1-12-07\nplot:crit,caribouMovement26,1-11-30,1-12-07\nmove:active,caribouMovement27,1-12-31,2-01-06\nplot:crit,caribouMovement28,1-12-31,2-01-06\nmove:active,caribouMovement29,2-01-30,2-02-06\nplot:crit,caribouMovement30,2-01-30,2-02-06\nmove:active,caribouMovement31,2-03-02,2-03-08\nplot:crit,caribouMovement32,2-03-02,2-03-08\nmove:active,caribouMovement33,2-04-01,2-04-07\nplot:crit,caribouMovement34,2-04-01,2-04-07\nmove:active,caribouMovement35,2-05-02,2-05-08\nplot:crit,caribouMovement36,2-05-02,2-05-08\nmove:active,caribouMovement37,2-06-01,2-06-07\nplot:crit,caribouMovement38,2-06-01,2-06-07\n"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <div id="module-documentation-modulename.rmd" class="section level2" number="2.3">
@@ -941,25 +626,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="data" class="section level2" number="2.5">
 <h2 number="2.5"><span class="header-section-number">2.5</span> Data</h2>
 <p>All module data are located in the module’s <code>data/</code> subdirectory. Also included in this folder is a <code>CHECKSUMS.txt</code> file that contains the expected checksums for each data file. Checksums can be verified (and optionally written) using <code>checksums()</code>.</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="do">## 1. specify your module here</span></span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>moduleName <span class="ot">&lt;-</span> <span class="st">&quot;my_module&quot;</span></span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="do">## 2. use a temp dir to ensure all modules get fresh copies of the data</span></span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>tmpdir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="fu">tempdir</span>(), <span class="st">&quot;SpaDES_modules&quot;</span>)</span>
-<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 3. download your module&#39;s data to the temp dir</span></span>
-<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a><span class="fu">downloadData</span>(moduleName, tmpdir)</span>
-<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 4. initialize a dummy simulation to ensure any &#39;data prep&#39; steps in the .inputObjects section are run</span></span>
-<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a><span class="fu">simInit</span>(<span class="at">modules =</span> moduleName)</span>
-<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 5. recalculate your checksums and overwrite the file</span></span>
-<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a><span class="fu">checksums</span>(moduleName, tmpdir, <span class="at">write =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 6. copy the new checksums file to your working module directory (the one not in the temp dir)</span></span>
-<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a><span class="fu">file.copy</span>(<span class="at">from =</span> <span class="fu">file.path</span>(tmpdir, moduleName, <span class="st">&#39;data&#39;</span>, <span class="st">&#39;CHECKSUMS.txt&#39;</span>),</span>
-<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a>          <span class="at">to =</span> <span class="fu">file.path</span>(<span class="st">&#39;path/to/my/moduleDir&#39;</span>, moduleName, <span class="st">&#39;data&#39;</span>, <span class="st">&#39;CHECKSUMS.txt&#39;</span>),</span>
-<span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a>          <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="do">## 1. specify your module here</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>moduleName <span class="ot">&lt;-</span> <span class="st">&quot;my_module&quot;</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="do">## 2. use a temp dir to ensure all modules get fresh copies of the data</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>tmpdir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="fu">tempdir</span>(), <span class="st">&quot;SpaDES_modules&quot;</span>)</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 3. download your module&#39;s data to the temp dir</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="fu">downloadData</span>(moduleName, tmpdir)</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 4. initialize a dummy simulation to ensure any &#39;data prep&#39; steps in the .inputObjects section are run</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a><span class="fu">simInit</span>(<span class="at">modules =</span> moduleName)</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 5. recalculate your checksums and overwrite the file</span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a><span class="fu">checksums</span>(moduleName, tmpdir, <span class="at">write =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 6. copy the new checksums file to your working module directory (the one not in the temp dir)</span></span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a><span class="fu">file.copy</span>(<span class="at">from =</span> <span class="fu">file.path</span>(tmpdir, moduleName, <span class="st">&#39;data&#39;</span>, <span class="st">&#39;CHECKSUMS.txt&#39;</span>),</span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>          <span class="at">to =</span> <span class="fu">file.path</span>(<span class="st">&#39;path/to/my/moduleDir&#39;</span>, moduleName, <span class="st">&#39;data&#39;</span>, <span class="st">&#39;CHECKSUMS.txt&#39;</span>),</span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a>          <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <p>Modules may require data that for various reasons cannot be distributed with the module source code. In these cases, the module developer should ensure that the module downloads and extracts the data required. It is useful to not only check that the data files exist locally but that their checksums match those expected (see <code>checksums()</code>).</p>
 </div>
 <div id="versioned-zip-archives-modulename_x.y.z.zip" class="section level2" number="2.6">
@@ -989,19 +674,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>As noted above, modules should not depend on one another for event scheduling. However, it is often useful to develop collections of modules that interact indirectly and are dependent on shared data objects. Modules can be designed to rely on outputs (data objects) from other modules. When objects are shared between modules, it is important to state these dependencies explicitly. To check whether objects upon which a model depends exist, a call to <code>checkObject</code> is made during module initialization.</p>
 <p>Note that modules need not be inter-dependent on one another: module B may depend on module A (for example to initialize a data object), without module A depending on module B.</p>
 <p>To view the dependencies for a simulation:</p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(SpaDES.core)</span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>times <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">start =</span> <span class="fl">0.0</span>, <span class="at">end =</span> <span class="dv">20</span>)</span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>parameters <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">.globals =</span> <span class="fu">list</span>(<span class="at">stackName =</span> <span class="st">&quot;landscape&quot;</span>, <span class="at">burnStats =</span> <span class="st">&quot;nPixelsBurned&quot;</span>)</span>
-<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>modules <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="st">&quot;SpaDES_sampleModules&quot;</span>)</span>
-<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>paths <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">modulePath =</span> <span class="fu">system.file</span>(<span class="st">&quot;sampleModules&quot;</span>, <span class="at">package =</span> <span class="st">&quot;SpaDES.core&quot;</span>))</span>
-<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>mySim <span class="ot">&lt;-</span> <span class="fu">simInit</span>(<span class="at">times =</span> times, <span class="at">params =</span> parameters, <span class="at">modules =</span> modules, <span class="at">paths =</span> paths)</span>
-<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a><span class="do">## examine simulation module (object) dependencies</span></span>
-<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a><span class="fu">depsEdgeList</span>(mySim, <span class="cn">FALSE</span>)      <span class="co"># all object dependency relationships</span></span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(SpaDES.core)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>times <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">start =</span> <span class="fl">0.0</span>, <span class="at">end =</span> <span class="dv">20</span>)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>parameters <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">.globals =</span> <span class="fu">list</span>(<span class="at">stackName =</span> <span class="st">&quot;landscape&quot;</span>, <span class="at">burnStats =</span> <span class="st">&quot;nPixelsBurned&quot;</span>)</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>modules <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="st">&quot;SpaDES_sampleModules&quot;</span>)</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>paths <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">modulePath =</span> <span class="fu">system.file</span>(<span class="st">&quot;sampleModules&quot;</span>, <span class="at">package =</span> <span class="st">&quot;SpaDES.core&quot;</span>))</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>mySim <span class="ot">&lt;-</span> <span class="fu">simInit</span>(<span class="at">times =</span> times, <span class="at">params =</span> parameters, <span class="at">modules =</span> modules, <span class="at">paths =</span> paths)</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a><span class="do">## examine simulation module (object) dependencies</span></span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a><span class="fu">depsEdgeList</span>(mySim, <span class="cn">FALSE</span>)      <span class="co"># all object dependency relationships</span></span></code></pre></div>
 <pre><code>##                from              to       objName               objClass
 ## 1:  caribouMovement caribouMovement       caribou SpatialPointsDataFrame
 ## 2:       fireSpread caribouMovement     landscape            RasterStack
@@ -1009,16 +694,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 4:       fireSpread      fireSpread nPixelsBurned                numeric
 ## 5: randomLandscapes caribouMovement     landscape            RasterStack
 ## 6: randomLandscapes      fireSpread     landscape            RasterStack</code></pre>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">clearPlot</span>()</span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">moduleDiagram</span>(mySim)            <span class="co"># simplified visual representation of modules</span></span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">clearPlot</span>()</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">moduleDiagram</span>(mySim)            <span class="co"># simplified visual representation of modules</span></span></code></pre></div>
 <p><img src="ii-modules_files/figure-html/module-object-diagrams-1.png" /><!-- --></p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">clearPlot</span>()</span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">moduleDiagram</span>(mySim, <span class="at">showParents =</span> <span class="cn">TRUE</span>) <span class="co"># similar, but showing parent module grouping</span></span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">clearPlot</span>()</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">moduleDiagram</span>(mySim, <span class="at">showParents =</span> <span class="cn">TRUE</span>) <span class="co"># similar, but showing parent module grouping</span></span></code></pre></div>
 <p><img src="ii-modules_files/figure-html/module-object-diagrams-2.png" /><!-- --></p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># detailed visual representation of objects</span></span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">objectDiagram</span>(mySim, <span class="at">width =</span> <span class="dv">720</span>)</span></code></pre></div>
-<div id="htmlwidget-0ad0232b1e2cadf94bd5" style="width:720px;height:288px;" class="DiagrammeR html-widget"></div>
-<script type="application/json" data-for="htmlwidget-0ad0232b1e2cadf94bd5">{"x":{"diagram":"sequenceDiagram\ncaribouMovement ->> caribouMovement : caribou\nfireSpread ->> caribouMovement : landscape\nfireSpread ->> fireSpread : landscape\nfireSpread ->> fireSpread : nPixelsBurned\nrandomLandscapes ->> caribouMovement : landscape\nrandomLandscapes ->> fireSpread : landscape\n"},"evals":[],"jsHooks":[]}</script>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># detailed visual representation of objects</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">objectDiagram</span>(mySim, <span class="at">width =</span> <span class="dv">720</span>)</span></code></pre></div>
+<div id="htmlwidget-6ae2703ddc4f1dbc18f4" style="width:720px;height:288px;" class="DiagrammeR html-widget"></div>
+<script type="application/json" data-for="htmlwidget-6ae2703ddc4f1dbc18f4">{"x":{"diagram":"sequenceDiagram\ncaribouMovement ->> caribouMovement : caribou\nfireSpread ->> caribouMovement : landscape\nfireSpread ->> fireSpread : landscape\nfireSpread ->> fireSpread : nPixelsBurned\nrandomLandscapes ->> caribouMovement : landscape\nrandomLandscapes ->> fireSpread : landscape\n"},"evals":[],"jsHooks":[]}</script>
 <p>The output of the <code>depsEdgeList</code> is an edgelist describing the relationships between each module. In the example above, line 2 of the output indicates that the <code>fireSpread</code> module relies on an object <code>landscape</code> provided by the <code>caribouMovement</code> module. This edgelist is used inside the <code>depsGraph</code> function to produce a dependency graph (network), where each module corresponds to a vertex (node), and object dependencies are denoted by the arrows. When plotting the dependency graph, it’s often useful to use the <code>plot=TRUE</code> argument to simplify the network by showing no more than one object dependency between modules.</p>
 </div>
 </div>
@@ -1130,39 +815,39 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="checkpoint-module" class="section level2" number="4.1">
 <h2 number="4.1"><span class="header-section-number">4.1</span> <code>.checkpoint</code> module</h2>
 <p>Schedule automatic simulation checkpointing to allow you to resume a previously saved simulation. All objects in the global environment including the state of the random number generator are saved and can be reloaded. Checkpoint frequency and filename can be passed as parameters to the simulation object as illustrated below. By default, checkpointing is not used unless the <code>interval</code> parameter is provided; the simulation checkpoint file (if one exists) is loaded if the <code>file</code> parameter is specified.</p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># initialize a new simulation, setting the checkpoint interval and filename.</span></span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>times <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">start =</span> <span class="dv">0</span>, <span class="at">end =</span> <span class="dv">30</span>)</span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>parameters <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">.globals =</span> <span class="fu">list</span>(<span class="at">stackName =</span> <span class="st">&quot;landscape&quot;</span>),</span>
-<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">.checkpoint =</span> <span class="fu">list</span>(<span class="at">interval =</span> <span class="dv">10</span>, <span class="at">file =</span> <span class="st">&quot;chkpnt.RData&quot;</span>)</span>
-<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>modules <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="st">&quot;randomLandscapes&quot;</span>, <span class="st">&quot;caribouMovement&quot;</span>)</span>
-<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>paths <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">modulePath =</span> <span class="fu">system.file</span>(<span class="st">&quot;sampleModules&quot;</span>, <span class="at">package =</span> <span class="st">&quot;SpaDES.core&quot;</span>)</span>
-<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>mySim <span class="ot">&lt;-</span> <span class="fu">simInit</span>(<span class="at">times =</span> times, <span class="at">params =</span> parameters, <span class="at">modules =</span> modules, <span class="at">paths =</span> paths)</span>
-<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a><span class="co"># retrieve the checkpoint params from the simulation object</span></span>
-<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a><span class="fu">checkpointFile</span>(mySim)</span></code></pre></div>
-<pre><code>## [1] &quot;chkpnt.RData&quot;</code></pre>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">checkpointInterval</span>(mySim)</span></code></pre></div>
-<pre><code>## [1] 10</code></pre>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># initialize a new simulation, setting the checkpoint interval and filename.</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>times <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">start =</span> <span class="dv">0</span>, <span class="at">end =</span> <span class="dv">30</span>)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>parameters <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">.globals =</span> <span class="fu">list</span>(<span class="at">stackName =</span> <span class="st">&quot;landscape&quot;</span>),</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">.checkpoint =</span> <span class="fu">list</span>(<span class="at">interval =</span> <span class="dv">10</span>, <span class="at">file =</span> <span class="st">&quot;chkpnt.RData&quot;</span>)</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>modules <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="st">&quot;randomLandscapes&quot;</span>, <span class="st">&quot;caribouMovement&quot;</span>)</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>paths <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">modulePath =</span> <span class="fu">system.file</span>(<span class="st">&quot;sampleModules&quot;</span>, <span class="at">package =</span> <span class="st">&quot;SpaDES.core&quot;</span>)</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>mySim <span class="ot">&lt;-</span> <span class="fu">simInit</span>(<span class="at">times =</span> times, <span class="at">params =</span> parameters, <span class="at">modules =</span> modules, <span class="at">paths =</span> paths)</span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a><span class="co"># retrieve the checkpoint params from the simulation object</span></span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a><span class="fu">checkpointFile</span>(mySim)</span></code></pre></div>
+<pre><code>## NULL</code></pre>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">checkpointInterval</span>(mySim)</span></code></pre></div>
+<pre><code>## [1] NA</code></pre>
 </div>
 <div id="progress-module" class="section level2" number="4.2">
 <h2 number="4.2"><span class="header-section-number">4.2</span> <code>.progress</code> module</h2>
 <p>Schedule updates to the simulation progress bar.</p>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># initialize a new simulation, setting the progress parameters</span></span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>mySim <span class="ot">&lt;-</span> <span class="fu">simInit</span>(<span class="at">times =</span> <span class="fu">list</span>(<span class="at">start =</span> <span class="fl">0.0</span>, <span class="at">end =</span> <span class="fl">100.0</span>),</span>
-<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">params =</span> <span class="fu">list</span>(<span class="at">.globals =</span> <span class="fu">list</span>(<span class="at">stackName =</span> <span class="st">&quot;landscape&quot;</span>),</span>
-<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>                               <span class="at">.progress =</span> <span class="fu">list</span>(<span class="at">type =</span> <span class="st">&quot;text&quot;</span>, <span class="at">interval =</span> <span class="dv">10</span>)),</span>
-<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">modules =</span> <span class="fu">list</span>(<span class="st">&quot;randomLandscapes&quot;</span>),</span>
-<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">paths =</span> <span class="fu">list</span>(<span class="at">modulePath =</span> <span class="fu">system.file</span>(<span class="st">&quot;sampleModules&quot;</span>, <span class="at">package =</span> <span class="st">&quot;SpaDES.core&quot;</span>)))</span>
-<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a><span class="co"># retrieve the checkpoint params from the simulation object</span></span>
-<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a><span class="fu">progressType</span>(mySim)</span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># initialize a new simulation, setting the progress parameters</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>mySim <span class="ot">&lt;-</span> <span class="fu">simInit</span>(<span class="at">times =</span> <span class="fu">list</span>(<span class="at">start =</span> <span class="fl">0.0</span>, <span class="at">end =</span> <span class="fl">100.0</span>),</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">params =</span> <span class="fu">list</span>(<span class="at">.globals =</span> <span class="fu">list</span>(<span class="at">stackName =</span> <span class="st">&quot;landscape&quot;</span>),</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>                               <span class="at">.progress =</span> <span class="fu">list</span>(<span class="at">type =</span> <span class="st">&quot;text&quot;</span>, <span class="at">interval =</span> <span class="dv">10</span>)),</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">modules =</span> <span class="fu">list</span>(<span class="st">&quot;randomLandscapes&quot;</span>),</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">paths =</span> <span class="fu">list</span>(<span class="at">modulePath =</span> <span class="fu">system.file</span>(<span class="st">&quot;sampleModules&quot;</span>, <span class="at">package =</span> <span class="st">&quot;SpaDES.core&quot;</span>)))</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a><span class="co"># retrieve the checkpoint params from the simulation object</span></span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a><span class="fu">progressType</span>(mySim)</span></code></pre></div>
 <pre><code>## [1] &quot;text&quot;</code></pre>
-<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">progressInterval</span>(mySim)</span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">progressInterval</span>(mySim)</span></code></pre></div>
 <pre><code>## [1] 10</code></pre>
 </div>
 <div id="load-and-.save-modules" class="section level2" number="4.3">
@@ -1313,68 +998,64 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>SpaDES will add a sixth column, <code>saved</code>, a logical, which will become <code>TRUE</code> when (immediately following) the successful save occurs.<br />
 Therefore, a call to <code>outputs(mySim)</code> will indicate which objects have been saved.</p>
 <p>There is partial string matching of these names, so if the <code>fun</code> requires arguments to be passed to it, use <code>outputArgs()</code>, and it must be the same length as the <code>outputs()</code> <code>data.frame</code>.</p>
-<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># initialize a new simulation, setting the load and save parameters</span></span>
-<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
-<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>outputDir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="fu">tempdir</span>(), <span class="st">&quot;simOutputs&quot;</span>)</span>
-<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>mySim <span class="ot">&lt;-</span> <span class="fu">simInit</span>(<span class="at">times =</span> <span class="fu">list</span>(<span class="at">start =</span> <span class="fl">0.0</span>, <span class="at">end =</span> <span class="dv">10</span>),</span>
-<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">params =</span> <span class="fu">list</span>(</span>
-<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">.globals =</span> <span class="fu">list</span>(<span class="at">stackName =</span> <span class="st">&quot;landscape&quot;</span>),</span>
-<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>                   <span class="at">randomLandscapes =</span> <span class="fu">list</span>(</span>
-<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>                     <span class="at">.saveInitialTime =</span> <span class="dv">0</span>, <span class="at">.saveInterval =</span> <span class="dv">10</span>,</span>
-<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>                     <span class="at">.saveObjects =</span> <span class="fu">c</span>(<span class="st">&quot;landscape&quot;</span>),</span>
-<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a>                     <span class="at">.savePath =</span> <span class="fu">file.path</span>(outputDir, <span class="st">&quot;randomLandscapes&quot;</span>))</span>
-<span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a>                   ),</span>
-<span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a>                 <span class="at">modules =</span> <span class="fu">list</span>(<span class="st">&quot;randomLandscapes&quot;</span>),</span>
-<span id="cb47-14"><a href="#cb47-14" aria-hidden="true" tabindex="-1"></a>                 <span class="at">paths =</span> <span class="fu">list</span>(<span class="at">modulePath =</span> <span class="fu">system.file</span>(<span class="st">&quot;sampleModules&quot;</span>, <span class="at">package =</span> <span class="st">&quot;SpaDES.core&quot;</span>),</span>
-<span id="cb47-15"><a href="#cb47-15" aria-hidden="true" tabindex="-1"></a>                              <span class="at">outputPath =</span> outputDir),</span>
-<span id="cb47-16"><a href="#cb47-16" aria-hidden="true" tabindex="-1"></a>                 <span class="at">outputs =</span> <span class="fu">data.frame</span>(<span class="at">objectName =</span> <span class="st">&quot;landscape&quot;</span>)</span>
-<span id="cb47-17"><a href="#cb47-17" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb47-18"><a href="#cb47-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb47-19"><a href="#cb47-19" aria-hidden="true" tabindex="-1"></a><span class="co"># retrieve the load and save params from the simulation object</span></span>
-<span id="cb47-20"><a href="#cb47-20" aria-hidden="true" tabindex="-1"></a><span class="fu">inputs</span>(mySim)    <span class="co"># shows all files and objects that are &quot;inputs&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># initialize a new simulation, setting the load and save parameters</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>outputDir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="fu">tempdir</span>(), <span class="st">&quot;simOutputs&quot;</span>)</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>mySim <span class="ot">&lt;-</span> <span class="fu">simInit</span>(<span class="at">times =</span> <span class="fu">list</span>(<span class="at">start =</span> <span class="fl">0.0</span>, <span class="at">end =</span> <span class="dv">10</span>),</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">params =</span> <span class="fu">list</span>(</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">.globals =</span> <span class="fu">list</span>(<span class="at">stackName =</span> <span class="st">&quot;landscape&quot;</span>),</span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>                   <span class="at">randomLandscapes =</span> <span class="fu">list</span>(</span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>                     <span class="at">.saveInitialTime =</span> <span class="dv">0</span>, <span class="at">.saveInterval =</span> <span class="dv">10</span>,</span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>                     <span class="at">.saveObjects =</span> <span class="fu">c</span>(<span class="st">&quot;landscape&quot;</span>),</span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a>                     <span class="at">.savePath =</span> <span class="fu">file.path</span>(outputDir, <span class="st">&quot;randomLandscapes&quot;</span>))</span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a>                   ),</span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a>                 <span class="at">modules =</span> <span class="fu">list</span>(<span class="st">&quot;randomLandscapes&quot;</span>),</span>
+<span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a>                 <span class="at">paths =</span> <span class="fu">list</span>(<span class="at">modulePath =</span> <span class="fu">system.file</span>(<span class="st">&quot;sampleModules&quot;</span>, <span class="at">package =</span> <span class="st">&quot;SpaDES.core&quot;</span>),</span>
+<span id="cb42-15"><a href="#cb42-15" aria-hidden="true" tabindex="-1"></a>                              <span class="at">outputPath =</span> outputDir),</span>
+<span id="cb42-16"><a href="#cb42-16" aria-hidden="true" tabindex="-1"></a>                 <span class="at">outputs =</span> <span class="fu">data.frame</span>(<span class="at">objectName =</span> <span class="st">&quot;landscape&quot;</span>)</span>
+<span id="cb42-17"><a href="#cb42-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb42-18"><a href="#cb42-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-19"><a href="#cb42-19" aria-hidden="true" tabindex="-1"></a><span class="co"># retrieve the load and save params from the simulation object</span></span>
+<span id="cb42-20"><a href="#cb42-20" aria-hidden="true" tabindex="-1"></a><span class="fu">inputs</span>(mySim)    <span class="co"># shows all files and objects that are &quot;inputs&quot;</span></span></code></pre></div>
 <pre><code>## [1] file       fun        package    objectName loadTime   loaded     arguments 
 ## [8] intervals 
 ## &lt;0 rows&gt; (or 0-length row.names)</code></pre>
-<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">outputs</span>(mySim)   <span class="co"># shows all files and objects that are &quot;outputs&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">outputs</span>(mySim)   <span class="co"># shows all files and objects that are &quot;outputs&quot;</span></span></code></pre></div>
 <pre><code>##   objectName                                            file     fun package
-## 1  landscape /tmp/RtmpFmpOfH/simOutputs/landscape_year10.rds saveRDS    base
+## 1  landscape /tmp/RtmptsMbu9/simOutputs/landscape_year10.rds saveRDS    base
 ##   saveTime saved arguments
 ## 1       10    NA        NA</code></pre>
-<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">params</span>(mySim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>.saveInitialTime</span></code></pre></div>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">params</span>(mySim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>.saveInitialTime</span></code></pre></div>
 <pre><code>## [1] 0</code></pre>
-<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">params</span>(mySim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>.saveInterval</span></code></pre></div>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">params</span>(mySim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>.saveInterval</span></code></pre></div>
 <pre><code>## [1] 10</code></pre>
-<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">params</span>(mySim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>.saveObjects</span></code></pre></div>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">params</span>(mySim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>.saveObjects</span></code></pre></div>
 <pre><code>## [1] &quot;landscape&quot;</code></pre>
-<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">params</span>(mySim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>.savePath</span></code></pre></div>
-<pre><code>## [1] &quot;/tmp/RtmpFmpOfH/simOutputs/randomLandscapes&quot;</code></pre>
-<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>ftmp <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="fu">tempdir</span>(), <span class="st">&quot;spades_vignetteOutputs&quot;</span>)</span>
-<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pdf</span>(ftmp)</span>
-<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a><span class="fu">clearPlot</span>()</span>
-<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>mySim2 <span class="ot">&lt;-</span> <span class="fu">spades</span>(mySim)</span>
-<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a><span class="co"># More sophisticated, passing arguments to outputs()</span></span>
-<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a><span class="fu">outputs</span>(mySim) <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">objectName =</span> <span class="st">&quot;landscape&quot;</span>, <span class="at">fun =</span> <span class="st">&quot;writeRaster&quot;</span>, <span class="at">package =</span> <span class="st">&quot;raster&quot;</span>,</span>
-<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">saveTime =</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">6</span>), <span class="at">arguments =</span> <span class="fu">I</span>(<span class="fu">lapply</span>(<span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">6</span>), <span class="cf">function</span>(x) {</span>
-<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">list</span>(<span class="at">dataType =</span> <span class="st">&quot;FLT4S&quot;</span>, <span class="at">format =</span> <span class="st">&quot;raster&quot;</span>, <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb59-11"><a href="#cb59-11" aria-hidden="true" tabindex="-1"></a>})))</span>
-<span id="cb59-12"><a href="#cb59-12" aria-hidden="true" tabindex="-1"></a>mySim2 <span class="ot">&lt;-</span> <span class="fu">spades</span>(mySim)</span></code></pre></div>
-<pre><code>## 2021-06-09 08:23:45 WARNING::message call argument &quot;datatype&quot; misspelled as &quot;dataType&quot; .datatype(...)</code></pre>
-<pre><code>## Warning in .datatype(...): argument &quot;datatype&quot; misspelled as &quot;dataType&quot;</code></pre>
-<pre><code>## 2021-06-09 08:23:45 WARNING::message call argument &quot;datatype&quot; misspelled as &quot;dataType&quot; .datatype(...)</code></pre>
-<pre><code>## Warning in .datatype(...): argument &quot;datatype&quot; misspelled as &quot;dataType&quot;</code></pre>
-<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">params</span>(mySim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>.savePath</span></code></pre></div>
+<pre><code>## [1] &quot;/tmp/RtmptsMbu9/simOutputs/randomLandscapes&quot;</code></pre>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>ftmp <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">pattern =</span> <span class="st">&quot;spades_vignetteOutputs&quot;</span>, <span class="at">fileext =</span> <span class="st">&quot;.pdf&quot;</span>)</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pdf</span>(ftmp)</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a><span class="fu">clearPlot</span>()</span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>mySim2 <span class="ot">&lt;-</span> <span class="fu">spades</span>(mySim)</span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a><span class="co"># More sophisticated, passing arguments to outputs()</span></span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a><span class="fu">outputs</span>(mySim) <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">objectName =</span> <span class="st">&quot;landscape&quot;</span>, <span class="at">fun =</span> <span class="st">&quot;writeRaster&quot;</span>, <span class="at">package =</span> <span class="st">&quot;raster&quot;</span>,</span>
+<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">saveTime =</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">6</span>), <span class="at">arguments =</span> <span class="fu">I</span>(<span class="fu">lapply</span>(<span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">6</span>), <span class="cf">function</span>(x) {</span>
+<span id="cb54-10"><a href="#cb54-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">list</span>(<span class="at">datatype =</span> <span class="st">&quot;FLT4S&quot;</span>, <span class="at">format =</span> <span class="st">&quot;raster&quot;</span>, <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb54-11"><a href="#cb54-11" aria-hidden="true" tabindex="-1"></a>})))</span>
+<span id="cb54-12"><a href="#cb54-12" aria-hidden="true" tabindex="-1"></a>mySim2 <span class="ot">&lt;-</span> <span class="fu">spades</span>(mySim)</span>
+<span id="cb54-13"><a href="#cb54-13" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span></code></pre></div>
 <pre><code>## png 
 ##   2</code></pre>
-<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(ftmp)</span></code></pre></div>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(<span class="fu">normalizePath</span>(ftmp))</span></code></pre></div>
 <p>Saving within a module – scheduling save events.</p>
-<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="do">### WITHIN A MODULE:</span></span>
-<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a><span class="co"># schedule a recurring save event</span></span>
-<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a>nextSave <span class="ot">&lt;-</span> <span class="fu">time</span>(mySim) <span class="sc">+</span> <span class="fu">params</span>(mySim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>.saveInterval</span>
-<span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a>sim <span class="ot">&lt;-</span> <span class="fu">scheduleEvent</span>(mySim, nextSave, <span class="st">&quot;randomLandscapes&quot;</span>, <span class="st">&quot;save&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="do">### WITHIN A MODULE:</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a><span class="co"># schedule a recurring save event</span></span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>nextSave <span class="ot">&lt;-</span> <span class="fu">time</span>(mySim) <span class="sc">+</span> <span class="fu">params</span>(mySim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>.saveInterval</span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>sim <span class="ot">&lt;-</span> <span class="fu">scheduleEvent</span>(mySim, nextSave, <span class="st">&quot;randomLandscapes&quot;</span>, <span class="st">&quot;save&quot;</span>)</span></code></pre></div>
 </div>
 </div>
 <div id="plotting" class="section level2" number="4.4">
@@ -1384,24 +1065,24 @@ Therefore, a call to <code>outputs(mySim)</code> will indicate which objects hav
 <li><code>.plotInitialTime</code>: The time at which the first plot is scheduled.</li>
 <li><code>.plotInterval</code>: The interval at which objects will be plotted. Used to schedule plot events.</li>
 </ul>
-<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="co"># initialize a new simulation, setting the load and save parameters</span></span>
-<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>mySim <span class="ot">&lt;-</span> <span class="fu">simInit</span>(<span class="at">times =</span> <span class="fu">list</span>(<span class="at">start =</span> <span class="fl">0.0</span>, <span class="at">end =</span> <span class="dv">100</span>),</span>
-<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">params =</span> <span class="fu">list</span>(</span>
-<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">.globals =</span> <span class="fu">list</span>(<span class="at">stackName =</span> <span class="st">&quot;landscape&quot;</span>),</span>
-<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">randomLandscapes =</span> <span class="fu">list</span>(<span class="at">.plotInitialTime =</span> <span class="dv">0</span>, <span class="at">.plotInterval =</span> <span class="dv">1</span>)</span>
-<span id="cb68-6"><a href="#cb68-6" aria-hidden="true" tabindex="-1"></a>                 ),</span>
-<span id="cb68-7"><a href="#cb68-7" aria-hidden="true" tabindex="-1"></a>                 <span class="at">modules =</span> <span class="fu">list</span>(<span class="st">&quot;randomLandscapes&quot;</span>),</span>
-<span id="cb68-8"><a href="#cb68-8" aria-hidden="true" tabindex="-1"></a>                 <span class="at">paths =</span> <span class="fu">list</span>(<span class="at">modulePath =</span> <span class="fu">system.file</span>(<span class="st">&quot;sampleModules&quot;</span>, <span class="at">package =</span> <span class="st">&quot;SpaDES.core&quot;</span>))</span>
-<span id="cb68-9"><a href="#cb68-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb68-10"><a href="#cb68-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-11"><a href="#cb68-11" aria-hidden="true" tabindex="-1"></a><span class="co"># retrieve the plotting params from the simulation object</span></span>
-<span id="cb68-12"><a href="#cb68-12" aria-hidden="true" tabindex="-1"></a><span class="fu">params</span>(mySim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>.plotInitialTime</span>
-<span id="cb68-13"><a href="#cb68-13" aria-hidden="true" tabindex="-1"></a><span class="fu">params</span>(mySim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>.plotInterval</span></code></pre></div>
-<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="do">### WITHIN A MODULE:</span></span>
-<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a><span class="co"># schedule a recurring plot event</span></span>
-<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>nextPlot <span class="ot">&lt;-</span> <span class="fu">time</span>(mySim) <span class="sc">+</span> <span class="fu">params</span>(mySim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>.plotInterval</span>
-<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a>mySim <span class="ot">&lt;-</span> <span class="fu">scheduleEvent</span>(mySim, nextPlot, <span class="st">&quot;randomLandscapes&quot;</span>, <span class="st">&quot;save&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="co"># initialize a new simulation, setting the load and save parameters</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>mySim <span class="ot">&lt;-</span> <span class="fu">simInit</span>(<span class="at">times =</span> <span class="fu">list</span>(<span class="at">start =</span> <span class="fl">0.0</span>, <span class="at">end =</span> <span class="dv">100</span>),</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">params =</span> <span class="fu">list</span>(</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">.globals =</span> <span class="fu">list</span>(<span class="at">stackName =</span> <span class="st">&quot;landscape&quot;</span>),</span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">randomLandscapes =</span> <span class="fu">list</span>(<span class="at">.plotInitialTime =</span> <span class="dv">0</span>, <span class="at">.plotInterval =</span> <span class="dv">1</span>)</span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>                 ),</span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>                 <span class="at">modules =</span> <span class="fu">list</span>(<span class="st">&quot;randomLandscapes&quot;</span>),</span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a>                 <span class="at">paths =</span> <span class="fu">list</span>(<span class="at">modulePath =</span> <span class="fu">system.file</span>(<span class="st">&quot;sampleModules&quot;</span>, <span class="at">package =</span> <span class="st">&quot;SpaDES.core&quot;</span>))</span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a><span class="co"># retrieve the plotting params from the simulation object</span></span>
+<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a><span class="fu">params</span>(mySim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>.plotInitialTime</span>
+<span id="cb58-13"><a href="#cb58-13" aria-hidden="true" tabindex="-1"></a><span class="fu">params</span>(mySim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>.plotInterval</span></code></pre></div>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="do">### WITHIN A MODULE:</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a><span class="co"># schedule a recurring plot event</span></span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>nextPlot <span class="ot">&lt;-</span> <span class="fu">time</span>(mySim) <span class="sc">+</span> <span class="fu">params</span>(mySim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>.plotInterval</span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>mySim <span class="ot">&lt;-</span> <span class="fu">scheduleEvent</span>(mySim, nextPlot, <span class="st">&quot;randomLandscapes&quot;</span>, <span class="st">&quot;save&quot;</span>)</span></code></pre></div>
 </div>
 </div>
 <div id="using-existing-spades-modules" class="section level1" number="5">
@@ -1418,7 +1099,7 @@ Therefore, a call to <code>outputs(mySim)</code> will indicate which objects hav
 <div id="included-sample-modules" class="section level2" number="5.1">
 <h2 number="5.1"><span class="header-section-number">5.1</span> Included sample modules</h2>
 <p>Use <code>system.file("sampleModules", package = "SpaDES.core")</code> to get the path to the <code>sampleModules</code> directory. To view the contents of a module, use the <code>openModules</code> function. Note that you should not edit the sample modules directly, but save them as a copy in another location.</p>
-<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">openModules</span>(<span class="fu">system.file</span>(<span class="st">&quot;sampleModules&quot;</span>, <span class="at">package =</span> <span class="st">&quot;SpaDES.core&quot;</span>), <span class="st">&quot;moduleName&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">openModules</span>(<span class="fu">system.file</span>(<span class="st">&quot;sampleModules&quot;</span>, <span class="at">package =</span> <span class="st">&quot;SpaDES.core&quot;</span>), <span class="st">&quot;moduleName&quot;</span>)</span></code></pre></div>
 <ol style="list-style-type: decimal">
 <li><p><code>randomLandscapes</code>: Generate <code>RasterStack</code> of random maps representative of a forest landscape (<code>DEM</code>, <code>forestAge</code>, <code>habitatQuality</code>, <code>percentPine</code>). Requires a global simulation parameter <code>stackName</code> be set.</p></li>
 <li><p><code>fireSpread</code>: Simulate fire ignition and spread on a landscape, where spread probability varies according to percent pine. Fire size statistics are collected immediately after each burn event. Requires a global simulation parameter <code>stackName</code> be set.</p></li>
@@ -1429,7 +1110,7 @@ Therefore, a call to <code>outputs(mySim)</code> will indicate which objects hav
 <h2 number="5.2"><span class="header-section-number">5.2</span> <code>SpaDES</code> module repository</h2>
 <p><strong>Website:</strong> <a href="https://github.com/PredictiveEcology/SpaDES-modules">https://github.com/PredictiveEcology/SpaDES-modules</a></p>
 <p>Modules from this (or another suitable GitHub repository) can be downloaded using:</p>
-<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="fu">downloadModule</span>(<span class="st">&quot;moduleName&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">downloadModule</span>(<span class="st">&quot;moduleName&quot;</span>)</span></code></pre></div>
 <p><strong>Note:</strong> by default, modules and their data are saved to the directory specified by the <code>spades.modulesPath</code>. An alternate path can be provided to <code>downloadModule</code> directly via the <code>path</code> argument, or specified using <code>options(spades.modulesPath = "path/to/my/modules")</code>.</p>
 </div>
 </div>
@@ -1443,9 +1124,9 @@ Therefore, a call to <code>outputs(mySim)</code> will indicate which objects hav
 <h2 number="6.2"><span class="header-section-number">6.2</span> Using the module template</h2>
 <p>Code for new modules can be developed quickly using the template generator function <code>newModule</code>(also available as an RStudio add-in) which accepts as arguments the name of the new module, a directory path in which to create the new module, and a logical indicating whether to open the newly created module code file for editing.</p>
 <p>Module developers can set the <code>devtools.desc.author</code> option (<em>e.g.</em>, in their <code>.Rprofile</code> to automatically supply a default module author). See <code>package?devtools</code> for more details.</p>
-<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create a new module called &quot;randomLandscape&quot; in the &quot;custom-modules&quot; subdirectory</span></span>
-<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a><span class="co"># and open the resulting file immediately for editing.</span></span>
-<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a><span class="fu">newModule</span>(<span class="at">name =</span> <span class="st">&quot;randomLandscapes&quot;</span>, <span class="at">path =</span> <span class="st">&quot;custom-modules&quot;</span>, <span class="at">open =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create a new module called &quot;randomLandscape&quot; in the &quot;custom-modules&quot; subdirectory</span></span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a><span class="co"># and open the resulting file immediately for editing.</span></span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a><span class="fu">newModule</span>(<span class="at">name =</span> <span class="st">&quot;randomLandscapes&quot;</span>, <span class="at">path =</span> <span class="st">&quot;custom-modules&quot;</span>, <span class="at">open =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <p>The newly created file can now be modified in the identified sections and customized to your module. However, it is very important that you do not edit portions of the file outside of the designated sections or your module may fail to work properly within a simulation.</p>
 </div>
 <div id="module-groups" class="section level2" number="6.3">
@@ -1457,38 +1138,38 @@ Therefore, a call to <code>outputs(mySim)</code> will indicate which objects hav
 <li><code>randomLandscapes</code></li>
 </ul>
 <p>Module groups make loading multiple modules easier: only the name of the module group needs to be specified in the <code>simInit</code> call, which will then initialize the simulation with the child modules.</p>
-<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DiagrammeR)</span>
-<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(SpaDES.core)</span>
-<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a>outputDir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="fu">tempdir</span>(), <span class="st">&quot;simOutputs&quot;</span>)</span>
-<span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a>times <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">start =</span> <span class="fl">0.0</span>, <span class="at">end =</span> <span class="fl">20.0</span>)</span>
-<span id="cb73-6"><a href="#cb73-6" aria-hidden="true" tabindex="-1"></a>parameters <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb73-7"><a href="#cb73-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">.globals =</span> <span class="fu">list</span>(<span class="at">stackName =</span> <span class="st">&quot;landscape&quot;</span>, <span class="at">burnStats =</span> <span class="st">&quot;nPixelsBurned&quot;</span>),</span>
-<span id="cb73-8"><a href="#cb73-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">.progress =</span> <span class="fu">list</span>(<span class="cn">NA</span>),</span>
-<span id="cb73-9"><a href="#cb73-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">randomLandscapes =</span> <span class="fu">list</span>(<span class="at">nx =</span> 100L, <span class="at">ny =</span> 100L, <span class="at">inRAM =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb73-10"><a href="#cb73-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">fireSpread =</span> <span class="fu">list</span>(</span>
-<span id="cb73-11"><a href="#cb73-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">nFires =</span> 10L, <span class="at">spreadprob =</span> <span class="fl">0.225</span>, <span class="at">its =</span> <span class="fl">1e6</span>, <span class="at">persistprob =</span> <span class="dv">0</span>,</span>
-<span id="cb73-12"><a href="#cb73-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">returnInterval =</span> <span class="dv">10</span>, <span class="at">startTime =</span> <span class="dv">0</span>,</span>
-<span id="cb73-13"><a href="#cb73-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">.plotInitialTime =</span> <span class="dv">0</span>, <span class="at">.plotInterval =</span> <span class="dv">10</span></span>
-<span id="cb73-14"><a href="#cb73-14" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb73-15"><a href="#cb73-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">caribouMovement =</span> <span class="fu">list</span>(</span>
-<span id="cb73-16"><a href="#cb73-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">N =</span> 100L, <span class="at">moveInterval =</span> <span class="dv">1</span>, <span class="at">torus =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb73-17"><a href="#cb73-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">.plotInitialTime =</span> <span class="dv">1</span>, <span class="at">.plotInterval =</span> <span class="dv">1</span></span>
-<span id="cb73-18"><a href="#cb73-18" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb73-19"><a href="#cb73-19" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb73-20"><a href="#cb73-20" aria-hidden="true" tabindex="-1"></a>modules <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="st">&quot;SpaDES_sampleModules&quot;</span>)</span>
-<span id="cb73-21"><a href="#cb73-21" aria-hidden="true" tabindex="-1"></a>objects <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb73-22"><a href="#cb73-22" aria-hidden="true" tabindex="-1"></a>paths <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb73-23"><a href="#cb73-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">modulePath =</span> <span class="fu">system.file</span>(<span class="st">&quot;sampleModules&quot;</span>, <span class="at">package =</span> <span class="st">&quot;SpaDES.core&quot;</span>),</span>
-<span id="cb73-24"><a href="#cb73-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">outputPath =</span> outputDir</span>
-<span id="cb73-25"><a href="#cb73-25" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb73-26"><a href="#cb73-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb73-27"><a href="#cb73-27" aria-hidden="true" tabindex="-1"></a>mySim <span class="ot">&lt;-</span> <span class="fu">simInit</span>(<span class="at">times =</span> times, <span class="at">params =</span> parameters, <span class="at">modules =</span> modules,</span>
-<span id="cb73-28"><a href="#cb73-28" aria-hidden="true" tabindex="-1"></a>                 <span class="at">objects =</span> objects, <span class="at">paths =</span> paths)</span>
-<span id="cb73-29"><a href="#cb73-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb73-30"><a href="#cb73-30" aria-hidden="true" tabindex="-1"></a><span class="fu">modules</span>(mySim) <span class="co"># note the child modules are initialized</span></span></code></pre></div>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DiagrammeR)</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(SpaDES.core)</span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a>outputDir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="fu">tempdir</span>(), <span class="st">&quot;simOutputs&quot;</span>)</span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a>times <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">start =</span> <span class="fl">0.0</span>, <span class="at">end =</span> <span class="fl">20.0</span>)</span>
+<span id="cb63-6"><a href="#cb63-6" aria-hidden="true" tabindex="-1"></a>parameters <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb63-7"><a href="#cb63-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">.globals =</span> <span class="fu">list</span>(<span class="at">stackName =</span> <span class="st">&quot;landscape&quot;</span>, <span class="at">burnStats =</span> <span class="st">&quot;nPixelsBurned&quot;</span>),</span>
+<span id="cb63-8"><a href="#cb63-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">.progress =</span> <span class="fu">list</span>(<span class="cn">NA</span>),</span>
+<span id="cb63-9"><a href="#cb63-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">randomLandscapes =</span> <span class="fu">list</span>(<span class="at">nx =</span> 100L, <span class="at">ny =</span> 100L, <span class="at">inRAM =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb63-10"><a href="#cb63-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">fireSpread =</span> <span class="fu">list</span>(</span>
+<span id="cb63-11"><a href="#cb63-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">nFires =</span> 10L, <span class="at">spreadprob =</span> <span class="fl">0.225</span>, <span class="at">its =</span> <span class="fl">1e6</span>, <span class="at">persistprob =</span> <span class="dv">0</span>,</span>
+<span id="cb63-12"><a href="#cb63-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">returnInterval =</span> <span class="dv">10</span>, <span class="at">startTime =</span> <span class="dv">0</span>,</span>
+<span id="cb63-13"><a href="#cb63-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">.plotInitialTime =</span> <span class="dv">0</span>, <span class="at">.plotInterval =</span> <span class="dv">10</span></span>
+<span id="cb63-14"><a href="#cb63-14" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb63-15"><a href="#cb63-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">caribouMovement =</span> <span class="fu">list</span>(</span>
+<span id="cb63-16"><a href="#cb63-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">N =</span> 100L, <span class="at">moveInterval =</span> <span class="dv">1</span>, <span class="at">torus =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb63-17"><a href="#cb63-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">.plotInitialTime =</span> <span class="dv">1</span>, <span class="at">.plotInterval =</span> <span class="dv">1</span></span>
+<span id="cb63-18"><a href="#cb63-18" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb63-19"><a href="#cb63-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb63-20"><a href="#cb63-20" aria-hidden="true" tabindex="-1"></a>modules <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="st">&quot;SpaDES_sampleModules&quot;</span>)</span>
+<span id="cb63-21"><a href="#cb63-21" aria-hidden="true" tabindex="-1"></a>objects <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb63-22"><a href="#cb63-22" aria-hidden="true" tabindex="-1"></a>paths <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb63-23"><a href="#cb63-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">modulePath =</span> <span class="fu">system.file</span>(<span class="st">&quot;sampleModules&quot;</span>, <span class="at">package =</span> <span class="st">&quot;SpaDES.core&quot;</span>),</span>
+<span id="cb63-24"><a href="#cb63-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">outputPath =</span> outputDir</span>
+<span id="cb63-25"><a href="#cb63-25" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb63-26"><a href="#cb63-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-27"><a href="#cb63-27" aria-hidden="true" tabindex="-1"></a>mySim <span class="ot">&lt;-</span> <span class="fu">simInit</span>(<span class="at">times =</span> times, <span class="at">params =</span> parameters, <span class="at">modules =</span> modules,</span>
+<span id="cb63-28"><a href="#cb63-28" aria-hidden="true" tabindex="-1"></a>                 <span class="at">objects =</span> objects, <span class="at">paths =</span> paths)</span>
+<span id="cb63-29"><a href="#cb63-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-30"><a href="#cb63-30" aria-hidden="true" tabindex="-1"></a><span class="fu">modules</span>(mySim) <span class="co"># note the child modules are initialized</span></span></code></pre></div>
 <p>Module groups can also be used to simplify the download of multiple modules:</p>
-<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">downloadModule</span>(<span class="st">&quot;SpaDES_sampleModules&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">downloadModule</span>(<span class="st">&quot;SpaDES_sampleModules&quot;</span>)</span></code></pre></div>
 </div>
 <div id="debugging" class="section level2" number="6.4">
 <h2 number="6.4"><span class="header-section-number">6.4</span> Debugging</h2>

@@ -32,26 +32,16 @@ utils::globalVariables(c("newQuantity", "quantityAdj", "quantityAdj2"))
 #'
 #' @author Alex Chubaty
 #' @export
-#' @importFrom utils modifyList
+#' @importFrom Require modifyList2
 #' @rdname updateList
 #'
-#' @examples
-#' L1 <- list(a = "hst", b = NA_character_, c = 43)
-#' L2 <- list(a = "gst", c = 42, d = list(letters))
-#' updateList(L1, L2)
-#'
-#' updateList(L1, NULL)
-#' updateList(L1)
-#' updateList(y = L2)
-#' updateList(NULL, L2)
-#' updateList(NULL, NULL) # should return empty list
-#'
 updateList <- function(x, y) {
+  .Deprecated("Require::modifyList2", "Require")
   if (missing(x)) x <- list()
   if (missing(y)) y <- list()
   if (is.null(y)) y <- list()
   if (is.null(x)) x <- list()
-  modifyList(x = x, val = y)
+  modifyList2(x = x, val = y)
 }
 
 
@@ -572,4 +562,15 @@ bindrows <- function(...) {
   } else {
     rbindlist(rws, fill = TRUE, use.names = TRUE)
   }
+}
+
+#' Extract the full file paths for R source code
+#'
+#' This can be used e.g., for Caching, to identify which files have changed.
+#'
+#' @export
+#' @inheritParams simInit
+moduleCodeFiles <- function(paths, modules) {
+  path.expand(c(dir(file.path(paths$modulePath, modules, "R"), full.names = TRUE),
+    file.path(paths$modulePath, modules, paste0(modules, ".R"))))
 }
