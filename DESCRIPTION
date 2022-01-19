@@ -12,8 +12,8 @@ Description: Provides the core framework for a discrete event system (DES) to
     and tools for visualizing and understanding the DES project.
 URL: https://spades-core.predictiveecology.org/,
         https://github.com/PredictiveEcology/SpaDES.core
-Date: 2021-09-28
-Version: 1.0.9
+Date: 2022-01-18
+Version: 1.0.10
 Authors@R: c(
     person("Alex M", "Chubaty", email = "alex.chubaty@gmail.com",
            role = c("aut", "cre"), comment = c(ORCID = "0000-0001-7146-8135")),
@@ -29,15 +29,15 @@ Authors@R: c(
                  "as represented by the Minister of Natural Resources Canada"),
            role = "cph")
     )
-Depends: R (>= 3.6), quickPlot (>= 0.1.4), reproducible (>= 1.2.7)
+Depends: R (>= 4.0), quickPlot (>= 0.1.4), reproducible (>= 1.2.7)
 Imports: crayon, data.table (>= 1.11.0), fastdigest, igraph (>= 1.0.1),
         methods, qs (>= 0.21.1), raster (>= 2.5-8), Require (>= 0.0.7),
         stats, utils, whisker
 Suggests: codetools, covr, DiagrammeR (>= 0.8.2), dplyr, future,
         future.callr, ggplot2, googledrive, httr, knitr, logging,
-        magrittr, png, RandomFields (>= 3.3.4), RColorBrewer (>=
-        1.1-2), rgdal, rstudioapi, sp, SpaDES.tools (>= 0.2.0),
-        rmarkdown, tcltk, testthat (>= 1.0.2)
+        magrittr, pkgload, png, RandomFields (>= 3.3.4), RColorBrewer
+        (>= 1.1-2), rgdal, roxygen2, rstudioapi, sp, SpaDES.tools (>=
+        0.2.0), rmarkdown, tcltk, testthat (>= 1.0.2)
 Encoding: UTF-8
 Language: en-CA
 License: GPL-3
@@ -47,7 +47,7 @@ ByteCompile: yes
 Collate: 'Plots.R' 'module-dependencies-class.R' 'misc-methods.R'
         'environment.R' 'helpers.R' 'simList-class.R' 'cache.R'
         'check.R' 'priority.R' 'checkpoint.R' 'code-checking.R'
-        'copy.R' 'debugging.R' 'downloadData.R'
+        'convertToPackage.R' 'copy.R' 'debugging.R' 'downloadData.R'
         'simulation-parseModule.R' 'simulation-simInit.R' 'load.R'
         'memory-leaks.R' 'memory.R' 'modActiveBinding.R'
         'module-define.R' 'module-dependencies-methods.R'
@@ -60,7 +60,7 @@ Collate: 'Plots.R' 'module-dependencies-class.R' 'misc-methods.R'
         'spades-core-package.R' 'suppliedElsewhere.R' 'zzz.R'
 RoxygenNote: 7.1.2
 NeedsCompilation: no
-Packaged: 2021-09-30 13:33:23 UTC; achubaty
+Packaged: 2022-01-19 15:38:59 UTC; achubaty
 Author: Alex M Chubaty [aut, cre] (<https://orcid.org/0000-0001-7146-8135>),
   Eliot J B McIntire [aut] (<https://orcid.org/0000-0002-6914-8316>),
   Yong Luo [ctb],
@@ -70,4 +70,4 @@ Author: Alex M Chubaty [aut, cre] (<https://orcid.org/0000-0001-7146-8135>),
     Minister of Natural Resources Canada [cph]
 Maintainer: Alex M Chubaty <alex.chubaty@gmail.com>
 Repository: CRAN
-Date/Publication: 2021-09-30 14:20:06 UTC
+Date/Publication: 2022-01-19 16:22:46 UTC

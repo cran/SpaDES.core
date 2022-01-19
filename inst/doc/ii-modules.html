@@ -148,7 +148,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <h1 class="title toc-ignore">02 Building <code>SpaDES</code> modules</h1>
 <h4 class="author">Alex M. Chubaty</h4>
-<h4 class="date">September 30 2021</h4>
+<h4 class="date">January 19 2022</h4>
 
 
 <div id="TOC">
@@ -224,30 +224,30 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 }
 </style>
 <div id="introduction" class="section level1" number="1">
-<h1 number="1"><span class="header-section-number">1</span> Introduction</h1>
+<h1><span class="header-section-number">1</span> Introduction</h1>
 <div id="module-overview" class="section level2" number="1.1">
-<h2 number="1.1"><span class="header-section-number">1.1</span> Module overview</h2>
+<h2><span class="header-section-number">1.1</span> Module overview</h2>
 <p>Recall that <code>SpaDES</code> simulations are event-driven, meaning that different actions are performed on data objects based on the order of scheduled events. The central design of <code>SpaDES</code> promotes modularity, such that collections of related simulation actions can be grouped together as ‘modules’ and easily reused among multiple simulations. Strict modularity requires that modules can act independently, without needing to know about other modules. Thus each <code>SpaDES</code> module must explicitly state its input dependencies (data, package, and parameterization requirements), data outputs, as well as provide other useful metadata and documentation for the user. Upon initialization of a simulation via <code>simInit</code>, the dependencies of every module used are examined and evaluated. If dependency incompatibilities exists, the initialization fails and the user is notified. Also during this initialization, module code is <code>source</code>-ed into the simulation environment, making all module objects and functions available during the simulation.</p>
 <p>Each <code>SpaDES</code> module describes the processes or activities that drive simulation state changes via changes to objects stored in the simulation environment. Each activity consists of a collection of events which are scheduled depending on the rules of the simulation. Each event may evaluate or modify a simulation data object (<em>e.g.</em>, update the values on a raster map), or perform other operations such as saving and loading data objects, plotting, or scheduling other events.</p>
 <div id="simulation-event-list" class="section level3" number="1.1.1">
-<h3 number="1.1.1"><span class="header-section-number">1.1.1</span> Simulation event list</h3>
+<h3><span class="header-section-number">1.1.1</span> Simulation event list</h3>
 <p>The event queue is stored in a slot in a <code>simList</code> simulation object. Each event is represented by a <code>data.table</code> row consisting of the time the event is to occur (<code>eventTime</code>), the name of the module from which the event is taken (<code>moduleName</code>), and a character string for the programmer-defined event type (<code>eventType</code>). This list is kept sorted by <code>eventTime</code>, and events are processed in sequence beginning at the top of the list. Completed events are removed from the queue.</p>
 </div>
 <div id="module-events" class="section level3" number="1.1.2">
-<h3 number="1.1.2"><span class="header-section-number">1.1.2</span> Module events</h3>
+<h3><span class="header-section-number">1.1.2</span> Module events</h3>
 <p>When a call to the event list is made, the event is processed by the module specified by <code>moduleName</code>. The module code then determines the event type and executes the code for that event. For each event type within a module: 1) the instructions for what happens for this event get executed; and 2) there is an optional call to <code>scheduleEvent</code>, which schedules a future event. A module can schedule other event types from within the same module, and should not call other modules because this introduces module dependencies, which breaks the drop-in/replace modularity of your simulation model.</p>
 </div>
 <div id="module-event-dependencies" class="section level3" number="1.1.3">
-<h3 number="1.1.3"><span class="header-section-number">1.1.3</span> Module event dependencies</h3>
+<h3><span class="header-section-number">1.1.3</span> Module event dependencies</h3>
 <p>Each module schedules its own events (<em>e.g.</em>, a ‘fire’ module may schedule ‘burn’ events) and only uses its own data objects (or shared simulation objects). Modules that behave in this way are independent of one another, which is the preferred way to design and implement modules. Maintaining strict modularity allows the removal, addition, and replacement of modules without having to rewrite your code.</p>
 <p>Module event dependencies complicate the construction of simulation models, and hinder the ability to develop and deploy models with modularity. If two modules are actually dependent on each others’ events, then you should consider whether they really are separate modules or should be merged into a single module.</p>
 </div>
 </div>
 </div>
 <div id="module-structure" class="section level1" number="2">
-<h1 number="2"><span class="header-section-number">2</span> Module structure</h1>
+<h1><span class="header-section-number">2</span> Module structure</h1>
 <div id="module-directory-structure-modulename" class="section level2" number="2.1">
-<h2 number="2.1"><span class="header-section-number">2.1</span> Module directory structure (<code>moduleName/</code>)</h2>
+<h2><span class="header-section-number">2.1</span> Module directory structure (<code>moduleName/</code>)</h2>
 <p>A module consists of a collection of files and folders that …</p>
 <pre><code>/moduleRepository
   |_ moduleName/
@@ -263,7 +263,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       |_ moduleName_x.y.z.zip   # zip archive of previous versions</code></pre>
 </div>
 <div id="module-code-file-modulename.r" class="section level2" number="2.2">
-<h2 number="2.2"><span class="header-section-number">2.2</span> Module code file (<code>moduleName.R</code>)</h2>
+<h2><span class="header-section-number">2.2</span> Module code file (<code>moduleName.R</code>)</h2>
 <p>A <code>SpaDES</code> module consists of a single <code>.R</code> source file, whose name matches the name of the module. This file consists of three parts containing the code for:</p>
 <ol style="list-style-type: decimal">
 <li>the metadata describing the module and its data dependencies;</li>
@@ -271,10 +271,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>functions describing what happens during the processing of each event type.</li>
 </ol>
 <div id="metadata" class="section level3" number="2.2.1">
-<h3 number="2.2.1"><span class="header-section-number">2.2.1</span> Metadata</h3>
+<h3><span class="header-section-number">2.2.1</span> Metadata</h3>
 <p>In order to interact correctly with one another in a simulation, <code>SpaDES</code> modules are designed to be aware of their own dependencies and to share this information with the simulation (and to the user). During simulation initialization, the <code>.R</code> file corresponding to each module used is parsed and the modules’ metadata stored in the <code>simList</code> object inside the <code>envir</code>. As part of this initialization step, the dependencies of each module are extracted from the metadata and are checked against the other modules used in the simulation to ensure that all dependencies can be resolved.</p>
 <div id="defining-module-metadata-definemodule" class="section level4" number="2.2.1.1">
-<h4 number="2.2.1.1"><span class="header-section-number">2.2.1.1</span> Defining module metadata: <code>defineModule()</code></h4>
+<h4><span class="header-section-number">2.2.1.1</span> Defining module metadata: <code>defineModule()</code></h4>
 <p>Every module requires complete metadata, structured as a named list, and passed as an argument to the <code>defineModule</code> function.</p>
 <table>
 <colgroup>
@@ -429,7 +429,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div>
 </div>
 <div id="defining-module-parameters-defineparameter" class="section level4" number="2.2.1.2">
-<h4 number="2.2.1.2"><span class="header-section-number">2.2.1.2</span> Defining module parameters: <code>defineParameter()</code></h4>
+<h4><span class="header-section-number">2.2.1.2</span> Defining module parameters: <code>defineParameter()</code></h4>
 <p>Parameters here differ from input data objects in that the former are intended to be variable across simulation runs, whereas the latter remain constant. Parameters are often module-specific, where they are only used within the module they are defined, although it may be useful to globally define some parameters that are intended to be used by multiple modules. Module-specific parameters are specified using <code>defineParameter</code> (with <code>rbind</code>) within <code>defineModule</code> to build a <code>data.frame</code> of input parameters. Global parameters are defined at the simulation level as part of the <code>simInit</code> call.</p>
 <p>The parameter list in the <code>simList</code> object (accessed via <code>P</code> or <code>params</code>) may be used to pass named parameter values to modules. The general structure of this parameter list is a nested list of lists: the top level list contains all module names, each of those is a list of module parameters: This would normally be accessed using the <code>P</code>: <code>P(sim)$paramName</code> if inside a module, or <code>P(mySim)$moduleName$moduleParameter</code> if not inside a module. This nested list structure allows passing as many parameters as needed for your simulation. We suggest passing a list of all the parameters needed for a single module together, but this is not strictly necessary.</p>
 <p>A module’s metadata defines default values for module-specific parameters, and these defaults will be used unless overridden by the user. Default parameter values can overridden by passing values in the parameter list to <code>simInit</code>.</p>
@@ -469,16 +469,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>                 <span class="at">objects =</span> objects, <span class="at">paths =</span> paths)</span></code></pre></div>
 <pre><code>## Setting:
 ##   options(
-##     spades.outputPath = &#39;/tmp/RtmptsMbu9/simOutputs&#39;
-##     spades.modulePath = &#39;/tmp/RtmpcgNHd6/Rinst383f425e7459d4/SpaDES.core/sampleModules&#39;
+##     spades.outputPath = &#39;/tmp/RtmpRjNlef/simOutputs&#39;
+##     spades.modulePath = &#39;/tmp/RtmpOeVeGI/Rinst9e43110fe506/SpaDES.core/sampleModules&#39;
 ##   )</code></pre>
 <pre><code>## Paths set to:
 ##   options(
-##     rasterTmpDir = &#39;/tmp/RtmptsMbu9/raster&#39;
-##     reproducible.cachePath = &#39;/tmp/RtmptsMbu9/Require/cache&#39;
-##     spades.inputPath = &#39;/tmp/RtmpNK26Cb/SpaDES/inputs&#39;
-##     spades.outputPath = &#39;/tmp/RtmptsMbu9/simOutputs&#39;
-##     spades.modulePath = &#39;/tmp/RtmpcgNHd6/Rinst383f425e7459d4/SpaDES.core/sampleModules&#39;
+##     rasterTmpDir = &#39;/tmp/RtmpRjNlef/raster&#39;
+##     reproducible.cachePath = &#39;/tmp/RtmpRjNlef/Require/cache&#39;
+##     spades.inputPath = &#39;/tmp/Rtmpyina6K/SpaDES/inputs&#39;
+##     spades.outputPath = &#39;/tmp/RtmpRjNlef/simOutputs&#39;
+##     spades.modulePath = &#39;/tmp/RtmpOeVeGI/Rinst9e43110fe506/SpaDES.core/sampleModules&#39;
 ##   )</code></pre>
 <pre><code>## options(&#39;spades.useRequire&#39; = FALSE), so not checking minimum package version requirements</code></pre>
 <pre><code>## Loading required package: RColorBrewer</code></pre>
@@ -508,7 +508,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 <div id="event-types" class="section level3" number="2.2.2">
-<h3 number="2.2.2"><span class="header-section-number">2.2.2</span> Event types</h3>
+<h3><span class="header-section-number">2.2.2</span> Event types</h3>
 <p>Each module may contain an arbitrary number of event types. Each of these event types are defined within the <code>doEvent.moduleName</code> call, and are wrapped in a simple <code>if</code>/<code>else</code> stanza that matches the called event type (NOTE: when several event types are defined, <code>switch</code>/<code>case</code> can faster than <code>if</code>/<code>else</code>). To keep the <code>doEvent.moduleName</code> code block as clear and readable as possible, keep the definitions of each event type minimal, using functions (defined outside of the block) for the details of what is happening for each event.</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="do">## sample event type definitions from the default `randomLandscapes` module</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>doEvent.randomLandscapes <span class="ot">&lt;-</span> <span class="cf">function</span>(sim, eventTime, eventType, <span class="at">debug =</span> <span class="cn">FALSE</span>) {</span>
@@ -550,7 +550,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb25-38"><a href="#cb25-38" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 <div id="event-functions" class="section level3" number="2.2.3">
-<h3 number="2.2.3"><span class="header-section-number">2.2.3</span> Event functions</h3>
+<h3><span class="header-section-number">2.2.3</span> Event functions</h3>
 <p>Event functions should be defined below the <code>doEvent.moduleName</code> code block and follow the naming convention <code>modulenameEventtype()</code>. Keep these function definitions as short and clean as possible (you can further modularize your functions by calling additional subroutines).</p>
 <p>Functions should get and return objects in the simulation environment (<code>envir</code>), rather than pass them as function arguments. This mostly allows for function definitions to be simpler, <em>i.e.</em>, they just take the one <code>sim</code> argument if parameters are passed within the <code>simInit</code> call. Accessing objects in the <code>envir</code> is similar to accessing items in a list, <em>i.e.</em>, <code>sim[["object"]]</code> or <code>sim$object</code> can be used, in addition to <code>get("object", envir=envir(sim))</code>. Likewise, simulation functions (<em>i.e.</em>, those defined in modules) are also accessed using the <code>$</code> accessor (<em>e.g.</em>, <code>sim$myFunction()</code>).</p>
 <p>Note that every module requires an <code>"init"</code> event type, which defines the initialization of the module; however, this <code>init</code> event need not do a whole lot (<em>i.e.</em>, it can be a stub). As such, the <code>modulenameInit()</code> function is required for initialization. Modules may also include <code>"save"</code> and <code>"plot"</code> events, though these are optional.</p>
@@ -601,22 +601,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb26-45"><a href="#cb26-45" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 <div id="event-diagram" class="section level3" number="2.2.4">
-<h3 number="2.2.4"><span class="header-section-number">2.2.4</span> Event diagram</h3>
+<h3><span class="header-section-number">2.2.4</span> Event diagram</h3>
 <p>To better understand how events are scheduled within a simulation, a visual representation called an <code>eventDiagram</code> illustrates the sequences of events within a simulation.</p>
 <p>Simulation time is presented on the x-axis, starting at date <code>startDate</code>. Each module appears in a colour-coded row, within which each event for that module is displayed corresponding to the sequence of events for that module. Note that only the start time of the event is meaningful is these figures: the width of the bar associated with a particular module’s event corresponds to the module’s timestep unit, not the event’s “duration”.</p>
 <pre><code>## png 
 ##   2</code></pre>
-<div id="htmlwidget-b39b9c321ede94f22b08" style="width:720px;height:1326px;" class="DiagrammeR html-widget"></div>
-<script type="application/json" data-for="htmlwidget-b39b9c321ede94f22b08">{"x":{"diagram":"gantt\ndateFormat  YYYY-MM-DD\ntitle SpaDES event diagram\nsection  checkpoint \n init:done,checkpoint1,0-06-01,0-06-07\nsection  save \n init:done,save1,0-06-01,0-06-07\nsection  load \n init:done,load1,0-06-01,0-06-07\nsection  randomLandscapes \n init:done,randomLandscapes1,0-06-01,0-06-07\nplot:crit,randomLandscapes2,0-06-01,0-06-07\nsection  fireSpread \n init:done,fireSpread1,0-06-01,0-06-07\nburn:active,fireSpread2,0-06-01,0-06-07\nstats:active,fireSpread3,0-06-01,0-06-07\nplot.init:active,fireSpread4,0-06-01,0-06-07\nburn:active,fireSpread5,1-06-01,1-06-07\nstats:active,fireSpread6,1-06-01,1-06-07\nburn:active,fireSpread7,2-06-01,2-06-07\nstats:active,fireSpread8,2-06-01,2-06-07\nsection  caribouMovement \n init:done,caribouMovement1,0-06-01,0-06-07\nplot.init:active,caribouMovement2,0-07-01,0-07-07\nplot:crit,caribouMovement3,0-07-31,0-08-07\nplot:crit,caribouMovement4,0-08-31,0-09-06\nplot:crit,caribouMovement5,0-09-30,0-10-07\nplot:crit,caribouMovement6,0-10-31,0-11-06\nplot:crit,caribouMovement7,0-11-30,0-12-06\nplot:crit,caribouMovement8,0-12-31,1-01-06\nplot:crit,caribouMovement9,1-01-30,1-02-05\nplot:crit,caribouMovement10,1-03-01,1-03-08\nplot:crit,caribouMovement11,1-04-01,1-04-07\nplot:crit,caribouMovement12,1-05-01,1-05-08\nmove:active,caribouMovement13,1-06-01,1-06-07\nplot:crit,caribouMovement14,1-06-01,1-06-07\nmove:active,caribouMovement15,1-07-01,1-07-07\nplot:crit,caribouMovement16,1-07-01,1-07-07\nmove:active,caribouMovement17,1-08-01,1-08-07\nplot:crit,caribouMovement18,1-08-01,1-08-07\nmove:active,caribouMovement19,1-08-31,1-09-06\nplot:crit,caribouMovement20,1-08-31,1-09-06\nmove:active,caribouMovement21,1-10-01,1-10-07\nplot:crit,caribouMovement22,1-10-01,1-10-07\nmove:active,caribouMovement23,1-10-31,1-11-06\nplot:crit,caribouMovement24,1-10-31,1-11-06\nmove:active,caribouMovement25,1-11-30,1-12-07\nplot:crit,caribouMovement26,1-11-30,1-12-07\nmove:active,caribouMovement27,1-12-31,2-01-06\nplot:crit,caribouMovement28,1-12-31,2-01-06\nmove:active,caribouMovement29,2-01-30,2-02-06\nplot:crit,caribouMovement30,2-01-30,2-02-06\nmove:active,caribouMovement31,2-03-02,2-03-08\nplot:crit,caribouMovement32,2-03-02,2-03-08\nmove:active,caribouMovement33,2-04-01,2-04-07\nplot:crit,caribouMovement34,2-04-01,2-04-07\nmove:active,caribouMovement35,2-05-02,2-05-08\nplot:crit,caribouMovement36,2-05-02,2-05-08\nmove:active,caribouMovement37,2-06-01,2-06-07\nplot:crit,caribouMovement38,2-06-01,2-06-07\n"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-f8e50ad0401e7cb5c7b6" style="width:720px;height:1326px;" class="DiagrammeR html-widget"></div>
+<script type="application/json" data-for="htmlwidget-f8e50ad0401e7cb5c7b6">{"x":{"diagram":"gantt\ndateFormat  YYYY-MM-DD\ntitle SpaDES event diagram\nsection  checkpoint \n init:done,checkpoint1,0-06-01,0-06-07\nsection  save \n init:done,save1,0-06-01,0-06-07\nsection  load \n init:done,load1,0-06-01,0-06-07\nsection  randomLandscapes \n init:done,randomLandscapes1,0-06-01,0-06-07\nplot:crit,randomLandscapes2,0-06-01,0-06-07\nsection  fireSpread \n init:done,fireSpread1,0-06-01,0-06-07\nburn:active,fireSpread2,0-06-01,0-06-07\nstats:active,fireSpread3,0-06-01,0-06-07\nplot.init:active,fireSpread4,0-06-01,0-06-07\nburn:active,fireSpread5,1-06-01,1-06-07\nstats:active,fireSpread6,1-06-01,1-06-07\nburn:active,fireSpread7,2-06-01,2-06-07\nstats:active,fireSpread8,2-06-01,2-06-07\nsection  caribouMovement \n init:done,caribouMovement1,0-06-01,0-06-07\nplot.init:active,caribouMovement2,0-07-01,0-07-07\nplot:crit,caribouMovement3,0-07-31,0-08-07\nplot:crit,caribouMovement4,0-08-31,0-09-06\nplot:crit,caribouMovement5,0-09-30,0-10-07\nplot:crit,caribouMovement6,0-10-31,0-11-06\nplot:crit,caribouMovement7,0-11-30,0-12-06\nplot:crit,caribouMovement8,0-12-31,1-01-06\nplot:crit,caribouMovement9,1-01-30,1-02-05\nplot:crit,caribouMovement10,1-03-01,1-03-08\nplot:crit,caribouMovement11,1-04-01,1-04-07\nplot:crit,caribouMovement12,1-05-01,1-05-08\nmove:active,caribouMovement13,1-06-01,1-06-07\nplot:crit,caribouMovement14,1-06-01,1-06-07\nmove:active,caribouMovement15,1-07-01,1-07-07\nplot:crit,caribouMovement16,1-07-01,1-07-07\nmove:active,caribouMovement17,1-08-01,1-08-07\nplot:crit,caribouMovement18,1-08-01,1-08-07\nmove:active,caribouMovement19,1-08-31,1-09-06\nplot:crit,caribouMovement20,1-08-31,1-09-06\nmove:active,caribouMovement21,1-10-01,1-10-07\nplot:crit,caribouMovement22,1-10-01,1-10-07\nmove:active,caribouMovement23,1-10-31,1-11-06\nplot:crit,caribouMovement24,1-10-31,1-11-06\nmove:active,caribouMovement25,1-11-30,1-12-07\nplot:crit,caribouMovement26,1-11-30,1-12-07\nmove:active,caribouMovement27,1-12-31,2-01-06\nplot:crit,caribouMovement28,1-12-31,2-01-06\nmove:active,caribouMovement29,2-01-30,2-02-06\nplot:crit,caribouMovement30,2-01-30,2-02-06\nmove:active,caribouMovement31,2-03-02,2-03-08\nplot:crit,caribouMovement32,2-03-02,2-03-08\nmove:active,caribouMovement33,2-04-01,2-04-07\nplot:crit,caribouMovement34,2-04-01,2-04-07\nmove:active,caribouMovement35,2-05-02,2-05-08\nplot:crit,caribouMovement36,2-05-02,2-05-08\nmove:active,caribouMovement37,2-06-01,2-06-07\nplot:crit,caribouMovement38,2-06-01,2-06-07\n"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <div id="module-documentation-modulename.rmd" class="section level2" number="2.3">
-<h2 number="2.3"><span class="header-section-number">2.3</span> Module documentation (<code>moduleName.Rmd</code>)</h2>
+<h2><span class="header-section-number">2.3</span> Module documentation (<code>moduleName.Rmd</code>)</h2>
 <p>Module documentation should be written so that others can use your module. As such, this documentation should include a high-level overview of the module as well as low-level, detailed descriptions of its usage.</p>
 <p>We strongly recommend using R Markdown (<code>.Rmd</code>) for this documentation, as it is easily human-readable while also being machine-readable and easily converted to a wide variety of file formats including <code>PDF</code>, <code>HTML</code>, and <code>DOCX</code>. Another benefit of using a text-based file format is to facilitate transparent document versioning and history using version control systems like <code>git</code>. For help writing in R Markdown, see <a href="https://rmarkdown.rstudio.com/" class="uri">https://rmarkdown.rstudio.com/</a>.</p>
 </div>
 <div id="citation-license-and-readme-files" class="section level2" number="2.4">
-<h2 number="2.4"><span class="header-section-number">2.4</span> Citation, LICENSE, and README files</h2>
+<h2><span class="header-section-number">2.4</span> Citation, LICENSE, and README files</h2>
 <ul>
 <li><p><code>citation.bib</code> provides a <code>BibTeX</code> formatted citation with which the module can be referenced. Most citation management software can read and output <code>.bib</code> format.</p></li>
 <li><p><code>LICENSE.txt</code> describes how your module can be redistributed and used by others. For help selecting a license, see <a href="https://choosealicense.com">choosealicense.com</a>.</p></li>
@@ -624,7 +624,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul>
 </div>
 <div id="data" class="section level2" number="2.5">
-<h2 number="2.5"><span class="header-section-number">2.5</span> Data</h2>
+<h2><span class="header-section-number">2.5</span> Data</h2>
 <p>All module data are located in the module’s <code>data/</code> subdirectory. Also included in this folder is a <code>CHECKSUMS.txt</code> file that contains the expected checksums for each data file. Checksums can be verified (and optionally written) using <code>checksums()</code>.</p>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="do">## 1. specify your module here</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>moduleName <span class="ot">&lt;-</span> <span class="st">&quot;my_module&quot;</span></span>
@@ -648,7 +648,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Modules may require data that for various reasons cannot be distributed with the module source code. In these cases, the module developer should ensure that the module downloads and extracts the data required. It is useful to not only check that the data files exist locally but that their checksums match those expected (see <code>checksums()</code>).</p>
 </div>
 <div id="versioned-zip-archives-modulename_x.y.z.zip" class="section level2" number="2.6">
-<h2 number="2.6"><span class="header-section-number">2.6</span> Versioned zip archives (<code>moduleName_x.y.z.zip</code>)</h2>
+<h2><span class="header-section-number">2.6</span> Versioned zip archives (<code>moduleName_x.y.z.zip</code>)</h2>
 <p>Use <a href="https://semver.org/">semantic versioning</a>, such that a version number <code>x.y.z</code> corresponds to:</p>
 <ul>
 <li><code>x</code> is the <strong>major</strong> version (incremented when you make incompatible API changes)</li>
@@ -658,19 +658,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 <div id="passing-data-between-modules" class="section level1" number="3">
-<h1 number="3"><span class="header-section-number">3</span> Passing data between modules</h1>
+<h1><span class="header-section-number">3</span> Passing data between modules</h1>
 <p>Modularity in <code>SpaDES</code> simulations is maintained by ensuring modules interact indirectly with one another by reading in and modifying objects in the simulation environment.</p>
 <div id="data-types" class="section level2" number="3.1">
-<h2 number="3.1"><span class="header-section-number">3.1</span> Data types</h2>
+<h2><span class="header-section-number">3.1</span> Data types</h2>
 <p>As you build your modules for your simulation, you can use any of <code>R</code>’s data types to store your objects and data. In particular, matrices (including vectors) and lists work well for this purpose because, as of <code>R</code> version <code>3.1.0</code>, they are more efficient, reducing your model’s memory footprint and speeding up your code’s execution. Other useful data types include <code>Raster*</code> and <code>SpatialPoints*</code> objects (see examples below).</p>
 </div>
 <div id="global-objects-and-the-simulation-environment" class="section level2" number="3.2">
-<h2 number="3.2"><span class="header-section-number">3.2</span> Global objects and the simulation environment</h2>
+<h2><span class="header-section-number">3.2</span> Global objects and the simulation environment</h2>
 <p><code>R</code> passes copies of objects to functions (instead of using pass-by-reference), so the typical <code>R</code> function never acts directly on the global copy of the variable. Within a function, all operations are generally performed on a local copy of the object, which is then either discarded or returned back to the parent environment upon when the function completes. This object-copying behaviour has given <code>R</code> a reputation of being slow in comparison to languages like <code>C</code> and <code>FORTRAN</code>. However, recent improvements to <code>R</code> have made it more memory efficient and faster to execute, in part by minimizing the number of object copies made and lazy loading.</p>
 <p>One way <code>SpaDES</code> reduces object copying is by storing and modifying objects in a simulation environment, because environments in R have <a href="http://adv-r.had.co.nz/Environments.html">reference semantics</a>. Instead of storing simulation data in the global environment, each <code>SpaDES</code> simulation uses a unique environment wherein simulation data are referenced.</p>
 </div>
 <div id="module-object-dependencies" class="section level2" number="3.3">
-<h2 number="3.3"><span class="header-section-number">3.3</span> Module object dependencies</h2>
+<h2><span class="header-section-number">3.3</span> Module object dependencies</h2>
 <p>As noted above, modules should not depend on one another for event scheduling. However, it is often useful to develop collections of modules that interact indirectly and are dependent on shared data objects. Modules can be designed to rely on outputs (data objects) from other modules. When objects are shared between modules, it is important to state these dependencies explicitly. To check whether objects upon which a model depends exist, a call to <code>checkObject</code> is made during module initialization.</p>
 <p>Note that modules need not be inter-dependent on one another: module B may depend on module A (for example to initialize a data object), without module A depending on module B.</p>
 <p>To view the dependencies for a simulation:</p>
@@ -702,13 +702,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><img src="ii-modules_files/figure-html/module-object-diagrams-2.png" /><!-- --></p>
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># detailed visual representation of objects</span></span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">objectDiagram</span>(mySim, <span class="at">width =</span> <span class="dv">720</span>)</span></code></pre></div>
-<div id="htmlwidget-6ae2703ddc4f1dbc18f4" style="width:720px;height:288px;" class="DiagrammeR html-widget"></div>
-<script type="application/json" data-for="htmlwidget-6ae2703ddc4f1dbc18f4">{"x":{"diagram":"sequenceDiagram\ncaribouMovement ->> caribouMovement : caribou\nfireSpread ->> caribouMovement : landscape\nfireSpread ->> fireSpread : landscape\nfireSpread ->> fireSpread : nPixelsBurned\nrandomLandscapes ->> caribouMovement : landscape\nrandomLandscapes ->> fireSpread : landscape\n"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-06724c26fcca590a0e0f" style="width:720px;height:288px;" class="DiagrammeR html-widget"></div>
+<script type="application/json" data-for="htmlwidget-06724c26fcca590a0e0f">{"x":{"diagram":"sequenceDiagram\ncaribouMovement ->> caribouMovement : caribou\nfireSpread ->> caribouMovement : landscape\nfireSpread ->> fireSpread : landscape\nfireSpread ->> fireSpread : nPixelsBurned\nrandomLandscapes ->> caribouMovement : landscape\nrandomLandscapes ->> fireSpread : landscape\n"},"evals":[],"jsHooks":[]}</script>
 <p>The output of the <code>depsEdgeList</code> is an edgelist describing the relationships between each module. In the example above, line 2 of the output indicates that the <code>fireSpread</code> module relies on an object <code>landscape</code> provided by the <code>caribouMovement</code> module. This edgelist is used inside the <code>depsGraph</code> function to produce a dependency graph (network), where each module corresponds to a vertex (node), and object dependencies are denoted by the arrows. When plotting the dependency graph, it’s often useful to use the <code>plot=TRUE</code> argument to simplify the network by showing no more than one object dependency between modules.</p>
 </div>
 </div>
 <div id="core-modules" class="section level1" number="4">
-<h1 number="4"><span class="header-section-number">4</span> Core modules</h1>
+<h1><span class="header-section-number">4</span> Core modules</h1>
 <p>There are a number of built-in modules that provide useful functionality such as plotting and saving. These modules have their names prefaced with a dot (<code>.</code>). Parameter values for core modules can be accessed by using their accessor methods; however, these are simply entries in a nested list exactly like the parameters passed to user modules, and can be accessed directly as such.</p>
 <p>These core modules are summarized in the following table and described further below.</p>
 <table>
@@ -813,7 +813,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </tbody>
 </table>
 <div id="checkpoint-module" class="section level2" number="4.1">
-<h2 number="4.1"><span class="header-section-number">4.1</span> <code>.checkpoint</code> module</h2>
+<h2><span class="header-section-number">4.1</span> <code>.checkpoint</code> module</h2>
 <p>Schedule automatic simulation checkpointing to allow you to resume a previously saved simulation. All objects in the global environment including the state of the random number generator are saved and can be reloaded. Checkpoint frequency and filename can be passed as parameters to the simulation object as illustrated below. By default, checkpointing is not used unless the <code>interval</code> parameter is provided; the simulation checkpoint file (if one exists) is loaded if the <code>file</code> parameter is specified.</p>
 <div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># initialize a new simulation, setting the checkpoint interval and filename.</span></span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>times <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">start =</span> <span class="dv">0</span>, <span class="at">end =</span> <span class="dv">30</span>)</span>
@@ -835,7 +835,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>## [1] NA</code></pre>
 </div>
 <div id="progress-module" class="section level2" number="4.2">
-<h2 number="4.2"><span class="header-section-number">4.2</span> <code>.progress</code> module</h2>
+<h2><span class="header-section-number">4.2</span> <code>.progress</code> module</h2>
 <p>Schedule updates to the simulation progress bar.</p>
 <div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># initialize a new simulation, setting the progress parameters</span></span>
 <span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>mySim <span class="ot">&lt;-</span> <span class="fu">simInit</span>(<span class="at">times =</span> <span class="fu">list</span>(<span class="at">start =</span> <span class="fl">0.0</span>, <span class="at">end =</span> <span class="fl">100.0</span>),</span>
@@ -851,7 +851,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>## [1] 10</code></pre>
 </div>
 <div id="load-and-.save-modules" class="section level2" number="4.3">
-<h2 number="4.3"><span class="header-section-number">4.3</span> <code>.load</code> and <code>.save</code> modules</h2>
+<h2><span class="header-section-number">4.3</span> <code>.load</code> and <code>.save</code> modules</h2>
 <p>Schedule object save and file load events by passing parameters to the save and load parameters for each module. Saving objects to file can be done at the module level or at the model level. At the module level, each module can be provided with appropriate arguments as parameters. In all cases, these must be events that are scheduled in the modules that do the saving or loading, and then the parameters necessary to make those events happen must be specified. Modules are not required to have the following parameters set, but when using <code>newModule()</code> to create the module, these will be events that are made, but not scheduled:</p>
 <table>
 <colgroup>
@@ -884,7 +884,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </tbody>
 </table>
 <div id="inputs-argument-to-siminit" class="section level3" number="4.3.1">
-<h3 number="4.3.1"><span class="header-section-number">4.3.1</span> <code>inputs</code> argument to simInit</h3>
+<h3><span class="header-section-number">4.3.1</span> <code>inputs</code> argument to simInit</h3>
 <p>Alternatively, objects can be read in during the <code>simInit</code> function call by passing a data.frame to the <code>input</code> argument. For <code>inputs()</code>, the <code>data.frame</code> must consist of, minimally, a column named <code>file</code> listing the absolute or relative filepaths of the files to be loaded. Additional columns can also be provided:</p>
 <table>
 <colgroup>
@@ -958,7 +958,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </table>
 </div>
 <div id="outputs-argument-to-siminit" class="section level3" number="4.3.2">
-<h3 number="4.3.2"><span class="header-section-number">4.3.2</span> <code>outputs</code> argument to simInit</h3>
+<h3><span class="header-section-number">4.3.2</span> <code>outputs</code> argument to simInit</h3>
 <p>Objects to be saved can be specified using the <code>output</code> argument, by passing a data.frame analogous to the <code>.load</code> module. This <code>data.frame</code> is passed via the <code>outputs</code> argument in the <code>simInit</code> call or via a <code>outputs(mySim) &lt;- data.frame()</code>.</p>
 <p>Saving files can be done “at the model level” by passing a simulation parameter called <code>outputs</code> which can be a <code>data.frame</code> and consists minimally of a column named <code>objectName</code>. This will identify which objects should be saved. Additional columns can also be provided:</p>
 <table>
@@ -1023,7 +1023,7 @@ Therefore, a call to <code>outputs(mySim)</code> will indicate which objects hav
 ## &lt;0 rows&gt; (or 0-length row.names)</code></pre>
 <div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">outputs</span>(mySim)   <span class="co"># shows all files and objects that are &quot;outputs&quot;</span></span></code></pre></div>
 <pre><code>##   objectName                                            file     fun package
-## 1  landscape /tmp/RtmptsMbu9/simOutputs/landscape_year10.rds saveRDS    base
+## 1  landscape /tmp/RtmpRjNlef/simOutputs/landscape_year10.rds saveRDS    base
 ##   saveTime saved arguments
 ## 1       10    NA        NA</code></pre>
 <div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">params</span>(mySim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>.saveInitialTime</span></code></pre></div>
@@ -1033,7 +1033,7 @@ Therefore, a call to <code>outputs(mySim)</code> will indicate which objects hav
 <div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">params</span>(mySim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>.saveObjects</span></code></pre></div>
 <pre><code>## [1] &quot;landscape&quot;</code></pre>
 <div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">params</span>(mySim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>.savePath</span></code></pre></div>
-<pre><code>## [1] &quot;/tmp/RtmptsMbu9/simOutputs/randomLandscapes&quot;</code></pre>
+<pre><code>## [1] &quot;/tmp/RtmpRjNlef/simOutputs/randomLandscapes&quot;</code></pre>
 <div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>ftmp <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">pattern =</span> <span class="st">&quot;spades_vignetteOutputs&quot;</span>, <span class="at">fileext =</span> <span class="st">&quot;.pdf&quot;</span>)</span>
 <span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pdf</span>(ftmp)</span>
 <span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a><span class="fu">clearPlot</span>()</span>
@@ -1059,7 +1059,7 @@ Therefore, a call to <code>outputs(mySim)</code> will indicate which objects hav
 </div>
 </div>
 <div id="plotting" class="section level2" number="4.4">
-<h2 number="4.4"><span class="header-section-number">4.4</span> Plotting</h2>
+<h2><span class="header-section-number">4.4</span> Plotting</h2>
 <p>Plotting events can be scheduled similarly to save events, by passing module-specific parameters indicating when to schedule the first plot event and how often to rescheduling recurring plot events. By default, when a module is created with a <code>newModule()</code> call, plotting will be scheduled using <code>.plotInitialTime</code>. The default is NA, i.e., no plotting.</p>
 <ul>
 <li><code>.plotInitialTime</code>: The time at which the first plot is scheduled.</li>
@@ -1086,7 +1086,7 @@ Therefore, a call to <code>outputs(mySim)</code> will indicate which objects hav
 </div>
 </div>
 <div id="using-existing-spades-modules" class="section level1" number="5">
-<h1 number="5"><span class="header-section-number">5</span> Using existing <code>SpaDES</code> modules</h1>
+<h1><span class="header-section-number">5</span> Using existing <code>SpaDES</code> modules</h1>
 <p>One of the primary motivations of developing the <code>SpaDES</code> package is to facilitate module reuse. We provide a few modules with this package as samples for demos and the vignettes, which can be used as a starting point for your own module development. We also maintain a publicly accessible repository of <code>SpaDES</code> modules (details below).</p>
 <p>Before using other modules, it is up to the modeler (you!) to understand the technical and scientific limitations of these modules. Although <code>SpaDES</code> provides some built-in functionality to ensure different modules will work together, and warn the user if certain module combinations are invalid, when deciding upon which modules to use, be sure to also:</p>
 <ol style="list-style-type: decimal">
@@ -1097,7 +1097,7 @@ Therefore, a call to <code>outputs(mySim)</code> will indicate which objects hav
 </ol>
 <p>See the <code>SpaDES</code> wiki (<a href="https://github.com/PredictiveEcology/SpaDES/wiki">https://github.com/PredictiveEcology/SpaDES/wiki</a>) for more detailed information on getting started.</p>
 <div id="included-sample-modules" class="section level2" number="5.1">
-<h2 number="5.1"><span class="header-section-number">5.1</span> Included sample modules</h2>
+<h2><span class="header-section-number">5.1</span> Included sample modules</h2>
 <p>Use <code>system.file("sampleModules", package = "SpaDES.core")</code> to get the path to the <code>sampleModules</code> directory. To view the contents of a module, use the <code>openModules</code> function. Note that you should not edit the sample modules directly, but save them as a copy in another location.</p>
 <div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">openModules</span>(<span class="fu">system.file</span>(<span class="st">&quot;sampleModules&quot;</span>, <span class="at">package =</span> <span class="st">&quot;SpaDES.core&quot;</span>), <span class="st">&quot;moduleName&quot;</span>)</span></code></pre></div>
 <ol style="list-style-type: decimal">
@@ -1107,7 +1107,7 @@ Therefore, a call to <code>outputs(mySim)</code> will indicate which objects hav
 </ol>
 </div>
 <div id="spades-module-repository" class="section level2" number="5.2">
-<h2 number="5.2"><span class="header-section-number">5.2</span> <code>SpaDES</code> module repository</h2>
+<h2><span class="header-section-number">5.2</span> <code>SpaDES</code> module repository</h2>
 <p><strong>Website:</strong> <a href="https://github.com/PredictiveEcology/SpaDES-modules">https://github.com/PredictiveEcology/SpaDES-modules</a></p>
 <p>Modules from this (or another suitable GitHub repository) can be downloaded using:</p>
 <div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">downloadModule</span>(<span class="st">&quot;moduleName&quot;</span>)</span></code></pre></div>
@@ -1115,13 +1115,13 @@ Therefore, a call to <code>outputs(mySim)</code> will indicate which objects hav
 </div>
 </div>
 <div id="creating-new-modules" class="section level1" number="6">
-<h1 number="6"><span class="header-section-number">6</span> Creating new modules</h1>
+<h1><span class="header-section-number">6</span> Creating new modules</h1>
 <div id="module-design-considerations" class="section level2" number="6.1">
-<h2 number="6.1"><span class="header-section-number">6.1</span> Module design considerations</h2>
+<h2><span class="header-section-number">6.1</span> Module design considerations</h2>
 <p>As noted above, modules should function as independently as possible so that they retain their modularity. While it may be useful for modules to exhibit indirect dependence on each other via shared data objects (such as maps), modules should not depend directly on each other via event scheduling.</p>
 </div>
 <div id="using-the-module-template" class="section level2" number="6.2">
-<h2 number="6.2"><span class="header-section-number">6.2</span> Using the module template</h2>
+<h2><span class="header-section-number">6.2</span> Using the module template</h2>
 <p>Code for new modules can be developed quickly using the template generator function <code>newModule</code>(also available as an RStudio add-in) which accepts as arguments the name of the new module, a directory path in which to create the new module, and a logical indicating whether to open the newly created module code file for editing.</p>
 <p>Module developers can set the <code>devtools.desc.author</code> option (<em>e.g.</em>, in their <code>.Rprofile</code> to automatically supply a default module author). See <code>package?devtools</code> for more details.</p>
 <div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create a new module called &quot;randomLandscape&quot; in the &quot;custom-modules&quot; subdirectory</span></span>
@@ -1130,7 +1130,7 @@ Therefore, a call to <code>outputs(mySim)</code> will indicate which objects hav
 <p>The newly created file can now be modified in the identified sections and customized to your module. However, it is very important that you do not edit portions of the file outside of the designated sections or your module may fail to work properly within a simulation.</p>
 </div>
 <div id="module-groups" class="section level2" number="6.3">
-<h2 number="6.3"><span class="header-section-number">6.3</span> Module groups</h2>
+<h2><span class="header-section-number">6.3</span> Module groups</h2>
 <p>A ‘module group’ is simply a convenient way of specifying multiple modules. Module groups are specified by naming child modules in the <code>defineModule</code> block of the metadata. For example, the <code>SpaDES_sampleModules</code> module group lists the following modules as “children”:</p>
 <ul>
 <li><code>caribouMovement</code></li>
@@ -1172,14 +1172,14 @@ Therefore, a call to <code>outputs(mySim)</code> will indicate which objects hav
 <div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">downloadModule</span>(<span class="st">&quot;SpaDES_sampleModules&quot;</span>)</span></code></pre></div>
 </div>
 <div id="debugging" class="section level2" number="6.4">
-<h2 number="6.4"><span class="header-section-number">6.4</span> Debugging</h2>
+<h2><span class="header-section-number">6.4</span> Debugging</h2>
 <p>Various debugging techniques are discussed at <a href="https://github.com/PredictiveEcology/SpaDES/wiki/Debugging">https://github.com/PredictiveEcology/SpaDES/wiki/Debugging</a>.</p>
 </div>
 <div id="contributing-modules" class="section level2" number="6.5">
-<h2 number="6.5"><span class="header-section-number">6.5</span> Contributing modules</h2>
+<h2><span class="header-section-number">6.5</span> Contributing modules</h2>
 <p>After publication you may wish to make your module more easily accessible for others to use (in fact we encourage it). We maintain a repository of <code>SpaDES</code> modules at the following site: <a href="https://github.com/PredictiveEcology/SpaDES-modules">https://github.com/PredictiveEcology/SpaDES-modules</a></p>
 <div id="minimum-requirements" class="section level3" number="6.5.1">
-<h3 number="6.5.1"><span class="header-section-number">6.5.1</span> Minimum requirements</h3>
+<h3><span class="header-section-number">6.5.1</span> Minimum requirements</h3>
 <p>All contributed modules should be well documented. In addition to providing <em>complete</em> metadata within the module’s <code>.R</code> file, the following components (see details above) should be included:</p>
 <ol style="list-style-type: decimal">
 <li>Complete module documentation, such as an R Markdown (<code>.Rmd</code>) document that can be built as a <code>PDF</code>.</li>
@@ -1190,8 +1190,8 @@ Therefore, a call to <code>outputs(mySim)</code> will indicate which objects hav
 <p>Note that <code>newModule()</code> produces skeleton templates of these files. Additionally, <code>zipModule()</code> can be used to build the <code>.zip</code> file corresponding to a particular version of your module.</p>
 </div>
 <div id="module-submission" class="section level3" number="6.5.2">
-<h3 number="6.5.2"><span class="header-section-number">6.5.2</span> Module submission</h3>
-<p>To submit your module for inclusion in our GitHub repository, login to GitHub with your account and initiate a pull request to the repository. See the <a href="https://help.github.com/articles/creating-a-pull-request/">GitHub help documentation</a> for more details.</p>
+<h3><span class="header-section-number">6.5.2</span> Module submission</h3>
+<p>To submit your module for inclusion in our GitHub repository, login to GitHub with your account and initiate a pull request to the repository. See the <a href="https://docs.github.com/articles/creating-a-pull-request/">GitHub help documentation</a> for more details.</p>
 </div>
 </div>
 </div>

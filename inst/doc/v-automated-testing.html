@@ -140,7 +140,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <h1 class="title toc-ignore">05 Automated module testing</h1>
 <h4 class="author">Alex M. Chubaty</h4>
-<h4 class="date">September 30 2021</h4>
+<h4 class="date">January 19 2022</h4>
 
 
 <div id="TOC">
@@ -159,27 +159,27 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 
 <div id="overview" class="section level1" number="1">
-<h1 number="1"><span class="header-section-number">1</span> Overview</h1>
+<h1><span class="header-section-number">1</span> Overview</h1>
 <p>Regular automated checks of your module code help ensure your module can be run by others and that no errors are introduced when you make a change to your code. Users hosting module code in GitHub repositories can take advantage of free <a href="https://github.com/features/actions">GitHub Actions</a> minutes to automatically run their module.</p>
 <p><em>NOTE:</em> Long-running or memory-intensive code should not be run. GitHub actions limits code execution.</p>
 <p>Since we encourage all module authors to maintain a high-level overview of their module in a <code>.Rmd</code> file, this can be used to demonstrate use of the module, as as well as test that the module can be run without error. By default, the automated testing of the module is done by running (<em>i.e.</em>, rendering) the module’s <code>.Rmd</code> file.</p>
 </div>
 <div id="setting-up-module-tests" class="section level1" number="2">
-<h1 number="2"><span class="header-section-number">2</span> Setting up module tests</h1>
+<h1><span class="header-section-number">2</span> Setting up module tests</h1>
 <div id="using-testing-with-new-modules" class="section level2" number="2.1">
-<h2 number="2.1"><span class="header-section-number">2.1</span> Using testing with new modules</h2>
+<h2><span class="header-section-number">2.1</span> Using testing with new modules</h2>
 <p>When creating a new module, simply specify <code>useGitHub = TRUE</code> to generate the necessary GitHub Actions configuration file.</p>
 </div>
 <div id="using-testing-with-existing-modules" class="section level2" number="2.2">
-<h2 number="2.2"><span class="header-section-number">2.2</span> Using testing with existing modules</h2>
+<h2><span class="header-section-number">2.2</span> Using testing with existing modules</h2>
 <p>For existing modules, use <code>use_gha(name = &#39;moduleName&#39;, path = &#39;modulePath&#39;)</code> to add the GitHub Actions testing workflow.</p>
 </div>
 </div>
 <div id="customizing-the-test-configuration" class="section level1" number="3">
-<h1 number="3"><span class="header-section-number">3</span> Customizing the test configuration</h1>
+<h1><span class="header-section-number">3</span> Customizing the test configuration</h1>
 <p>You can modify your module’s workflow file (<code>.github/workflows/render-module-rmd.yaml</code>) to suit your specific needs.</p>
 <div id="adding-system-dependencies" class="section level2" number="3.1">
-<h2 number="3.1"><span class="header-section-number">3.1</span> Adding system dependencies</h2>
+<h2><span class="header-section-number">3.1</span> Adding system dependencies</h2>
 <p>Some packages may require installation of additional system dependencies. The workflow file contains a section named <em>Install GDAL and other dependencies</em>, which can be updated to include additional system packages. To determine which additional packages need to be installed, use <code>remotes::system_requirements</code>. For example, to determine the system dependencies required for the <code>usefulFuns</code> package (from GitHub), get the package code and determine what additional system packages need to be installed.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git clone https://github.com/PredictiveEcology/usefulFuns</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cd usefulFuns</span>
