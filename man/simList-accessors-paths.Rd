@@ -18,14 +18,24 @@
 \alias{outputPath,simList-method}
 \alias{outputPath<-}
 \alias{outputPath<-,simList-method}
+\alias{logPath}
+\alias{logPath,simList-method}
 \alias{modulePath}
 \alias{modulePath,simList-method}
 \alias{modulePath<-}
 \alias{modulePath<-,simList-method}
+\alias{scratchPath}
+\alias{scratchPath,simList-method}
+\alias{scratchPath<-}
+\alias{scratchPath<-,simList-method}
 \alias{rasterPath}
 \alias{rasterPath,simList-method}
 \alias{rasterPath<-}
 \alias{rasterPath<-,simList-method}
+\alias{terraPath}
+\alias{terraPath,simList-method}
+\alias{terraPath<-}
+\alias{terraPath<-,simList-method}
 \alias{dataPath}
 \alias{dataPath,simList-method}
 \title{Specify paths for modules, inputs, outputs, and temporary rasters}
@@ -62,6 +72,10 @@ outputPath(sim) <- value
 
 \S4method{outputPath}{simList}(sim) <- value
 
+logPath(sim)
+
+\S4method{logPath}{simList}(sim)
+
 modulePath(sim, module)
 
 \S4method{modulePath}{simList}(sim, module)
@@ -70,6 +84,14 @@ modulePath(sim) <- value
 
 \S4method{modulePath}{simList}(sim) <- value
 
+scratchPath(sim)
+
+\S4method{scratchPath}{simList}(sim)
+
+scratchPath(sim) <- value
+
+\S4method{scratchPath}{simList}(sim) <- value
+
 rasterPath(sim)
 
 \S4method{rasterPath}{simList}(sim)
@@ -77,6 +99,14 @@ rasterPath(sim)
 rasterPath(sim) <- value
 
 \S4method{rasterPath}{simList}(sim) <- value
+
+terraPath(sim)
+
+\S4method{terraPath}{simList}(sim)
+
+terraPath(sim) <- value
+
+\S4method{terraPath}{simList}(sim) <- value
 
 dataPath(sim)
 
@@ -107,7 +137,7 @@ will return \code{"movingAgent"}, and \code{dataPath(sim)} will return
 \code{file.path(modulePath(sim), "movingAgent", "data")}
 }
 \details{
-These are ways to add or access the file paths used by \code{\link{spades}}.
+These are ways to add or access the file paths used by \code{\link[=spades]{spades()}}.
 There are five file paths: \code{cachePath}, \code{modulePath},
 \code{inputPath}, \code{outputPath}, and \code{rasterPath}.
 Each has a function to get or set the value in a \code{simList} object.
@@ -118,11 +148,13 @@ If no paths are specified, the defaults are as follows:
 \item \code{inputPath}: \code{getOption("spades.modulePath")};
 \item \code{modulePath}: \code{getOption("spades.inputPath")};
 \item \code{outputPath}: \code{getOption("spades.outputPath")};
-\item \code{rasterPath}: \code{raster::tmpDir()}
+\item \code{rasterPath}: \code{file.path(getOption("spades.scratchPath"), "raster")};
+\item \code{scratchPath}: \code{getOption("spades.scratchPath")};
+\item \code{terraPath}: \code{file.path(getOption("spades.scratchPath"), "terra")}
 }
 }
 \seealso{
-\code{\link{SpaDES.core-package}}, specifically the section 1.2.4 on Simulation Paths.
+\code{\link[=SpaDES.core-package]{SpaDES.core-package()}}, specifically the section 1.2.4 on Simulation Paths.
 
 Other functions to access elements of a 'simList' object: 
 \code{\link{.addDepends}()},

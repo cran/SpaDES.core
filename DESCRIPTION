@@ -10,16 +10,18 @@ Description: Provides the core framework for a discrete event system (DES) to
     reusable modules, tools for developing arbitrary automated workflows,
     automated interweaving of modules of different temporal resolution,
     and tools for visualizing and understanding the DES project.
+    The suggested package 'NLMR' can be installed with 
+    'install.packages("NLMR", repos = "https://PredictiveEcology.r-universe.dev")'.
 URL: https://spades-core.predictiveecology.org/,
         https://github.com/PredictiveEcology/SpaDES.core
-Date: 2022-01-18
-Version: 1.0.10
+Date: 2022-08-13
+Version: 1.1.0
 Authors@R: c(
-    person("Alex M", "Chubaty", email = "alex.chubaty@gmail.com",
+    person("Alex M", "Chubaty", email = "achubaty@for-cast.ca",
            role = c("aut", "cre"), comment = c(ORCID = "0000-0001-7146-8135")),
-    person("Eliot J B", "McIntire", email = "eliot.mcintire@canada.ca",
+    person("Eliot J B", "McIntire", email = "eliot.mcintire@nrcan-rncan.gc.ca",
            role = c("aut"), comment = c(ORCID = "0000-0002-6914-8316")),
-    person("Yong", "Luo", email = "yluo1@lakeheadu.ca",
+    person("Yong", "Luo", email = "Yong.Luo@gov.bc.ca",
            role = c("ctb")),
     person("Steve", "Cumming", email = "Steve.Cumming@sbf.ulaval.ca",
            role = c("ctb")),
@@ -29,15 +31,16 @@ Authors@R: c(
                  "as represented by the Minister of Natural Resources Canada"),
            role = "cph")
     )
-Depends: R (>= 4.0), quickPlot (>= 0.1.4), reproducible (>= 1.2.7)
+Depends: R (>= 4.0), quickPlot (>= 0.1.4), reproducible (>= 1.2.9)
 Imports: crayon, data.table (>= 1.11.0), fastdigest, igraph (>= 1.0.1),
-        methods, qs (>= 0.21.1), raster (>= 2.5-8), Require (>= 0.0.7),
-        stats, utils, whisker
+        lobstr, methods, qs (>= 0.21.1), raster (>= 2.5-8), Require (>=
+        0.0.7), stats, utils, whisker
 Suggests: codetools, covr, DiagrammeR (>= 0.8.2), dplyr, future,
         future.callr, ggplot2, googledrive, httr, knitr, logging,
-        magrittr, pkgload, png, RandomFields (>= 3.3.4), RColorBrewer
-        (>= 1.1-2), rgdal, roxygen2, rstudioapi, sp, SpaDES.tools (>=
-        0.2.0), rmarkdown, tcltk, testthat (>= 1.0.2)
+        magrittr, NLMR (>= 1.1.1), pkgload, png, RColorBrewer (>=
+        1.1-2), rgdal, rmarkdown, roxygen2, rstudioapi, sp,
+        SpaDES.tools (>= 0.2.0), tcltk, terra, testthat (>= 1.0.2)
+Additional_repositories: https://predictiveecology.r-universe.dev/
 Encoding: UTF-8
 Language: en-CA
 License: GPL-3
@@ -58,9 +61,9 @@ Collate: 'Plots.R' 'module-dependencies-class.R' 'misc-methods.R'
         'save.R' 'saveLoadSimList.R' 'simulation-spades.R'
         'spades-classes.R' 'spades-core-deprecated.R'
         'spades-core-package.R' 'suppliedElsewhere.R' 'zzz.R'
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1
 NeedsCompilation: no
-Packaged: 2022-01-19 15:38:59 UTC; achubaty
+Packaged: 2022-08-18 18:39:06 UTC; achubaty
 Author: Alex M Chubaty [aut, cre] (<https://orcid.org/0000-0001-7146-8135>),
   Eliot J B McIntire [aut] (<https://orcid.org/0000-0002-6914-8316>),
   Yong Luo [ctb],
@@ -68,6 +71,6 @@ Author: Alex M Chubaty [aut, cre] (<https://orcid.org/0000-0001-7146-8135>),
   Ceres Barros [ctb] (<https://orcid.org/0000-0003-4036-977X>),
   Her Majesty the Queen in Right of Canada, as represented by the
     Minister of Natural Resources Canada [cph]
-Maintainer: Alex M Chubaty <alex.chubaty@gmail.com>
+Maintainer: Alex M Chubaty <achubaty@for-cast.ca>
 Repository: CRAN
-Date/Publication: 2022-01-19 16:22:46 UTC
+Date/Publication: 2022-08-19 13:20:05 UTC

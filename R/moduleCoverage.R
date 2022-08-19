@@ -3,7 +3,7 @@
 #'
 #' Calculate the test coverage by unit tests for the module and its functions.
 #'
-#' @param mod  Character string. The module's name. Default is \code{basename(getwd())}
+#' @param mod  Character string. The module's name. Default is `basename(getwd())`
 #'
 #' @param modulePath  Character string. The path to the module directory
 #'              (default is "..", i.e., one level up from working directory).
@@ -14,18 +14,18 @@
 #' for the module.
 #' The `functionCoverage` object contains percentage values for unit test
 #' coverage for each function defined in the module.
-#' Please use \code{\link[covr]{report}} to view the coverage information.
+#' Please use [covr::report()] to view the coverage information.
 #' Two data.tables give the information of all the tested and untested functions
 #' in the module.
 #'
 #' @note When running this function, the test files must be strictly placed in
 #' the \file{tests/testthat/} directory under module path.
-#' To automatically generate this folder, please set \code{unitTests = TRUE}
-#' when creating a new module using \code{\link{newModule}}.
+#' To automatically generate this folder, please set `unitTests = TRUE`
+#' when creating a new module using [newModule()].
 #' To accurately test your module, the test filename must follow the format
-#' \code{test-functionName.R}.
+#' `test-functionName.R`.
 #'
-#' @seealso \code{\link{newModule}}.
+#' @seealso [newModule()].
 #'
 #' @author Yong Luo
 #' @export

@@ -5,18 +5,18 @@
 #' @param module Character string. Your module's name.
 #'
 #' @param path   Character string specifying the file path to modules directory.
-#'               Default is to use the \code{spades.modulePath} option.
+#'               Default is to use the `spades.modulePath` option.
 #' @param defineModuleListItems A vector of metadata entries to return values
 #'   about.
 #'
 #' @return A list of module metadata, matching the structure in
-#'         \code{\link{defineModule}}.
+#'         [defineModule()].
 #'
 #' @author Alex Chubaty
 #' @export
 #' @include simulation-simInit.R
 #' @rdname moduleMetadata
-#' @seealso \code{\link{defineModule}}
+#' @seealso [defineModule()]
 #'
 #' @example inst/examples/example_moduleMetadata.R
 #'
@@ -136,18 +136,18 @@ setMethod(
 #' @param module Character string. Your module's name.
 #'
 #' @param path   Character string specifying the file path to modules directory.
-#'               Default is to use the \code{spades.modulePath} option.
+#'               Default is to use the `spades.modulePath` option.
 #'
 #' @inheritParams spades
 #' @inheritParams .parseModulePartial
 #'
-#' @return \code{numeric_version} indicating the module's version.
+#' @return `numeric_version` indicating the module's version.
 #'
 #' @author Alex Chubaty
 #' @export
 #' @include simulation-simInit.R
 #' @rdname moduleVersion
-#' @seealso \code{\link{moduleMetadata}}
+#' @seealso [moduleMetadata()]
 #'
 #' @example inst/examples/example_moduleVersion.R
 #'
@@ -199,22 +199,22 @@ setMethod(
 ################################################################################
 #' Extract a module's parameters, inputs, or outputs
 #'
-#' These are more or less wrappers around \code{moduleMetadata}, with the exception
+#' These are more or less wrappers around `moduleMetadata`, with the exception
 #' that extraneous spaces and End-Of-Line characters will be removed from the
-#' \code{desc} arguments in \code{defineParameters}, \code{defineInputs}, and
-#' \code{defineOutputs}
+#' `desc` arguments in `defineParameters`, `defineInputs`, and
+#' `defineOutputs`
 #'
 #' @param module Character string. Your module's name.
 #'
 #' @param path   Character string specifying the file path to modules directory.
-#'               Default is to use the \code{spades.modulePath} option.
+#'               Default is to use the `spades.modulePath` option.
 #'
-#' @return \code{data.frame}
+#' @return `data.frame`
 #'
 #' @author Alex Chubaty
 #' @export
 #' @rdname moduleParamsInputsOuputs
-#' @seealso \code{\link{moduleMetadata}}
+#' @seealso [moduleMetadata()]
 #'
 #' @example inst/examples/example_moduleParamsInputsOuputs.R
 #'
