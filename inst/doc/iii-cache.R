@@ -1,28 +1,28 @@
 ## ----setup, include = FALSE---------------------------------------------------
-hasSuggests <- all(
-  require("NLMR", quietly = TRUE),
-  require("SpaDES.tools", quietly = TRUE)
-)
+SuggestedPkgsNeeded <- c("NLMR", "SpaDES.tools", "knitr")
+hasSuggests <- all(sapply(SuggestedPkgsNeeded, require, character.only = TRUE, quietly = TRUE))
+useSuggests <- !(tolower(Sys.getenv("_R_CHECK_DEPENDS_ONLY_")) == "true")
 
-knitr::opts_chunk$set(eval = hasSuggests)
+knitr::opts_chunk$set(eval = hasSuggests && useSuggests)
 
 options("spades.moduleCodeChecks" = FALSE,
-        "spades.useRequire" = FALSE)
+        "spades.useRequire" = FALSE,
+        "spades.loadReqdPkgs" = FALSE)
 
 ## ----examples, echo=TRUE, message=FALSE---------------------------------------
-library(raster)
+library(terra)
 library(reproducible)
 library(SpaDES.core)
 
 mySim <- simInit(
-  times = list(start = 0.0, end = 5.0),
+  times = list(start = 0.0, end = 3.0),
   params = list(
     .globals = list(stackName = "landscape", burnStats = "testStats"),
     randomLandscapes = list(.plotInitialTime = NA),
     fireSpread = list(.plotInitialTime = NA)
   ),
   modules = list("randomLandscapes", "fireSpread"),
-  paths = list(modulePath = system.file("sampleModules", package = "SpaDES.core"))
+  paths = list(modulePath = getSampleModules(tempdir()))
 )
 
 ## ----spades-------------------------------------------------------------------
@@ -32,7 +32,7 @@ system.time({
 })
 
 ## ----spades-cached------------------------------------------------------------
-# vastly faster 2nd time
+# faster 2nd time
 system.time({
   outSimCached <- spades(Copy(mySim), cache = TRUE)
 })
@@ -46,7 +46,7 @@ system.time({
                       notOlderThan = Sys.time(), debug = TRUE)
 })
 
-# vastly faster the second time
+# faster the second time
 system.time({
   randomSimCached <- spades(Copy(mySim), .plotInitialTime = NA, debug = TRUE)
 })
@@ -65,48 +65,34 @@ system.time({
                       notOlderThan = Sys.time(), debug = TRUE)
 })
 
-# vastly faster the second time
+# faster the second time
 system.time({
   randomSimCached <- spades(Copy(mySim), .plotInitialTime = NA, debug = TRUE)
 })
 
 ## ----function-level, echo=TRUE------------------------------------------------
-ras <- raster(extent(0, 1e3, 0, 1e3), res = 1)
+ras <- terra::rast(terra::ext(0, 1e3, 0, 1e3), res = 1, vals = 1)
 system.time({
-  map <- Cache(NLMR::nlm_mpd,
-               ncol = ncol(ras),
-               nrow = nrow(ras),
-               resolution = unique(res(ras)),
-               roughness = 0.5,
-               rand_dev = 10,
-               rescale = FALSE,
-               verbose = FALSE,
-               cacheRepo = cachePath(mySim),
-               userTags = "nlm_mpd",
+  map <- Cache(SpaDES.tools::neutralLandscapeMap(ras),
+               cachePath = cachePath(mySim),
+               userTags = "neutralLandscapeMap",
                notOlderThan = Sys.time())
 })
 
-# vastly faster the second time
+# faster the second time
 system.time({
-  mapCached <- Cache(NLMR::nlm_mpd,
-                     ncol = ncol(ras),
-                     nrow = nrow(ras),
-                     resolution = unique(res(ras)),
-                     roughness = 0.5,
-                     rand_dev = 10,
-                     rescale = FALSE,
-                     verbose = FALSE,
-                     cacheRepo = cachePath(mySim),
-                     userTags = "nlm_mpd")
+  mapCached <- Cache(SpaDES.tools::neutralLandscapeMap(ras),
+                     cachePath = cachePath(mySim),
+                     userTags = "neutralLandscapeMap")
 })
 
-all.equal(map, mapCached) 
+all.equal(map[], mapCached[]) # note --> can't use all.equal on SpatRaster -- they are pointers 
 
 ## ----manual-cache-------------------------------------------------------------
-cacheDB <- showCache(mySim)
+cacheDB <- showCache(mySim, userTags = "neutralLandscapeMap")
 
-## get the RasterLayer that was produced with the NLMR::nlm_mpd function:
-map <- loadFromCache(cachePath(mySim), cacheId = cacheDB[tagValue == "nlm_mpd"]$cacheId)
+## get the RasterLayer that was produced with neutralLandscapeMap()
+map <- loadFromCache(cacheId = cacheDB$cacheId, cachePath = cachePath(mySim))
 
 clearPlot()
 Plot(map)

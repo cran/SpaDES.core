@@ -29,12 +29,21 @@ loadFiles(sim, filelist, ...)
 
 \item{...}{Additional arguments.}
 }
+\value{
+\code{data.frame} of file extension, package, and function mappings
+
+the modified \code{sim}, invisibly.
+
+\code{data.frame}
+}
 \description{
 How to load various types of files in R.
 
-This function has two roles: 1) to proceed with the loading of files that
-are in a simList or 2) as a short cut to simInit(inputs = filelist). Generally
-not to be used by a user.
+This function has two roles:
+\enumerate{
+\item to proceed with the loading of files that are in a \code{simList}; or
+\item as a shortcut to \code{simInit(inputs = filelist)}.
+}
 
 A \code{data.frame} with information on how to load various types of files in R,
 containing the columns:
@@ -44,36 +53,39 @@ containing the columns:
 \item \code{package}: the package from which to load \code{fun}.
 }
 }
+\note{
+Generally not intended to be used by users.
+}
 \examples{
-\dontrun{
+\donttest{
+library(SpaDES.core)
 
 # Load random maps included with package
 filelist <- data.frame(
-    files = dir(system.file("maps", package = "quickPlot"),
-            full.names = TRUE, pattern = "tif"),
-    functions = "rasterToMemory", package = "quickPlot"
+  files = dir(getMapPath(tempdir()), full.names = TRUE),
+  functions = "rasterToMemory",
+  package = "SpaDES.core"
 )
-sim1 <- loadFiles(filelist = filelist)
-clearPlot()
-if (interactive()) Plot(sim1$DEM)
+sim1 <- loadFiles(filelist = filelist) # loads all the maps to sim1 simList
 
 # Second, more sophisticated. All maps loaded at time = 0, and the last one is reloaded
 #  at time = 10 and 20 (via "intervals").
 # Also, pass the single argument as a list to all functions...
 #  specifically, when add "native = TRUE" as an argument to the raster function
-files = dir(system.file("maps", package = "quickPlot"),
-            full.names = TRUE, pattern = "tif")
-arguments = I(rep(list(native = TRUE), length(files)))
-filelist = data.frame(
+files <- dir(getMapPath(tempdir()), full.names = TRUE)
+arguments <- I(rep(list(lyrs = 1), length(files)))
+filelist <- data.frame(
    files = files,
-   functions = "raster::raster",
+   functions = "terra::rast",
    objectName = NA,
    arguments = arguments,
    loadTime = 0,
    intervals = c(rep(NA, length(files)-1), 10)
 )
 
-sim2 <- loadFiles(filelist = filelist)
+sim2 <- loadFiles(filelist = filelist) # only does the time = 0 loading; see next
+end(sim2) <- 10
+sim2 <- spades(sim2) # loads the object at time 10
 
 # if we extend the end time and continue running, it will load an object scheduled
 #  at time = 10, and it will also schedule a new object loading at 20 because

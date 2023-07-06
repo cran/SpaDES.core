@@ -6,7 +6,7 @@ utils::globalVariables(c(
 ### `show` generic is already defined in the methods package
 #' Show an Object
 #'
-#' @param object  `simList`
+#' @param object `simList`
 #'
 #' @author Alex Chubaty
 #' @export
@@ -115,7 +115,7 @@ setMethod(
 #'
 #' @return Returns or sets the value of the slot from the `simList` object.
 #'
-#' @seealso [SpaDES.core-package()], specifically the section 1.2.8 on simList environment.
+#' @seealso [SpaDES.core-package], specifically the section 1.2.8 on `simList` environment.
 #'
 #' @aliases simList-accessors-envir
 #' @author Alex Chubaty
@@ -166,15 +166,14 @@ setReplaceMethod("envir",
 #' `objs<-` requires takes a named list of values to be assigned in
 #' the simulation environment.
 #'
-#' @param sim      A `simList` object from which to extract element(s) or
-#'                 in which to replace element(s).
+#' @param sim A `simList` object from which to extract element(s) or in which to replace element(s).
 #' @param value objects to assign to the `simList`
 #' @param ... passed to `ls`
 #'
 #' @return Returns or sets a list of objects in the `simList` environment.
 #'
 #' @family functions to access elements of a 'simList' object
-#' @seealso [SpaDES.core-package()], specifically the section 1.2.1 on Simulation Parameters.
+#' @seealso [SpaDES.core-package], specifically the section 1.2.1 on Simulation Parameters.
 #'
 #' @export
 #' @include simList-class.R
@@ -234,8 +233,7 @@ setReplaceMethod(
 ################################################################################
 #' Simulation modules and dependencies
 #'
-#' Accessor functions for the `depends` and `modules` slots in a
-#' `simList` object.
+#' Accessor functions for the `depends` and `modules` slots in a `simList` object.
 #' These are included for advanced users.
 #' \tabular{ll}{
 #'    [depends()] \tab List of simulation module dependencies. (advanced) \cr
@@ -254,7 +252,7 @@ setReplaceMethod(
 #' @return Returns or sets the value of the slot from the `simList` object.
 #'
 #' @family functions to access elements of a 'simList' object
-#' @seealso [SpaDES.core-package()], specifically the section 1.2.7 on Modules and dependencies.
+#' @seealso [SpaDES.core-package], specifically the section 1.2.7 on Modules and dependencies.
 #'
 #' @aliases simList-accessors-modules
 #' @author Alex Chubaty
@@ -337,8 +335,6 @@ setReplaceMethod("depends",
 ################################################################################
 #' Namespacing within `SpaDES`
 #'
-#' `.callingModuleName` returns the name of the module that is currently
-#' the active module calling functions like `scheduleEvent`.
 #' This will only return the module name if it is inside a `spades` call,
 #' i.e., it will return `NULL` if used in interactive mode.
 #' The related function `currentModule` is simply a rapid accessor for the
@@ -347,11 +343,13 @@ setReplaceMethod("depends",
 #'
 #' @inheritParams modules
 #'
+#' @return `.callingModuleName` returns the name of the module that is currently
+#' the active module calling functions like `scheduleEvent`.
+#'
 #' @author Eliot McIntire
 #' @export
 #' @importFrom reproducible .grepSysCalls
 #' @include simList-class.R
-#' @keywords internal
 #' @rdname namespacing
 #'
 setGeneric(".callingModuleName", function(sim) {
@@ -402,7 +400,8 @@ setMethod(
 ################################################################################
 #' Get and set simulation parameters
 #'
-#' `params` and `P` access the parameter slot in the `simList`.
+#' `params`, `P` and `Par` (an active binding, like "mod") access the parameter
+#'  slot in the `simList`.
 #' `params` has a replace method, so can be used to update a parameter value.
 #'
 #' @inheritParams objs
@@ -415,16 +414,16 @@ setMethod(
 #'
 #' @return Returns or sets the value of the slot from the `simList` object.
 #'
-#' @note The differences between P, params and being explicit with passing arguments
+#' @note The differences between `P()`, `params()` and being explicit with passing arguments
 #' are mostly a question of speed and code compactness.
-#' The computationally fastest way to get a parameter is to specify moduleName and parameter name, as in:
-#' `P(sim, "paramName", "moduleName")` (replacing moduleName and paramName with your
-#' specific module and parameter names), but it is more verbose than P(sim)$paramName. Note: the important
-#' part for speed (e.g., 2-4x faster) is specifying the moduleName.
+#' The computationally fastest way to get a parameter is to specify `moduleName` and parameter name,
+#' as in: `P(sim, "paramName", "moduleName")` (replacing `moduleName` and `paramName` with your
+#' specific module and parameter names), but it is more verbose than `P(sim)$paramName`.
+#' Note: the important part for speed (e.g., 2-4x faster) is specifying the `moduleName`.
 #' Specifying the parameter name is <5% faster.
 #'
 #' @family functions to access elements of a 'simList' object
-#' @seealso [SpaDES.core-package()], specifically the section 1.2.1 on Simulation parameters.
+#' @seealso [SpaDES.core-package], specifically the section 1.2.1 on Simulation parameters.
 #'
 #' @aliases parameters
 #' @aliases simList-accessors-params
@@ -465,8 +464,8 @@ setReplaceMethod("params",
 #' `P` is a concise way to access parameters within a module. It works more like
 #' a namespaced function in the sense that the module from which it is called is the
 #' default place it will look for the parameter. To access a parameter from within
-#' a module, you can use `P(sim)$paramName` instead of
-#' `params(sim)$moduleName$paramName`
+#' a module, you can use `P(sim)$paramName` instead of `params(sim)$moduleName$paramName`.
+#' You can also use `Par`, which is an Active Binding to `P(sim)`.
 #'
 #' @aliases simList-accessors-params
 #' @export
@@ -474,6 +473,15 @@ setReplaceMethod("params",
 #' @importFrom utils getSrcFilename
 #' @include simList-class.R
 #' @rdname params
+#' @examples
+#' s <- simInit()
+#' # add a parameter to tmp module
+#' params(s)$tmp <- list(a = 1)
+#'
+#' # Only work inside a module, inside a function with `sim` is an argument
+#' # P(s, "a") # get "a" parameter inside the current module
+#' # Par$a     # same. Get "a" parameter inside the current module
+#'
 P <- function(sim, param, module) UseMethod("P")
 
 #' @export
@@ -483,11 +491,17 @@ P.simList <- function(sim, param, module) {
 
   # first check if inside an event
   module1 <- sim@current$moduleName
+  mods <- modules(sim)
   if (length(module1) == 0) {
     # then check if inside a .inputObjects call
     inSimInit <- .grepSysCalls(sys.calls(), pattern = "(^.parseModule)")
     if (length(inSimInit)) {
-      module1 <- get("m", sys.frame(inSimInit[2]))
+      inSimInit <- c(inSimInit + 1) # bump up one because S4 actually runs in a .local
+      for (isi in inSimInit) {
+        module1 <- get0("m", sys.frame(isi))
+        if (!is.null(module1))
+          break
+      }
     } else {
       inManualCall <- .grepSysCalls(sys.calls(), pattern = "(\\.mods\\$|\\[)")
       if (length(inManualCall)) { # this is the case where a user calls the function using the full path
@@ -496,7 +510,6 @@ P.simList <- function(sim, param, module) {
         gg <- gsub("^.+\\.mods(\\$|\\[\\[)", "", as.character(pp)[[1]])
         module1 <- strsplit(gg, split = "\\$|\\[")[[1]][1]
       } else {
-        mods <- modules(sim)
         modFilePaths <- checkPath(names(mods))
 
         scalls <- sys.calls();
@@ -538,15 +551,13 @@ P.simList <- function(sim, param, module) {
           module1 <- param
           param <- module
         }
-      } else {
-
-        # Module missing, only have parameter --> this could be old case of P(sim, module = "something")
-        if (param %in% ls(sim@params[[param]], all.names = TRUE) ||
-            module1 %in% ls(sim@params)) {
-          # module1 is in list of modules; param is not in parameters --> this is likely a reversal
-          warning(reversalMessage)
-          param <- NULL
+      } else { # module is missing; can't be reversal, but can be incorrect module --> params
+        if (any(param %in% mods) && is.null(module1)) {
+          module1 <- param
         }
+        # module1 is in list of modules; param is not in parameters --> this is likely a reversal
+        warning(reversalMessage)
+        param <- NULL
       }
     } else {
       module1 <- module
@@ -614,7 +625,7 @@ P.simList <- function(sim, param, module) {
 #' @inheritParams params
 #'
 #' @family functions to access elements of a 'simList' object
-#' @seealso [SpaDES.core-package()], specifically the section 1.2.1 on Simulation Parameters.
+#' @seealso [SpaDES.core-package], specifically the section 1.2.1 on Simulation Parameters.
 #'
 #' @export
 #' @include simList-class.R
@@ -646,6 +657,7 @@ setReplaceMethod("globals",
                  signature = "simList",
                  function(sim, value) {
                    sim@params$.globals <- value
+                   sim <- updateParamsFromGlobals(sim)
                    validObject(sim)
                    return(sim)
 })
@@ -697,10 +709,11 @@ setReplaceMethod("G",
 #' @export
 #' @rdname params
 #' @examples
-#' if (require("NLMR", quietly = TRUE) &&
-#'     require("SpaDES.tools", quietly = TRUE)) {
+#' if (requireNamespace("NLMR", quietly = TRUE) &&
+#'     requireNamespace("SpaDES.tools", quietly = TRUE)) {
+#'   opts <- options("spades.moduleCodeChecks" = FALSE) # not necessary for example
 #'   modules <- list("randomLandscapes")
-#'   paths <- list(modulePath = system.file("sampleModules", package = "SpaDES.core"))
+#'   paths <- list(modulePath = getSampleModules(tempdir()))
 #'   mySim <- simInit(modules = modules, paths = paths,
 #'                    params = list(.globals = list(stackName = "landscape")))
 #'
@@ -723,6 +736,8 @@ setReplaceMethod("G",
 #'   # These next 2 are same here because they are not within a module
 #'   P(mySim)          # nx and ny are Gone
 #'   params(mySim)     # nx and ny are Gone
+#'
+#'   options(opts) # reset
 #' }
 setGeneric("parameters", function(sim, asDF = FALSE) {
   standardGeneric("parameters")
@@ -832,7 +847,7 @@ setReplaceMethod("checkpointInterval",
 #' Get and set simulation progress bar details
 #'
 #' The progress bar can be set in two ways in SpaDES. First, by setting values
-#' in the .progress list element in the params list element passed to [simInit()].
+#' in the `.progress` list element in the params list element passed to [simInit()].
 #' Second, at the [spades()] call itself, which can be simpler. See examples.
 #'
 #' @details Progress Bar:
@@ -843,20 +858,28 @@ setReplaceMethod("checkpointInterval",
 #' See examples.
 #'
 #' @inheritParams params
-#' @include simList-class.R
+#'
+#' @return for `progressInterval`, a numeric corresponding to the progress update interval;
+#'         for `progressInterval<-`, an updated `simList` object.
+#'
 #' @export
 #' @family functions to access elements of a 'simList' object
+#' @include simList-class.R
 #' @rdname progress
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
+#' if (requireNamespace("SpaDES.tools", quietly = TRUE) &&
+#' requireNamespace("NLMR", quietly = TRUE)) {
+#' opts <- options("spades.moduleCodeChecks" = FALSE) # not necessary for example
 #' mySim <- simInit(
 #'   times = list(start=0.0, end=100.0),
 #'   params = list(.globals = list(stackName = "landscape"),
 #'   .progress = list(type = "text", interval = 10),
 #'   checkpoint = list(interval = 10, file = "chkpnt.RData")),
 #'   modules = list("randomLandscapes"),
-#'   paths = list(modulePath = system.file("sampleModules", package = "SpaDES.core")))
+#'   paths = list(modulePath = getSampleModules(tempdir()))
+#' )
 #'
 #' # progress bar
 #' progressType(mySim) # "text"
@@ -871,7 +894,9 @@ setReplaceMethod("checkpointInterval",
 #' checkpointFile(mySim) # returns the name of the checkpoint file
 #'                       # In this example, "chkpnt.RData"
 #' checkpointInterval(mySim) # 10
-#' }
+#'
+#' options(opts) # reset
+#' }}
 setGeneric("progressInterval", function(sim) {
   standardGeneric("progressInterval")
 })
@@ -977,7 +1002,7 @@ setReplaceMethod("progressType",
 #' load that file. Defaults to the known extensions in `SpaDES` (found by
 #' examining `.fileExtensions()`). The `package` and `fun` can be
 #' jointly specified here as `"packageName::functionName"`, e.g.,
-#' `"raster::raster"`.\cr
+#' `"terra::rast"`.\cr
 #'
 #' `package` \tab optional character string indicating the package in
 #' which to find the `fun`);\cr
@@ -1012,10 +1037,10 @@ setReplaceMethod("progressType",
 #' object dependencies, including such things as downloading default datasets, e.g.,
 #' `downloadData('LCC2005', modulePath(sim))`.
 #' Nothing should be created here that does not create an named object in `inputObjects`.
-#' Any other initiation procedures should be put in the "init" eventType of the doEvent function.
-#' Note: the module developer can use 'sim$.userSuppliedObjNames' inside the function to
-#' selectively skip unnecessary steps because the user has provided those inputObjects in the
-#' simInit call. e.g., the following code would look to see if the user had passed `defaultColor`
+#' Any other initiation procedures should be put in the "init" `eventType` of the `doEvent` function.
+#' Note: the module developer can use `sim$.userSuppliedObjNames` inside the function to
+#' selectively skip unnecessary steps because the user has provided those `inputObjects` in the
+#' `simInit` call. e.g., the following code would look to see if the user had passed `defaultColor`
 #' into during `simInit`. If the user had done this, then this function would not override
 #' that value with 'red'. If the user has not passed in a value for `defaultColor`, then
 #' the module will get it here:
@@ -1032,7 +1057,7 @@ setReplaceMethod("progressType",
 #' in the `simList` object.
 #'
 #' @family functions to access elements of a 'simList' object
-#' @seealso [SpaDES.core-package()], specifically the section 1.2.2 on loading and saving.
+#' @seealso [SpaDES.core-package], specifically the section 1.2.2 on loading and saving.
 #'
 #' @include simList-class.R
 #' @importFrom data.table is.data.table
@@ -1091,70 +1116,74 @@ setReplaceMethod(
   "inputs",
   signature = "simList",
   function(sim, value) {
-   if (length(value) > 0) {
-     whFactors <- sapply(value, function(x) is.factor(x))
-     if (any(whFactors)) {
-       value[, whFactors] <- sapply(value[, whFactors], as.character)
-     }
+    if (length(value) > 0) {
+      whFactors <- sapply(value, function(x) is.factor(x))
+      if (any(whFactors)) {
+        value[, whFactors] <- sapply(value[, whFactors], as.character)
+      }
 
-     if (!is.data.frame(value)) {
-       if (!is.list(value)) {
-         stop("inputs must be a list, data.frame")
-       }
+      if (!is.data.frame(value)) {
+        if (!is.list(value)) {
+          stop("inputs must be a list, data.frame")
+        }
         value <- data.frame(value, stringsAsFactors = FALSE)
-     }
-     sim@inputs <- .fillInputRows(value, start(sim))
-   } else {
-     sim@inputs <- value
-   }
-   # Deal with objects and files differently... if files (via inputs arg in simInit)...
-     # Deal with file names
-     # 2 things: 1. if relative, concatenate inputPath
-     #           2. if absolute, don't use inputPath
-   if (NROW(value) > 0) {
-     sim@inputs[["file"]][is.na(sim@inputs$file)] <- NA
+      }
+      sim@inputs <- .fillInputRows(value, start(sim))
+    } else {
+      sim@inputs <- value
+    }
+    # Deal with objects and files differently... if files (via inputs arg in simInit)...
+    # Deal with file names
+    # 2 things: 1. if relative, concatenate inputPath
+    #           2. if absolute, don't use inputPath
+    if (NROW(value) > 0) {
+      sim@inputs[["file"]][is.na(sim@inputs$file)] <- NA
 
-     # If a filename is provided, determine if it is absolute path, if so,
-     # use that, if not, then append it to inputPath(sim)
-     isAP <- isAbsolutePath(as.character(sim@inputs$file))
-     sim@inputs[["file"]][!isAP & !is.na(sim@inputs$file)] <-
-       file.path(inputPath(sim),
-                 sim@inputs[["file"]][!isAP & !is.na(sim@inputs$file)])
+      # If a filename is provided, determine if it is absolute path, if so,
+      # use that, if not, then append it to inputPath(sim)
+      isAP <- isAbsolutePath(as.character(sim@inputs$file))
+      sim@inputs[["file"]][!isAP & !is.na(sim@inputs$file)] <-
+        file.path(inputPath(sim),
+                  sim@inputs[["file"]][!isAP & !is.na(sim@inputs$file)])
 
-     if (!all(names(sim@inputs) %in% .fileTableInCols)) {
-       stop(paste("input table can only have columns named",
-                  paste(.fileTableInCols, collapse = ", ")))
-     }
-     if (any(is.na(sim@inputs[["loaded"]]))) {
-       if (!all(is.na(sim@inputs[["loadTime"]]))) {
-         newTime <- sim@inputs[["loadTime"]][is.na(sim@inputs$loaded)]
-         attributes(newTime)$unit <- sim@simtimes[["timeunit"]]
+      if (!all(names(sim@inputs) %in% .fileTableInCols)) {
+        stop(paste("input table can only have columns named",
+                   paste(.fileTableInCols, collapse = ", ")))
+      }
+      if (any(is.na(sim@inputs[["loaded"]]))) {
+        if (!all(is.na(sim@inputs[["loadTime"]]))) {
+          newTime <- sim@inputs[["loadTime"]][is.na(sim@inputs$loaded)]
+          attributes(newTime)$unit <- sim@simtimes[["timeunit"]]
 
-         for (nT in newTime) {
-           attributes(nT)$unit <- timeunit(sim)
-           sim <- scheduleEvent(sim, nT, "load", "inputs", .first() - 1)
-         }
-         toRemove <- duplicated(rbindlist(list(current(sim), events(sim))),
-                                by = c("eventTime", "moduleName", "eventType"))
-         if (any(toRemove)) {
-           if (NROW(current(sim)) > 0)
-             toRemove <- toRemove[-seq_len(NROW(current(sim)))]
-           events(sim) <- events(sim)[!toRemove]
-         }
+          for (nT in newTime) {
+            attributes(nT)$unit <- timeunit(sim)
+            sim <- scheduleEvent(sim, nT, "load", "inputs", .first() - 1)
+          }
+          toRemove <- duplicated(rbindlist(list(current(sim), events(sim))),
+                                 by = c("eventTime", "moduleName", "eventType"))
+          if (any(toRemove)) {
+            if (NROW(current(sim)) > 0)
+              toRemove <- toRemove[-seq_len(NROW(current(sim)))]
+            events(sim) <- events(sim)[!toRemove]
+          }
 
-       } else {
-         sim@inputs[["loadTime"]][is.na(sim@inputs$loadTime)] <-
-           sim@simtimes[["current"]]
-         newTime <- sim@inputs[["loadTime"]][is.na(sim@inputs$loaded)] %>%
-           min(., na.rm = TRUE)
-         attributes(newTime)$unit <- "seconds"
-         sim <- scheduleEvent(sim, newTime, "load", "inputs", .first() - 1)
-       }
-     }
-   }
+        } else {
+          sim@inputs[["loadTime"]][is.na(sim@inputs$loadTime)] <-
+            sim@simtimes[["current"]]
+          newTime <- sim@inputs[["loadTime"]][is.na(sim@inputs$loaded)] %>%
+            min(., na.rm = TRUE)
+          attributes(newTime)$unit <- "seconds"
+          sim <- scheduleEvent(sim, newTime, "load", "inputs", .first() - 1)
+        }
+      }
+    }
+    possNewUSON <- inputs(sim)$objectName
+    sim$.userSuppliedObjNames <- if (is.null(sim$.userSuppliedObjNames))
+      possNewUSON else unique(c(sim$.userSuppliedObjNames, possNewUSON))
 
-   return(sim)
-})
+
+    return(sim)
+  })
 
 ################################################################################
 #' Simulation outputs
@@ -1217,6 +1246,11 @@ setReplaceMethod(
 #' @include simList-class.R
 #' @importFrom data.table := data.table
 #' @importFrom stats na.omit
+#' @seealso [registerOutputs()] which enables files that are saved to be added to
+#' the `simList` using the `outputs(sim)` mechanism, so the files that are saved
+#' during a module event can be tracked at the `simList` level. [saveSimList()]
+#' which will optionally add all the outputs that are tracked into an archive.
+#'
 #' @name outputs
 #' @rdname simList-accessors-outputs
 #'
@@ -1313,11 +1347,19 @@ setReplaceMethod(
 
        # file extension stuff
        fileExts <- .saveFileExtensions()
-       fe <- setDT(fileExts)[setDT(sim@outputs[,c("fun", "package")]), on = c("fun","package")]$exts
+       fileExtsHere <- setDT(fileExts)[setDT(sim@outputs[, c("fun", "package")]),
+                                       on = c("fun", "package")]
+       fe <- fileExtsHere$exts
 
        # grep allows for file extensions from 1 to 5 characters
-       wh <- !grepl(pattern = "\\..{1,5}$", sim@outputs$file) &
-         (nzchar(fe, keepNA = TRUE))
+       wh <- !grepl(pattern = "\\..{1,5}$", sim@outputs$file) & nzchar(fe, keepNA = TRUE)
+       if (anyNA(fe[wh])) {
+         messageDF(unique(fileExtsHere), verbose = TRUE)
+         stop("outputs(sim) are specified along with fun and package, but no file extension. ",
+              "Please set `options('spades.saveFileExtensions' = xxx)` where `xxx` is a ",
+              "data.frame where column `exts` that specifies file extension is not NA ",
+              "(see example message above and also described in ?spadesOptions)")
+       }
        sim@outputs[["file"]][wh] <- paste0(sim@outputs[["file"]][wh], ".", fe[wh])
 
        # If the file name already has a time unit on it,
@@ -1349,6 +1391,107 @@ setReplaceMethod(
 
     return(sim)
 })
+
+
+outputsAppend <- function(outputs, saveTime, objectName = NA, file = NA, fun = NA,
+                          args = I(list(NA)), ...) {
+  if (!is(args, "list") && !is(args, "AsIs")) {
+    stop("args must a list (with same length as file) of lists (with named elements), ",
+         ", wrapped with I(  )")
+  }
+  if (length(args) < length(file))
+    args <- I(rep(args, length(file)))
+  df <- data.frame(file = file, saved = TRUE, objectName = objectName, fun = fun, args = args)
+
+
+  outs <- .fillOutputRows(df, endTime = saveTime)
+  if (!is(outputs[["arguments"]], "AsIs")) # needed for rbindlist
+    outputs[["arguments"]] <- I(outputs[["arguments"]])
+  rbindlist(list(outputs, outs), use.names = TRUE, fill = TRUE)
+}
+
+#' Add file name of a saved object to `outputs(sim)`
+#'
+#' If a module saves a file to disk during events, it can be useful to keep track
+#' of the files that are saved e.g., for [saveSimList()] so that all files can
+#' be added to the archive. In addition to setting `outputs` at the `simInit`
+#' stage, a module developer can also put this in a using any saving mechanism that
+#' is relevant (e.g., `qs::qsave`, `saveRDS` etc.). When a module event does this
+#' it can be useful to register that saved file. `registerOutputs` offers an additional
+#' mechanism to do this. See examples.
+#'
+#' @export
+#' @name registerOutputs
+#' @rdname simList-accessors-outputs
+#' @param sim A `simList`. If missing, then the function will search in the call
+#'    stack, so it will find it if it is in a `SpaDES` module.
+#' @param filename The filename to register in the `outputs(sim)` data.frame. If
+#'    missing, an attempt will be made to search for either a `file` or `filename`
+#'    argument in the call itself. This means that this function can be used with
+#'    the pipe, as long as the returned return from the upstream pipe function is
+#'    a filename or if it is `NULL` (e.g., `saveRDS`), then it will find the `file`
+#'    argument and use that.
+#' @param ... Not used.
+#'
+#' @details
+#' Note using `registerOutputs`: a user can pass any other
+#' arguments to `registerOutputs` that are in the
+#' `outputs(sim)` data.frame, such as `objectName`, `fun`, `package`, though these
+#' will not be used to save the files as this function is only about
+#' registering an output that has already been saved.
+#'
+#' @seealso [Plots()], [outputs()]
+#' @return A `simList` which will be the `sim` passed in with a new object registered
+#'   in the `outputs(sim)`
+#' @examples
+#' # For `registerOutputs`
+#' sim <- simInit()
+#' # This would normally be a save call, e.g., `writeRaster`
+#' tf <- reproducible::tempfile2(fileext = ".tif")
+#' sim <- registerOutputs(sim, filename = tf)
+#'
+#' # Using a pipe
+#' tf <- reproducible::tempfile2(fileext = ".rds")
+#' sim$a <- 1
+#' sim <- saveRDS(sim$a, tf) |> registerOutputs()
+#' # confirm:
+#' outputs(sim) # has object --> saved = TRUE
+#'
+registerOutputs <- function(filename, sim, ...) {
+  fn <- substitute(filename)
+
+  simIsIn <- NULL
+  simIsIn <- parent.frame() # try for simplicity sake... though the whereInStack would get this too
+
+  if (missing(sim)) sim <- NULL
+  if (is.null(sim)) {
+    if (!exists("sim", simIsIn, inherits = FALSE))
+      simIsIn <- try(whereInStack("sim"), silent = TRUE)
+  }
+  sim <- get0("sim", simIsIn, inherits = FALSE)
+
+
+  if (is.name(fn))
+    filename <- try(eval(fn, envir = simIsIn), silent = TRUE)
+
+  if (!is.character(filename)) {
+    fnNames <- names(fn)
+    if (is.null(fnNames)) {
+      fn <- match.call(eval(fn[[1]]), fn)
+      fnNames <- names(fn) # redo
+    }
+    theFileArg <- NULL
+    if (!is.null(fnNames))
+      theFileArg <- grep("^file$|^filename$", names(fn), value = TRUE)
+    if (!is.null(theFileArg))
+      filename <- try(eval(fn[[theFileArg]], envir = simIsIn), silent = TRUE)
+  }
+  if (is(filename, "try-error"))
+    stop("Couldn't guess filename; please pass it explicitly")
+
+  sim@outputs <- outputsAppend(sim@outputs, saveTime = time(sim), file = filename, ...)
+  sim
+}
 
 ################################################################################
 #' `inputArgs` and `outputArgs` are ways to specify any arguments that are needed for
@@ -1467,7 +1610,7 @@ setReplaceMethod(
 #' @return Returns or sets the value of the slot from the `simList` object.
 #'
 #' @family functions to access elements of a 'simList' object
-#' @seealso [SpaDES.core-package()], specifically the section 1.2.4 on Simulation Paths.
+#' @seealso [SpaDES.core-package], specifically the section 1.2.4 on Simulation Paths.
 #'
 #' @include simList-class.R
 #' @importFrom stats na.omit
@@ -1512,16 +1655,6 @@ setReplaceMethod(
     whValueUnnamed <- rep(TRUE, length(value))
     if (length(whValueNamed)) whValueUnnamed[whValueNamed] <- FALSE
 
-    # keep named elements, use unnamed in remaining order:
-    #  cache, input, module, output
-    # if (length(na.omit(wh)) < length(value)) {
-    #   wh1 <- !(wh[1:length(value)] %in% (1:N)[1:length(value)])
-    #   wh2 <- !((1:N)[1:length(value)] %in% wh[1:length(value)])
-    #   if (length(wh1) < N) wh1 <- c(wh1, rep(FALSE, N - length(wh1)))
-    #   if (length(wh2) < N) wh2 <- c(wh2, rep(FALSE, N - length(wh2)))
-    #   wh[wh1] <- (1:N)[wh2]
-    # }
-
     # start with .paths()
     emptyOnes <- unlist(lapply(sim@paths, is.null))
     if (sum(emptyOnes) > 0) sim@paths[emptyOnes] <- .paths()[emptyOnes]
@@ -1529,7 +1662,6 @@ setReplaceMethod(
     # override with named ones
     sim@paths[!is.na(wh)] <- value[na.omit(wh)]
 
-    #sim@paths[is.na(wh)] <- .paths()[is.na(wh)]
     # keep named elements, use unnamed in remaining order:
     #  cache, input, module, output
     if (length(na.omit(wh)) < length(value)) {
@@ -1684,8 +1816,6 @@ setReplaceMethod(
     return(sim)
 })
 
-
-
 #' @inheritParams paths
 #' @include simList-class.R
 #' @export
@@ -1702,19 +1832,18 @@ setGeneric("logPath", function(sim) {
 setMethod("logPath",
           signature = "simList",
           definition = function(sim) {
-            lp <- file.path(sim@paths$outputPath, "log")
+            lp <- getOption("spades.logPath")
+            if (is.null(lp))
+              lp <- file.path(sim@paths$outputPath, "log")
             lp <- checkPath(lp, create = TRUE)
             return(lp)
 })
-
-
-
 
 # modulePath ----------------------------------------------------------------------------------
 
 #' @inheritParams paths
 #' @param module The optional character string of the module(s) whose
-#'               paths are desired. If omitted, will return all modulePaths,
+#'               paths are desired. If omitted, will return all module paths,
 #'               if more than one exist.
 #' @include simList-class.R
 #' @export
@@ -1954,7 +2083,7 @@ setMethod("dataPath",
 #'
 #' @return Returns or sets the value of the slot from the `simList` object.
 #'
-#' @seealso [SpaDES.core-package()], specifically the section 1.2.5 on Simulation times;
+#' @seealso [SpaDES.core-package], specifically the section 1.2.5 on Simulation times;
 #'   [elapsedTime()],
 #'
 #' @aliases simList-accessors-times
@@ -2354,7 +2483,7 @@ setMethod(
 #'
 #' @return Returns or sets the value of the slot from the `simList` object.
 #'
-#' @seealso [SpaDES.core-package()], specifically the section 1.2.6 on Simulation event queues.
+#' @seealso [SpaDES.core-package], specifically the section 1.2.6 on Simulation event queues.
 #'
 #' @aliases simList-accessors-events
 #' @export
@@ -2562,7 +2691,7 @@ setReplaceMethod("current",
 
 ################################################################################
 #' @inheritParams events
-#' @param times Logical. Should this function report the clockTime
+#' @param times Logical. Should this function report the `clockTime`.
 #'
 #' @aliases simList-accessors-events
 #' @export
@@ -2656,12 +2785,12 @@ setReplaceMethod(
 #' Add simulation dependencies
 #'
 #' Internal function.
-#' Adds a [.moduleDeps()] object to the simulation dependency list.
+#' Adds a `.moduleDeps` object to the simulation dependency list.
 #'
 #' @inheritParams objs
 #'
 #' @param x   A named list containing the parameters used to construct a new
-#'            [.moduleDeps()] object.
+#'            `.moduleDeps` object.
 #'
 #' @return A `simList` object.
 #'
@@ -2697,11 +2826,12 @@ setMethod(
 #'
 #' @keywords internal
 .cleanPkgs <- function(pkgs) {
-  pkgs <- gsub(".*\\/+(.+)(@.*)",  "\\1", pkgs)
-  pkgs <- gsub(".*\\/+(.+)",  "\\1", pkgs)
-  pkgs <- sub("[[:space:]]*\\(>=.*", "", pkgs)
-
-  return(pkgs)
+  Require::extractPkgName(pkgs)
+  # pkgs <- gsub(".*\\/+(.+)(@.*)",  "\\1", pkgs)
+  # pkgs <- gsub(".*\\/+(.+)",  "\\1", pkgs)
+  # pkgs <- sub("[[:space:]]*\\(>=.*", "", pkgs)
+  #
+  # return(pkgs)
 }
 
 ################################################################################
@@ -2709,18 +2839,16 @@ setMethod(
 #'
 #' @param sim  A `simList` object.
 #'
-#' @param modules Character vector, specifying the name or
-#'             vector of names of module(s)
-#' @param paths Character vector, specifying the name or
-#'             vector of names of paths(s) for those modules. If path not specified,
-#'             it will be taken from getOption("spades.modulePath"), which is set
-#'             with `setPaths`)
+#' @param modules Character vector, specifying the name or vector of names of module(s)
+#' @param paths Character vector, specifying the name or vector of names of paths(s) for
+#'              those modules. If path not specified, it will be taken from
+#'              `getOption("spades.modulePath")`, which is set with `setPaths()`)
 #' @param filenames Character vector specifying filenames of modules (i.e.
 #'                 combined path & module. If this is specified, then `modules` and
 #'                 `path` are ignored.
 #' @param clean Optional logical. If `TRUE`, it will scrub any references to
-#'              github repositories, e.g., "PredictiveEcology/reproducible" will be
-#'              returned as "reproducible"
+#'              GitHub repositories, e.g., "PredictiveEcology/reproducible" will be
+#'              returned as "reproducible".
 #'
 #' @inheritParams .parseModulePartial
 #'
@@ -2759,8 +2887,12 @@ setMethod(
                                     #  if not NULL, one will be reqdPkgs
       pkgs <- lapply(depsInSim, function(x) {
         x@reqdPkgs
-      }) %>% unlist() %>% c("SpaDES.core") %>% unique()
-      if (!is.null(pkgs)) pkgs <- sort(pkgs)
+      }) %>% unlist()
+      pkgs <- unique(pkgs)
+      if (!any(grepl("SpaDES.core", pkgs)))
+        pkgs <- c("SpaDES.core", pkgs)
+      if (!is.null(pkgs))
+        pkgs <- sort(pkgs)
     } else {
       if (!missing(filenames))  {
         paths <- filenames
@@ -2796,8 +2928,9 @@ setMethod(
         } else {
           pkgs <- character(0)
         }
-        pkgs <- pkgs[nzchar(pkgs)]
-        pkgs <- unique(c("SpaDES.core", pkgs))
+        pkgs <- unique(pkgs[nzchar(pkgs)])
+        if (!any(grepl("SpaDES.core", pkgs)))
+          pkgs <- c("SpaDES.core", pkgs)
         return(pkgs)
       })
       names(pkgs) <- modules
@@ -2962,16 +3095,11 @@ setMethod("outputObjectNames",
 #' @aliases simList-accessors-metadata
 #'
 #' @examples
-#' \dontrun{
-#' # To pre-install and pre-load all packages prior to `simInit`.
-#'
+#' \donttest{
 #' # set modulePath
-#' setPaths(modulePath = system.file("sampleModules", package = "SpaDES.core"))
+#' setPaths(modulePath = getSampleModules(tempdir()))
 #' # use Require and reqdPkgs
-#' if (!interactive()) chooseCRANmirror(ind = 1) #
 #' pkgs <- reqdPkgs(module = c("caribouMovement", "randomLandscapes", "fireSpread"))
-#' pkgs <- unique(unlist(pkgs))
-#' Require(pkgs)
 #' }
 setGeneric("reqdPkgs", function(sim, module, modulePath) {
   standardGeneric("reqdPkgs")
@@ -3044,23 +3172,30 @@ setMethod("documentation",
             return(out)
 })
 
-################################################################################
+
+#' @name citation
+#' @rdname citation
+setGeneric("citation", function(package, lib.loc = NULL, auto = NULL, module = character()) {
+  standardGeneric("citation")
+})
+
+
+#' A citation method for `SpaDES` modules
+#'
+#' This is a wrapper around [utils::citation()] for cases with `package` is a
+#' `character` string. Otherwise, it takes a `simList`.
+#'
 #' @param package For compatibility with [utils::citation()]. This can be
 #'                a `simList` or a character string for a package name.
 #' @inheritParams P
 #' @inheritParams utils::citation
 #' @include simList-class.R
 #' @export
-#' @rdname simList-accessors-metadata
+#' @name citation
+#' @rdname citation
+#' @return The citation information for a SpaDES module.
 #'
-#' @aliases simList-accessors-metadata
-setGeneric("citation", function(package, lib.loc = NULL, auto = NULL, module = character()) {
-  standardGeneric("citation")
-})
-
-#' @export
-#' @rdname simList-accessors-metadata
-#' @aliases simList-accessors-metadata
+#' @aliases citation,simList-method
 setMethod("citation",
           signature = "simList",
           definition = function(package, lib.loc, auto, module) {
@@ -3078,13 +3213,36 @@ setMethod("citation",
             return(out)
 })
 
+
 #' @export
-#' @rdname simList-accessors-metadata
-#' @aliases simList-accessors-metadata
+#' @rdname citation
+#' @name citation
+#' @aliases citation,character-method
 setMethod("citation",
           signature = "character",
           definition = function(package, lib.loc, auto, module) {
             utils::citation(package = package, lib.loc = lib.loc, auto = auto)
+})
+
+################################################################################
+#' @inheritParams P
+#' @inheritParams utils::citation
+#' @include simList-class.R
+#' @export
+#' @rdname simList-accessors-metadata
+#'
+#' @aliases simList-accessors-metadata
+setGeneric("sessInfo", function(sim) {
+  standardGeneric("sessInfo")
+})
+
+#' @export
+#' @rdname simList-accessors-metadata
+#' @aliases simList-accessors-metadata
+setMethod("sessInfo",
+          signature = "simList",
+          definition = function(sim) {
+            return(sim@.xData[["._sessionInfo"]])
 })
 
 ################################################################################
@@ -3134,5 +3292,122 @@ elapsedTime.simList <- function(x, byEvent = TRUE, units = "auto", ...) {
   return(ret[])
 }
 
-
 .knownDotParams <- c(".plots", ".plotInitialTime", ".plotInterval", ".saveInitialTime", ".saveInterval", ".useCache")
+
+
+#' @export
+#' @rdname objects
+#' @inheritParams inputObjects
+#' @return
+#' `moduleObjects` returns a data.table with 4 columns, `module`, `objectName`, `type`, and `desc`,
+#' pulled directly from the object metadata in the `createsOutputs` and `expectsInputs`. These
+#' will be determined either from a `simList` or from the module source code.
+#' @importFrom data.table set rbindlist setcolorder
+moduleObjects <- function(sim, module, path) {
+  simTry <- NULL # can't set `sim = NULL` because `whereInStack`; also next line check
+  if (missing(sim)) {
+    if (missing(module)) {
+      for (i in seq(length(sys.frames()))[-1]) { # don't start in this environment; not here
+        simTry <- suppressWarnings(try(get("sim", whereInStack("sim", whFrame = -i)), silent = TRUE))
+        if (!is(simTry, "try-error")) {
+          break
+        }
+      }
+    }
+    sim <- simTry
+  }
+
+
+  if (!is.null(sim)) {
+    path <- modulePath(sim)
+    if (missing(module))
+      module <- modules(sim)
+    a <- Map(nam = unlist(unname(module)),
+        mod = module, function(mod, nam) inputObjects(sim, module = mod))
+    b <- Map(nam = unlist(unname(module)),
+             mod = module, function(mod, nam) inputObjects(sim, module = mod))
+    a <- rbindlist(a, idcol = "module", fill = TRUE)
+    b <- rbindlist(b, idcol = "module", fill = TRUE)
+  } else {
+    if (missing(path)) {
+      path <- getOption("spades.modulePath")
+    }
+    if (missing(module)) {
+      module <- dir(path)
+    }
+    a <- Map(nam = unlist(unname(module)), pat = path,
+             mod = module, function(mod, nam, pat)
+               inputObjects(module = mod, path = pat)[[1]])
+    b <- Map(nam = unlist(unname(module)), pat = path,
+             mod = module, function(mod, nam, pat)
+               outputObjects(module = mod, path = pat)[[1]])
+
+    a <- rbindlist(a, fill = TRUE, use.names = TRUE, idcol = "module")
+    b <- rbindlist(b, fill = TRUE, use.names = TRUE, idcol = "module")
+  }
+  set(a, NULL, "type", "input")
+  srcURL <- "sourceURL"
+  if (srcURL %in% colnames(a))
+    set(a, NULL, "sourceURL", NULL)
+  set(b, NULL, "type", "output")
+  if (srcURL %in% colnames(b))
+    set(b, NULL, "sourceURL", NULL)
+  d <- rbindlist(list(a, b), use.names = TRUE, fill = TRUE)
+  data.table::setcolorder(d, neworder = c("objectName", "module", "type"))
+  d[]
+}
+
+#' @export
+#' @rdname objects
+#' @param objects A character vector of length >= 1 with name(s) of objects to look
+#'   for in the metadata. This is used in a `grep`, meaning it will do partial
+#'   matching (e.g., `"studyArea"` will find `"studyArea"` and `"studyAreaLarge"`).
+#'   User can use regular expressions.
+#' @return
+#' `findObjects` returns a data.table similar to `moduleObjects`, but with only the
+#' objects provided by `objects`.
+#' @importFrom data.table set rbindlist
+#' @examples
+#' # findObjects
+#' path <- getSampleModules(tempdir())
+#' findObjects(path = path, module = dir(path), objects = "caribou")
+findObjects <- function(objects, sim, module, path) {
+  mo <- moduleObjects(sim, module, path)
+  mo[grep(paste(objects, collapse = "|"), objectName), ]
+}
+
+
+#' Extract an intact `simList` but with subset of objects
+#'
+#' This is copies the non-object components of a `simList` (e.g., events, etc.)
+#' then selects only the objects listed in `i` using `Copy(mget(i, envir(sim)))`
+#' and adds them to the returned `simList`.
+#'
+#' @author Eliot McIntire
+#' @param i A character vector of objects to select.
+#' @param j Not used.
+#' @param ... Not used.
+#' @param drop Not used.
+#' @param x A `simList`
+#'
+#' @return
+#' The `[` method returns a complete `simList` class with all the slots
+#'   copied from the original, but only the named objects in `i` are returned.
+#' @examples
+#' s <- simInit()
+#' s$a <- 1
+#' s$b <- 2
+#' s$d <- 3
+#' s[c("a", "d")] # a simList with only 2 objects
+#'
+#'
+#' @export
+setMethod(
+  "[",
+  signature = list(x = "simList", i = "character"),
+  function(x, i, ...) {
+    x2 <- Copy(x, objects = 2)
+    list2env(Copy(mget(i, envir = envir(x))), envir = envir(x2))
+    x2
+  }
+)

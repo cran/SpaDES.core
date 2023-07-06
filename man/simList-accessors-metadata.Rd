@@ -15,9 +15,8 @@
 \alias{reqdPkgs,missing-method}
 \alias{documentation}
 \alias{documentation,simList-method}
-\alias{citation}
-\alias{citation,simList-method}
-\alias{citation,character-method}
+\alias{sessInfo}
+\alias{sessInfo,simList-method}
 \title{Metadata accessors}
 \usage{
 inputObjects(sim, module, path)
@@ -46,15 +45,12 @@ documentation(sim, module)
 
 \S4method{documentation}{simList}(sim, module)
 
-citation(package, lib.loc = NULL, auto = NULL, module = character())
+sessInfo(sim)
 
-\S4method{citation}{simList}(package, lib.loc = NULL, auto = NULL, module = character())
-
-\S4method{citation}{character}(package, lib.loc = NULL, auto = NULL, module = character())
+\S4method{sessInfo}{simList}(sim)
 }
 \arguments{
-\item{sim}{A \code{simList} object from which to extract element(s) or
-in which to replace element(s).}
+\item{sim}{A \code{simList} object from which to extract element(s) or in which to replace element(s).}
 
 \item{module}{Character vector of module name(s)}
 
@@ -64,37 +60,16 @@ Only relevant if \code{sim} not supplied.}
 \item{modulePath}{That path where \code{module} can be found. If set already
 using \code{setPaths}, it will use that. This will be ignored if \code{sim}
 is supplied and is required if \code{sim} not supplied}
-
-\item{package}{For compatibility with \code{\link[utils:citation]{utils::citation()}}. This can be
-a \code{simList} or a character string for a package name.}
-
-\item{lib.loc}{a character vector with path names of \R libraries, or
-    the directory containing the source for \code{package}, or
-    \code{NULL}.  The default value of \code{NULL} corresponds to all
-    libraries currently known.  If the default is used, the loaded
-    packages are searched before the libraries.}
-
-\item{auto}{a logical indicating whether the default citation
-    auto-generated from the package \file{DESCRIPTION} metadata should
-    be used or not, or \code{NULL} (default), indicating that a
-    \file{CITATION} file is used if it exists, or an object of class
-    \code{"\link[utils]{packageDescription}"} with package metadata (see
-    below).}
 }
 \description{
 These accessors extract the metadata for a module (if specified) or all modules
 in a \code{simList} if not specified.
 }
 \examples{
-\dontrun{
-# To pre-install and pre-load all packages prior to `simInit`.
-
+\donttest{
 # set modulePath
-setPaths(modulePath = system.file("sampleModules", package = "SpaDES.core"))
+setPaths(modulePath = getSampleModules(tempdir()))
 # use Require and reqdPkgs
-if (!interactive()) chooseCRANmirror(ind = 1) #
 pkgs <- reqdPkgs(module = c("caribouMovement", "randomLandscapes", "fireSpread"))
-pkgs <- unique(unlist(pkgs))
-Require(pkgs)
 }
 }

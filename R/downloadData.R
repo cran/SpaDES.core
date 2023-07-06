@@ -78,7 +78,7 @@ setMethod(
 #' To update your \file{CHECKSUMS.txt} files using the new algorithm:
 #' \enumerate{
 #'   \item specify your module (`moduleName <- "my_module"`);
-#'   \item use a temp dir to ensure all modules get fresh copies of the data
+#'   \item use a temporary location to ensure all modules get fresh copies of the data
 #'         (`tmpdir <- file.path(tempdir(), "SpaDES_modules")`);
 #'   \item download your module's data to the temp dir (`downloadData(moduleName, tmpdir)`);
 #'   \item initialize a dummy simulation to ensure any 'data prep' steps in the
@@ -111,17 +111,17 @@ checksums <- function(module, path, ...) {
 
 #' Determine the size of a remotely hosted file
 #'
-#' Deprecated.
+#' Defunct. Will be removed by mid-2023.
 #'
 #' @param url  The url of the remote file.
 #'
 #' @return A numeric indicating the size of the remote file in bytes.
 #'
 #' @author Eliot McIntire and Alex Chubaty
-#' @export
 #'
+#' @export
 remoteFileSize <- function(url) {
-  .Deprecated()
+  .Defunct()
   # contentLength <- vapply(url, function(u) {
   #   header <- RCurl::url.exists(u, .header = TRUE)
   #   status <- tryCatch(as.numeric(header[["status"]]), error = function(e) 0)
@@ -134,8 +134,6 @@ remoteFileSize <- function(url) {
   #
   # return(contentLength)
 }
-
-
 
 ################################################################################
 #' Download module data
@@ -200,18 +198,16 @@ remoteFileSize <- function(url) {
 #' @author Alex Chubaty & Eliot McIntire
 #' @export
 #' @importFrom reproducible compareNA
-#' @importFrom Require checkPath
+#' @importFrom reproducible checkPath
 #' @importFrom utils download.file
 #' @rdname downloadData
 #' @examples
-#' \dontrun{
-#' # For a Google Drive example
-#' # In metadata:
-#' expectsInputs("theFilename.zip", "NA", "NA",
-#'   sourceURL = "https://drive.google.com/open?id=1Ngb-jIRCSs1G6zcuaaCEFUwldbkI_K8Ez")
-#' # create the checksums file
-#' checksums("thisModule", "there", write = TRUE)
-#' downloadData("thisModule", "there", files = "theFilename.zip")
+#' \donttest{
+#' # In metadata, each expectsInput has a sourceURL; downloadData will look for
+#' # that and download if it defined; however this sample module has all
+#' # NAs for sourceURL, so nothing to download
+#' modulePath <- getSampleModules(tempdir())
+#' downloadData("caribouMovement", path = modulePath)
 #' }
 #'
 setGeneric("downloadData", function(module, path, quiet, quickCheck = FALSE,
@@ -256,6 +252,7 @@ setMethod(
     notNAs <- !unlist(lapply(urls, is.na))
     dPath <- file.path(path, module, "data")
     if (any(notNAs)) {
+      # This requires googledrive in reproducible 1.2.16; even if not a googledrive url
       res <- Map(reproducible::preProcess,
                  targetFile = targetFiles[notNAs],
                  url = urls[notNAs],
@@ -272,7 +269,10 @@ setMethod(
       chksums <- chksums[order(-result)]
       chksums <- unique(chksums, by = "expectedFile")
     } else {
+      unlinkAfter <- !dir.exists(dPath) # next line will make the folder and put nothing in it
       chksums <- Checksums(dPath, write = TRUE)
+      if (isTRUE(unlinkAfter))
+        unlink(dPath, recursive = TRUE)
     }
 
     # after download, check for childModules that also require downloading

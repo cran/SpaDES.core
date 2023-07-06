@@ -1,20 +1,20 @@
 utils::globalVariables(c("memory", "maxMemory"))
 
 #' @importFrom reproducible tempfile2
-ongoingMemoryThisPid <- function(seconds = 1000, interval = getOption("spades.memoryUseInterval", 0.5),
-                                 thisPid, outputFile) {
-  numTimes = 1
+ongoingMemoryThisPid <- function(seconds = 1000,
+                                 interval = getOption("spades.memoryUseInterval", 0.5),
+                                 thisPid,
+                                 outputFile) {
+  numTimes <- 1
   if (missing(thisPid)) thisPid <- Sys.getpid()
   if (missing(outputFile)) {
     outputFile <- outputFilename(thisPid)
-    # outputFile <-
   }
-  #cat("memory,  time", "\n", file = outputFile, append = FALSE)
   suppressWarnings(file.remove(outputFile))
   if (interval > 0) {
     op <- options(digits.secs = 5)
     stopFilename <- stopFilename(outputFile)
-    while(numTimes < (seconds/interval) && !file.exists(stopFilename)) { # will go infinitely long!
+    while (numTimes < (seconds/interval) && !file.exists(stopFilename)) { # will go infinitely long!
       Sys.sleep(getOption("spades.memoryUseInterval", 0.5))
       a <- memoryUseThisSession(thisPid)
       data.table::fwrite(list(memory = a, time = Sys.time()),
@@ -31,12 +31,15 @@ ongoingMemoryThisPid <- function(seconds = 1000, interval = getOption("spades.me
 
 #' Estimate memory used with `system("ps")`
 #'
-#' This will give a slightly different estimate than `pryr::mem_used`,
-#' which uses `gc()` internally. The purpose of this function is
-#' to allow continuous monitoring, external to the R session.
+#' This will give a slightly different estimate than `pryr::mem_used`, which uses `gc()` internally.
+#' The purpose of this function is to allow continuous monitoring, external to the R session.
 #' Normally, this is run in a different session.
-#' @param thisPid Numeric or integer, the PID of the process. If omitted, it will
-#'   be found with `Sys.getpid()`
+#'
+#' @param thisPid Numeric or integer, the `PID` of the process.
+#'                If omitted, it will be found with `Sys.getpid()`.
+#'
+#' @return estimated memory use in MiB
+#'
 #' @export
 #' @rdname memoryUse
 memoryUseThisSession <- function(thisPid) {
@@ -44,7 +47,7 @@ memoryUseThisSession <- function(thisPid) {
   if (missing(thisPid)) thisPid <- Sys.getpid()
   needTasklist <- isWindows()
   if (nzchar(ps) && !needTasklist) {
-    aa <- try(suppressWarnings(system(paste("ps -eo rss,pid | grep", thisPid), intern = TRUE)), silent = TRUE)
+    aa <- try(suppressWarnings(system(paste(ps, "-eo rss,pid | grep", thisPid), intern = TRUE)), silent = TRUE)
     needTasklist <- !is.null(attr(aa, "status"))
     if (!needTasklist)
       aa2 <- try(strsplit(aa, split = " +")[[1]][1], silent = TRUE)
@@ -68,14 +71,15 @@ futureOngoingMemoryThisPid <- function(outputFile = NULL,
   if (is.null(outputFile))
     outputFile <- outputFilename(thisPid)
   message("Writing memory to ", outputFile)
-  a <- future::future(
+  a <- future::future({
     getFromNamespace("ongoingMemoryThisPid", "SpaDES.core")(seconds = seconds,
                                                             interval = interval,
                                                             thisPid = thisPid,
-                                                            outputFile = outputFile),
-    globals = list(memoryUseThisSession = memoryUseThisSession,
-                   outputFile = outputFile, thisPid = thisPid,
-                   seconds = seconds, interval = interval))
+                                                            outputFile = outputFile)
+  }, globals = list(memoryUseThisSession = memoryUseThisSession,
+                    outputFile = outputFile, thisPid = thisPid,
+                    seconds = seconds, interval = interval)
+  )
   return(a)
 }
 
@@ -85,17 +89,23 @@ futureOngoingMemoryThisPid <- function(outputFile = NULL,
 
 #' Show memory use
 #'
-#' This will only work if the user has specified before running
-#' the `spades` call, set the interval, in seconds, that ps is
-#' run with `options("spades.memoryUseInterval" = 0.5)`, will assess
-#' memory use every 0.5 seconds. The default
-#' is 0, meaning no interval, "off".
+#' This will only work if the user has specified before running the `spades` call,
+#' set the interval, in seconds, that `ps` is run.
+#' E.g., `options("spades.memoryUseInterval" = 0.5)`, will assess memory use every 0.5 seconds.
+#' The default is `0`, meaning no interval, "off".
 #'
-#' @export
-#' @param sim A completed simList
+#' @note The suggested `future` and `future.callr` packages must be available.
+#'
+#' @param sim A completed `simList`
+#'
 #' @param max Logical. If TRUE, then it the return value will be summarized by
 #'   module/event, showing the maximum memory used. If `FALSE`, then
 #'   the raw memory used during each event will be shown.
+#'
+#' @return `data.table` summarizing the estimated memory use (in MiB) for each event type,
+#' for each module, during the simulation.
+#'
+#' @export
 #' @seealso The `vignette("iv-modules")`
 memoryUse <- function(sim, max = TRUE) {
   compl <- Copy(completed(sim))
@@ -103,7 +113,6 @@ memoryUse <- function(sim, max = TRUE) {
   if (is.null(mem)) {
     message("There are no data in the sim@.xData$.memoryUse$obj ... try running spades again?")
   } else {
-
     # make sure same tz
     if (any(grepl("^time$", names(mem))))
       setnames(mem, old = "time", new = "clockTime")
@@ -152,7 +161,10 @@ memoryUseSetup <- function(sim, originalFuturePlan) {
 
     st <- format(Sys.time(), format = "%Y-%m-%d_%H-%M-%S")
     sim@.xData$.memoryUse$filename <-
-      file.path(logPath(sim), paste0("_memoryUse_", st, "_", Sys.getpid(),".csv"))
+      file.path(logPath(sim), paste0("_memoryUse_", st, "_", Sys.getpid(), ".csv"))
+
+    checkPath(dirname(sim@.xData$.memoryUse$filename), create = TRUE)
+
     sim@.xData$.memoryUse$futureObj <-
       futureOngoingMemoryThisPid(seconds = Inf,
                                  interval = getOption("spades.memoryUseInterval", 0.2),
@@ -176,7 +188,7 @@ memoryUseSetup <- function(sim, originalFuturePlan) {
       message("\bDone!")
 
   } else {
-    message(futureMessage)
+    stop(futureMessage)
   }
 
   return(sim)
@@ -205,7 +217,7 @@ memoryUseOnExit <- function(sim, originalFuturePlan) {
       message("Memory use saved in simList; see memoryUse(sim); removing memoryUse txt file")
     }
   } else {
-    message(futureMessage)
+    stop(futureMessage)
   }
   return(sim)
 }

@@ -1,13 +1,11 @@
 utils::globalVariables(c(".", "moduleName"))
 
 ################################################################################
-#' ganttStatus
+#' `ganttStatus`
 #'
-#' Internal function assign the "status" of each event to be passed to
-#' `DiagrammeR::mermaid` to make a Gantt chart representing the
-#' events in a completed simulation.
-#' 'init' events are set as "done"; 'plot' events as "critical"; and all others
-#' as "active".
+#' Internal function assign the "status" of each event to be passed to `DiagrammeR::mermaid()`
+#' to make a Gantt chart representing the events in a completed simulation.
+#' `init` events are set as "done"; `plot` events as "critical"; and all others as "active".
 #'
 #' @param eventType Character vector of events.
 #'
@@ -107,21 +105,20 @@ setMethod(
 #' This event diagram is constructed using the completed event list
 #' To change the number of events shown, provide an `n` argument.
 #'
-#' Simulation time is presented on the x-axis, starting at date 'startDate'.
-#' Each module appears in a color-coded row, within which each event for that
+#' Simulation time is presented on the x-axis, starting at date `startDate`.
+#' Each module appears in a colour-coded row, within which each event for that
 #' module is displayed corresponding to the sequence of events for that module.
 #' Note that only the start time of the event is meaningful is these figures:
 #' the width of the bar associated with a particular module's event DOES NOT
 #' correspond to an event's "duration".
 #'
-#' Based on this StackOverflow answer: <https://stackoverflow.com/a/29999300/1380598>.
+#' Based on this Stack Overflow answer: <https://stackoverflow.com/a/29999300/1380598>.
 #'
 #' @note
 #' A red vertical line corresponding to the current date may appear on the figure.
 #' This is useful for Gantt Charts generally but can be considered a 'bug' here.
 #'
-#' @param sim  A `simList` object (typically corresponding to a
-#'             completed simulation).
+#' @param sim  A `simList` object (typically corresponding to a completed simulation).
 #'
 #' @param n    The number of most recently completed events to plot.
 #'
@@ -223,8 +220,7 @@ setMethod(
 #' @param ...  Additional arguments passed to `DiagrammeR::mermaid`.
 #'             Useful for specifying `height` and `width`.
 #'
-#' @return Plots a sequence diagram, invisibly returning a
-#'   `DiagrammeR::mermaid` object.
+#' @return Plots a sequence diagram, invisibly returning a `DiagrammeR::mermaid` object.
 #'
 #' @seealso `DiagrammeR::mermaid`.
 #'
@@ -234,10 +230,13 @@ setMethod(
 #'
 #' @author Alex Chubaty
 #' @examples
-#' \dontrun{
-#' objectDiagram(sim)
-#' # if there are lots of objects, may need to increase width and/or height
-#' objectDiagram(sim, height = 3000, width = 3000)
+#' \donttest{
+#' if (requireNamespace("DiagrammeR", quietly = TRUE)) {
+#'   sim <- simInit()
+#'   objectDiagram(sim)
+#'   # if there are lots of objects, may need to increase width and/or height
+#'   objectDiagram(sim, height = 3000, width = 3000)
+#' }
 #' }
 #'
 setGeneric("objectDiagram", function(sim, ...) {
@@ -276,17 +275,17 @@ setMethod(
 #'             completed simulation).
 #'
 #' @param type  Character string, either `"rgl"` for `igraph::rglplot`
-#' or `"tk"` for `igraph::tkplot`, `"Plot"` to use quickPlot::Plot
-#' or `"plot"` to use base::plot, the default.
+#' or `"tk"` for `igraph::tkplot`, `"Plot"` to use `quickPlot::Plot()`
+#' or `"plot"` to use `base::plot()`, the default.
 #'
 #' @param showParents Logical. If TRUE, then any children that are grouped into parent
-#'                    modules will be grouped together by colored blobs. Internally,
+#'                    modules will be grouped together by coloured blobs. Internally,
 #'                    this is calling [moduleGraph()]. Default `FALSE`.
 #'
 #'
 #' @param ...  Additional arguments passed to plotting function specified by `type`.
 #'
-#' @return Plots module dependency diagram.
+#' @return invoked for its side effect of plotting the module dependency diagram.
 #'
 #' @seealso [igraph()], [moduleGraph()] for a version that accounts for
 #' parent and children module structure.
@@ -297,8 +296,29 @@ setMethod(
 #'
 #' @author Alex Chubaty
 #' @examples
-#' \dontrun{
-#' # Will use quickPlot::Plot
+#' \donttest{
+#' if (requireNamespace("SpaDES.tools", quietly = TRUE) &&
+#'     requireNamespace("NLMR", quietly = TRUE)) {
+#' library(igraph)
+#' times <- list(start = 0, end = 6, "month")
+#' parameters <- list(
+#'   .globals = list(stackName = "landscape"),
+#'   caribouMovement = list(
+#'     .saveObjects = "caribou",
+#'     .saveInitialTime = 1, .saveInterval = 1
+#'   ),
+#'   randomLandscapes = list(.plotInitialTime = NA, nx = 20, ny = 20))
+#'
+#' modules <- list("randomLandscapes", "caribouMovement")
+#' paths <- list(
+#'   modulePath = getSampleModules(tempdir())
+#' )
+#'
+#' # Set some options so example runs faster
+#' opts <- options(spades.moduleCodeChecks = FALSE, spades.loadReqdPkgs = FALSE)
+#' sim <- simInit(times = times, params = parameters, modules = modules,
+#'                paths = paths)
+#' options(opts)
 #' moduleDiagram(sim)
 #' # Can also use default base::plot
 #' modDia <- depsGraph(sim, plot = TRUE)
@@ -311,16 +331,12 @@ setMethod(
 #' edgeList[from == "_INPUT_", from := "Data"]
 #' edgeList[to == "_INPUT_", to := "Data"]
 #' edgeList <- unique(edgeList)
-#' edge
-#' ig <- igraph::graph_from_data_frame(edgeList[, list(from, to)])
+#' ig <- graph_from_data_frame(edgeList[, list(from, to)])
 #' plot(ig)
-#'
-#' # Or use qgraph package
-#' # library(qgraph)
-#' # qgraph(edgeList, shape = "rectangle", vsize = 12, vsize2 = 2
+#' }
 #' }
 #'
-# igraph is being imported in spades-package.R
+# NOTE: `igraph` is being imported in spades-package.R
 setGeneric("moduleDiagram", function(sim, type, showParents = TRUE, ...) {
   standardGeneric("moduleDiagram")
 })
@@ -464,25 +480,24 @@ setMethod(
 #' Build a module dependency graph
 #'
 #' This is still experimental, but this will show the hierarchical structure of
-#' parent and children modules and return a list with an igraph object
-#' and an igraph communities object, showing the groups.
+#' parent and children modules and return a list with an `igraph` object
+#' and an `igraph` communities object, showing the groups.
 #' Currently only tested with relatively simple structures.
 #'
 #' @inheritParams depsEdgeList
 #'
 #' @param ... Arguments passed to `Plot`
 #'
-#' @return A list with 2 elements, an [igraph()] object and an `igraph`
-#' communities object.
+#' @return A list with 2 elements, an [igraph()] object and an `igraph` communities object.
 #'
 #' @author Eliot McIntire
 #' @export
 #' @importFrom data.table rbindlist
-# @importFrom igraph graph_from_data_frame cluster_optimal edges # already with import igraph
 #' @include simList-class.R
 #' @rdname moduleGraph
-#' @seealso moduleDiagram
+#' @seealso [moduleDiagram()]
 #'
+# `igraph` is being imported in spades-package.R
 setGeneric("moduleGraph", function(sim, plot, ...) {
   standardGeneric("moduleGraph")
 })

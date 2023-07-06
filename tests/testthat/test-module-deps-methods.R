@@ -1,16 +1,14 @@
 test_that("defineModule correctly handles different inputs", {
-  testInitOut <- testInit("raster", smcc = FALSE)
-  on.exit({
-    testOnExit(testInitOut)
-  }, add = TRUE)
+  testInit("terra", smcc = FALSE)
 
   tmp <- simInit()
+  tmp1 <- simInit()
 
   # check empty metadata
   x0 <- list()
   expect_warning(defineModule(tmp, x0))
-  expect_identical(suppressWarnings(defineModule(tmp, x0)),
-                   suppressWarnings(defineModule(tmp, .emptyMetadata())))
+  expect_equivalent(suppressWarnings(defineModule(tmp, x0)),
+                   suppressWarnings(defineModule(tmp1, .emptyMetadata())))
 
   # check each element in metadata
   x1 <- list(
@@ -22,12 +20,12 @@ test_that("defineModule correctly handles different inputs", {
                        email = "alex.chubaty@gmail.com",
                        role = c("aut", "cre"))),
     version = list(testModule = "0.0.0.9000"),
-    spatialExtent = raster::extent(rep(NA_real_, 4)),
+    spatialExtent = terra::ext(rep(0, 4)),
     timeframe = as.POSIXlt(c(NA, NA)),
     timeunit = "year",
     citation = list(),
     documentation = list(),
-    reqdPkgs = list("grid", "raster", "sp"),
+    reqdPkgs = list("grid", "terra", "sf"),
     parameters = rbind(
       defineParameter("dummyVal", "numeric", 1.0, NA, NA, "vague description
                       with spaces")
@@ -40,7 +38,7 @@ test_that("defineModule correctly handles different inputs", {
     outputObjects = bindrows(
       createsOutput(objectName = "testOutput", objectClass = "list", desc = NA_character_),
       createsOutput(objectName = "testOutput", objectClass = "list", desc = "another vague
-                   description with spaces for outputs   another space")
+                    description with spaces for outputs   another space")
     )
   )
 
@@ -54,17 +52,17 @@ test_that("defineModule correctly handles different inputs", {
   ## check name
   x2 <- x1
   x2$name <- list("testModule") # not a character
-  expect_identical(defineModule(tmp, x1), defineModule(tmp, x2))
+  expect_equivalent(defineModule(tmp, x1), defineModule(tmp1, x2))
 
   ## check description
   x2 <- x1
   x2$description <- list("this is a test.") # not a character vector
-  expect_identical(defineModule(tmp, x1), defineModule(tmp, x2))
+  expect_equivalent(defineModule(tmp, x1), defineModule(tmp1, x2))
 
   ## check keywords
   x2 <- x1
   x2$keywords <- list("test") # not a character vector
-  expect_identical(defineModule(tmp, x1), defineModule(tmp, x2))
+  expect_equivalent(defineModule(tmp, x1), defineModule(tmp1, x2))
 
   ## check authors
   x2 <- x1
@@ -74,32 +72,32 @@ test_that("defineModule correctly handles different inputs", {
   ## check version
   x2 <- x1
   x2$version <- "0.0.0.9000"
-  expect_identical(defineModule(tmp, x1), defineModule(tmp, x2))
+  expect_equivalent(defineModule(tmp, x1), defineModule(tmp1, x2))
 
   ## check spatialExtent
   x2 <- x1
   x2$spatialExtent <- NA
-  expect_identical(defineModule(tmp, x1), defineModule(tmp, x2))
+  expect_equivalent(defineModule(tmp, x1), defineModule(tmp1, x2))
 
   ## check timeframe
   x2 <- x1
   x2$timeframe <- NA
-  expect_identical(defineModule(tmp, x1), defineModule(tmp, x2))
+  expect_equivalent(defineModule(tmp, x1), defineModule(tmp1, x2))
 
   ## check timeunit
   x2 <- x1
   x2$timeunit <- NA
-  expect_identical(defineModule(tmp, x1), defineModule(tmp, x2))
+  expect_equivalent(defineModule(tmp, x1), defineModule(tmp1, x2))
 
   ## check citation
   x2 <- x1
   x2$citation <- character() # not a list
-  expect_identical(defineModule(tmp, x1), defineModule(tmp, x2))
+  expect_equivalent(defineModule(tmp, x1), defineModule(tmp1, x2))
 
   ## check reqdPkgs
   x2 <- x1
-  x2$reqdPkgs <- c("grid", "raster", "sp") # not a list
-  expect_identical(defineModule(tmp, x1), defineModule(tmp, x2))
+  x2$reqdPkgs <- c("grid", "terra", "sf") # not a list
+  expect_equivalent(defineModule(tmp, x1), defineModule(tmp1, x2))
 
   ## check parameters
   x2 <- x1
@@ -118,8 +116,18 @@ test_that("defineModule correctly handles different inputs", {
 })
 
 test_that("depsEdgeList and depsGraph work", {
-  skip_if_not_installed("NLMR")
+  skip_on_cran() # requires installation of NLMR, from a Git Repo
+  testInit(sampleModReqdPkgs)
 
+  origRepos <- getOption("repos")
+  print(origRepos)
+  if (any(unname(origRepos) == "@CRAN@")) {
+    suppressMessages(utils::chooseCRANmirror(ind = 1))
+    on.exit({
+      options(repos = origRepos)
+      print(getOption("repos"))
+    } , add = TRUE)
+  }
   times <- list(start = 0.0, end = 10)
   params <- list(
     .globals = list(burnStats = "npixelsburned", stackName = "landscape"),
@@ -128,7 +136,7 @@ test_that("depsEdgeList and depsGraph work", {
     fireSpread = list(.plotInitialTime = NA, .plotInterval = NA)
   )
   modules <- list("randomLandscapes", "caribouMovement", "fireSpread")
-  paths <- list(modulePath = system.file("sampleModules", package = "SpaDES.core"))
+  paths <- list(modulePath = getSampleModules(tmpdir))
 
   mySim <- simInit(times, params, modules, paths = paths)
 
@@ -143,6 +151,9 @@ test_that("depsEdgeList and depsGraph work", {
   el_objClass <- c("SpatialPointsDataFrame", "RasterStack", "RasterStack",
                    "numeric", "RasterStack", "RasterStack")
 
+  el_objClass <- c("SpatVector", "SpatRaster", "SpatRaster",
+                   "numeric", "SpatRaster", "SpatRaster")
+
   expect_is(el, "data.table")
   expect_equal(names(el), c("from", "to", "objName", "objClass"))
   expect_equal(el$from, el_from)
@@ -155,7 +166,7 @@ test_that("depsEdgeList and depsGraph work", {
   p_from <- c("fireSpread", "randomLandscapes", "randomLandscapes")
   p_to <- c("caribouMovement", "caribouMovement", "fireSpread")
   p_objName <- c("landscape", "landscape", "landscape")
-  p_objClass <- c("RasterStack", "RasterStack", "RasterStack")
+  p_objClass <- c("SpatRaster", "SpatRaster", "SpatRaster")
   p_ <- data.table::data.table(
     from = p_from, to = p_to, objName = p_objName, objClass = p_objClass
   )
@@ -168,10 +179,7 @@ test_that("depsEdgeList and depsGraph work", {
 })
 
 test_that("3 levels of parent and child modules load and show correctly", {
-  testInitOut <- testInit("raster", smcc = FALSE)
-  on.exit({
-    testOnExit(testInitOut)
-  }, add = TRUE)
+  testInit("terra", smcc = FALSE)
 
   suppressMessages({
     newModule("grandpar1", tmpdir, type = "parent",
@@ -230,10 +238,7 @@ test_that("3 levels of parent and child modules load and show correctly", {
 
 
 test_that("Test cleaning up of desc in createsOutputs, expectsInputs, defineParameters", {
-  testInitOut <- testInit("raster", smcc = FALSE)
-  on.exit({
-    testOnExit(testInitOut)
-  }, add = TRUE)
+  testInit("terra", smcc = FALSE)
 
   aList <- list()
   aList[[1]] <- expectsInput("ROCList", "list", sourceURL = NA,

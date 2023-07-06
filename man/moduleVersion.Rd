@@ -25,9 +25,8 @@ Default is to use the \code{spades.modulePath} option.}
 
 \item{envir}{Optional environment in which to store parsed code. This may be
 useful if the same file is being parsed multiple times. This
-function will check in that envir for the parsed file before
-parsing again. If the \code{envir} is transient, then this will
-have no effect.}
+function will check in that environment for the parsed file before
+parsing again. If the \code{envir} is transient, then this will have no effect.}
 }
 \value{
 \code{numeric_version} indicating the module's version.
@@ -37,7 +36,7 @@ Parse and extract a module's version
 }
 \examples{
 # using filepath
-path <- system.file("sampleModules", package = "SpaDES.core")
+path <- getSampleModules(tempdir())
 moduleVersion("caribouMovement", path)
 
 # using simList

@@ -1,28 +1,45 @@
+makeSimListActiveBindings <- function(sim) {
+  mods <- modules(sim)
+  mods <- mods[mods %in% ls(sim@.xData$.mods)]
+  #browser()
+  lapply(mods, function(mod) {
+    makeModActiveBinding(sim = sim, mod = mod)
+    makeParActiveBinding(sim = sim, mod = mod)
+  })
+}
+
+
 makeModActiveBinding <- function(sim, mod) {
-  env <- if (.isPackage(fullModulePath = mod, sim = sim)) {
-    #browser()
-    asNamespace(.moduleNameNoUnderscore(mod))
+  if (.isPackage(fullModulePath = mod, sim = sim)) {
+    env <- asNamespace(.moduleNameNoUnderscore(mod))
   } else {
-    sim@.xData$.mods[[mod]]
-  }
+    env <- sim@.xData$.mods[[mod]]
+    if (exists("mod", envir = env, inherits = FALSE))
+      rm(list = "mod", envir = env, inherits = FALSE)
+    makeActiveBinding(sym = "mod",
+                      fun = activeModBindingFunction,
+                      env = env)
+    }
+
   if (exists("aaaaa", envir = .GlobalEnv, inherits = FALSE))
     browser()
 
-  makeActiveBinding(sym = "mod",
-                    fun = activeModBindingFunction,
-                    env = env)
+
 }
 
 #' @include helpers.R
 makeParActiveBinding <- function(sim, mod) {
-  env <- if (.isPackage(fullModulePath = mod, sim = sim)) {
-     asNamespace(.moduleNameNoUnderscore(mod))
-  } else {
-    sim@.xData$.mods[[mod]]
-  }
-  makeActiveBinding(sym = "Par",
-                    fun = activeParBindingFunction,
-                    env = env)
+  if (.isPackage(fullModulePath = mod, sim = sim)) {
+    env <- asNamespace(.moduleNameNoUnderscore(mod))
+   } else {
+    env <- sim@.xData$.mods[[mod]]
+    if (exists("Par", envir = env, inherits = FALSE))
+      rm(list = "Par", envir = env, inherits = FALSE)
+    makeActiveBinding(sym = "Par",
+                      fun = activeParBindingFunction,
+                      env = env)
+    }
+
 }
 
 activeModBindingFunction <- function(value) {
@@ -40,6 +57,7 @@ activeModBindingFunction <- function(value) {
       }
     }
   } else {
+    browser()
     stop("Can't overwrite mod")
   }
   return(ret)

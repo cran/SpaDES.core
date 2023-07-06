@@ -38,7 +38,7 @@ setMethod(
   signature(sim = "simList", plot = "logical"),
   definition = function(sim, plot) {
     deps <- sim@depends
-    DT <- .depsEdgeListMem(deps, plot)
+    DT <- .depsEdgeList(deps, plot)
     return(DT)
 })
 
@@ -49,7 +49,7 @@ setMethod("depsEdgeList",
             depsEdgeList(sim, plot = FALSE)
 })
 
-
+#' @importFrom data.table as.data.table data.table rbindlist setkeyv setorder
 .depsEdgeList <- function(deps, plot) {
   sim.in <- sim.out <- data.table(objectName = character(0),
                                   objectClass = character(0),
@@ -57,7 +57,11 @@ setMethod("depsEdgeList",
   lapply(deps@dependencies, function(x) {
     if (!is.null(x)) {
       z.in <- as.data.table(x@inputObjects)[, .(objectName, objectClass)]
+      if (NROW(z.in) == 0)
+        z.in <- as.data.table(list(objectName = ".dummyIn", objectClass = NA))
       z.out <- as.data.table(x@outputObjects)[, .(objectName, objectClass)]
+      if (NROW(z.out) == 0)
+        z.in <- as.data.table(list(objectName = ".dummyOut", objectClass = NA))
       z.in$module <- z.out$module <- x@name
       if (!all(is.na(z.in[, objectName]), is.na(z.in[, objectClass]))) {
         sim.in <<- rbindlist(list(sim.in, z.in), use.names = TRUE)
@@ -86,14 +90,13 @@ setMethod("depsEdgeList",
   setorder(DT, "from", "to", "objName")
 }
 
-.depsEdgeListMem <- memoise::memoise(.depsEdgeList)
 
 ################################################################################
 #' Build a module dependency graph
 #'
 #' @inheritParams depsEdgeList
 #'
-#' @return An [igraph()] object.
+#' @return An `igraph()` object.
 #'
 #' @author Alex Chubaty
 #' @export
@@ -185,6 +188,7 @@ setMethod(
           }
         }
       }
+      pth <- unique(pth)
       pth <- simEdgeList[pth, on = c("from", "to")]
       #pth <- pth %>% inner_join(simEdgeList, by = c("from", "to"))
       #if (!identical(pth, pth2)) browser()
@@ -243,7 +247,43 @@ setMethod(".depsLoadOrder",
           signature(sim = "simList", simGraph = "igraph"),
           definition = function(sim, simGraph) {
             # only works if simGraph is acyclic!
-            tsort <- topo_sort(simGraph, "out")
+            doTopoSort <- TRUE
+
+            if (!is.null(sim@depends@dependencies[[1]])) {
+              loadOrdersInMetaData <- Map(mod = sim@depends@dependencies, function(mod) {
+                if (length(mod@loadOrder)) mod@loadOrder else NULL})
+              loadOrdersInMetaData <- loadOrdersInMetaData[!vapply(loadOrdersInMetaData, is.null, FUN.VALUE = logical(1))]
+
+              if (length(loadOrdersInMetaData)) {
+                dt <- as.data.table(as_data_frame(simGraph))
+
+                Map(lo = loadOrdersInMetaData, nam = names(loadOrdersInMetaData),
+                    function(lo, nam) {
+                      lapply(lo[["after"]], function(aft) {
+                        a <- setDT(list(from = aft, to = nam, objName = .rndstr(1)))
+                        dt <<- rbindlist(list(dt, a), fill = TRUE)
+                      })
+                      lapply(lo[["before"]], function(bef) {
+                        a <- setDT(list(from = nam, to = bef, objName = .rndstr(1)))
+                        dt <<- rbindlist(list(dt, a), fill = TRUE)
+                      })
+                    })
+                simGraph2 <- graph_from_data_frame(dt)
+                tsort <- try(topo_sort(simGraph2, "out"), silent = TRUE)
+                if (exists("tsort", inherits = FALSE))
+                  if (!is(tsort, "try-error")) {
+                    doTopoSort <- FALSE
+                    simGraph <- simGraph2
+                  } else {
+                    message("Could not automatically determine module order, even with `loadOrder` metadata; ",
+                            "it may be wise to set the order manually and pass to `simInit(... loadOrder = xxx)`")
+                  }
+              }
+            }
+            if (doTopoSort)
+              tsort <- topo_sort(simGraph, "out")
+
+            # depsGrDF <- as.data.table(as_data_frame(simGraph))
             if (length(tsort)) {
               loadOrder <- names(simGraph[[tsort, ]]) %>% .[!(. %in% "_INPUT_" )]
             } else {
@@ -254,11 +294,52 @@ setMethod(".depsLoadOrder",
                 loadOrder <- character()
               }
             }
+
+            # cyclic ones are absent; the topo-sort above just puts them in randomly; this is bad
+            # fromSet <- setdiff(unique(c(depsGrDF$from)), "_INPUT_")
+            # toSet <- setdiff(unique(c(depsGrDF$to)), "_INPUT_")
+            # toSet <- setdiff(toSet, fromSet)
+            # doFirst <- loadOrder[loadOrder %in% fromSet]
+            # doSecond <- loadOrder[loadOrder %in% toSet]
+            # doThird <- setdiff(loadOrder, c(doFirst, doSecond))
+            #
+            # loadOrder <- c(doFirst, doSecond, doThird)
+
+            # New -- loadOrder element in metadata
+            # Map(lo = loadOrdersInMetaData, nam = names(loadOrdersInMetaData),
+            #     function(lo, nam) {
+            #       lapply(lo[["after"]], function(aft) {
+            #         aftI <- grep(aft, loadOrder)
+            #         namI <- grep(nam, loadOrder)
+            #         if (aftI > namI) {
+            #           loadOrder <<- loadOrder[-aftI]
+            #           loadOrder <<- append(loadOrder, aft, after=namI)
+            #           message("Reordering modules due to metadata: ", aft, " is being moved before ", nam)
+            #         }
+            #       })
+            #       lapply(lo[["before"]], function(bef) {
+            #         befI <- grep(bef, loadOrder)
+            #         namI <- grep(nam, loadOrder)
+            #         if (befI < namI) {
+            #           loadOrder <<- append(loadOrder, bef, after=namI)
+            #           loadOrder <<- loadOrder[-befI]
+            #           message("Reordering modules due to metadata: ", bef, " is being moved after ", nam)
+            #         }
+            #       })
+            #     })
+
             # make sure modules with no deps get added
             if (!all(sim@modules %in% loadOrder)) {
               ids <- which(sim@modules %in% loadOrder)
-              noDeps <- unlist(sim@modules)[-ids]
+              noDeps <- unname(unlist(sim@modules)[-ids])
               loadOrder <- c(loadOrder, noDeps)
             }
             return(loadOrder)
 })
+
+.rndstr <- function (n = 1, len = 8) {
+  unlist(lapply(character(n), function(x) {
+    x <- paste0(sample(c(0:9, letters, LETTERS), size = len,
+                       replace = TRUE), collapse = "")
+  }))
+}

@@ -9,6 +9,8 @@
 #' @param open  Logical. Should the new project file be opened after creation?
 #'              Default `TRUE` in an interactive session.
 #'
+#' @return invoked for side effect of project file creation
+#'
 #' @export
 #' @rdname newProject
 #'
@@ -26,7 +28,7 @@ setGeneric("newProject", function(name, path, open) {
 
 #' @export
 #' @rdname newProject
-#' @importFrom Require checkPath
+#' @importFrom reproducible checkPath
 setMethod(
   "newProject",
   signature = c(name = "character", path = "character", open = "logical"),
@@ -54,7 +56,7 @@ setMethod(
 
 #' @export
 #' @rdname newProject
-#' @importFrom Require checkPath
+#' @importFrom reproducible checkPath
 setMethod(
   "newProject",
   signature = c(name = "character", path = "character", open = "missing"),
@@ -66,6 +68,8 @@ setMethod(
 #'
 #' @inheritParams newProject
 #'
+#' @return invoked for side effect of project file creation
+#'
 #' @author Alex Chubaty
 #' @export
 #' @rdname newProjectCode
@@ -75,7 +79,7 @@ setGeneric("newProjectCode", function(name, path, open) {
 })
 
 #' @export
-#' @importFrom Require checkPath
+#' @importFrom reproducible checkPath
 #' @importFrom whisker whisker.render
 #' @rdname newProjectCode
 setMethod(

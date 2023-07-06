@@ -41,19 +41,18 @@ Default is to use the \code{spades.modulePath} option.}
 about.}
 }
 \value{
-A list of module metadata, matching the structure in
-\code{\link[=defineModule]{defineModule()}}.
+A list of module metadata, matching the structure in \code{\link[=defineModule]{defineModule()}}.
 }
 \description{
 Parse and extract module metadata
 }
 \examples{
-path <- system.file("sampleModules", package = "SpaDES.core")
-sampleModules <- dir(path)
 ## turn off code checking -- don't need it here
 opts <- options("spades.moduleCodeChecks" = FALSE,
                 "spades.useRequire" = FALSE)
 
+path <- getSampleModules(tempdir())
+sampleModules <- dir(path)
 x <- moduleMetadata(sampleModules[3], path = path)
 
 ## using simList
@@ -64,7 +63,7 @@ if (require("SpaDES.tools", quietly = TRUE)) {
         .globals = list(stackName = "landscape")
       ),
       modules = list("caribouMovement"),
-      paths = list(modulePath = system.file("sampleModules", package = "SpaDES.core"))
+      paths = list(modulePath = path)
    )
    moduleMetadata(sim = mySim)
 }

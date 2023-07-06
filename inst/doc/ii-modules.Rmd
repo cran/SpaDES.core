@@ -10,7 +10,7 @@ output:
     toc: yes
 vignette: >
   %\VignetteIndexEntry{02 Building `SpaDES` modules}
-  %\VignetteDepends{data.table, DiagrammeR, magrittr, NLMR, raster, RColorBrewer, SpaDES.core, SpaDES.tools}
+  %\VignetteDepends{data.table, DiagrammeR, igraph, magrittr, terra, RColorBrewer, SpaDES.core, SpaDES.tools, CircStats}
   %\VignetteKeyword{module development}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
@@ -19,15 +19,15 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(eval = TRUE)
+SuggestedPkgsNeeded <- c("DiagrammeR", "NLMR", "SpaDES.tools", "knitr", "CircStats")
+hasSuggests <- all(sapply(SuggestedPkgsNeeded, require, character.only = TRUE, quietly = TRUE))
+useSuggests <- !(tolower(Sys.getenv("_R_CHECK_DEPENDS_ONLY_")) == "true")
 
-hasSuggests <- all(
-  require("NLMR", quietly = TRUE),
-  require("SpaDES.tools", quietly = TRUE)
-)
+knitr::opts_chunk$set(eval = hasSuggests && useSuggests)
 
 options("spades.moduleCodeChecks" = FALSE,
         "spades.useRequire" = FALSE)
+
 ```
 
 ```{css, echo=FALSE}
@@ -93,8 +93,9 @@ A module consists of a collection of files and folders that ...
           |_ CHECKSUMS.txt      # contains checksums for data files
       |_ tests/                 # contains unit tests for module code
       |_ citation.bib           # bibtex citation for the module
-      |_ LICENSE.txt            # describes module's legal usage
-      |_ README.txt             # provide overview of key aspects
+      |_ LICENSE.md             # describes module's legal usage
+      |_ NEWS.md                # log of changes made to module code
+      |_ README.md              # symlink to rendered documentation file (moduleName.md)
       |_ moduleName.R           # module code file (incl. metadata)
       |_ moduleName.Rmd         # documentation, usage info, etc.
       |_ moduleName_x.y.z.zip   # zip archive of previous versions
@@ -147,7 +148,7 @@ Every module requires complete metadata, structured as a named list, and passed 
 &nbsp;                | the objects output by the module, with columns `objectName`, `objectClass`, `desc` and other specifications.
 &nbsp;                | Add an output object by using `createsOutput`.
 
-```{r module-metadata, echo=FALSE, eval=TRUE, results="asis"}
+```{r module-metadata, echo=FALSE, results="asis"}
 cat(c(
   "```",
   "## sample module metadata for the default `caribouMovement` module",
@@ -170,11 +171,11 @@ We suggest passing a list of all the parameters needed for a single module toget
 A module's metadata defines default values for module-specific parameters, and these defaults will be used unless overridden by the user.
 Default parameter values can overridden by passing values in the parameter list to `simInit`.
 
-```{r passing-params, eval=hasSuggests, echo=TRUE}
-library(SpaDES.core)
+```{r passing-params, echo=TRUE}
+  library(SpaDES.core)
 
 outputDir <- file.path(tempdir(), "simOutputs")
-times <- list(start = 0.0, end = 20.0)
+times <- list(start = 0.0, end = 5.0)
 parameters <- list(
   .globals = list(stackName = "landscape", burnStats = "nPixelsBurned"),
   .progress = list(NA),
@@ -191,7 +192,7 @@ parameters <- list(
 )
 modules <- list("randomLandscapes", "fireSpread", "caribouMovement")
 objects <- list()
-paths <- list(modulePath = system.file("sampleModules", package = "SpaDES.core"),
+paths <- list(modulePath = getSampleModules(tempdir()),
               outputPath = outputDir)
 
 mySim <- simInit(times = times, params = parameters, modules = modules,
@@ -217,7 +218,7 @@ Each module may contain an arbitrary number of event types.
 Each of these event types are defined within the `doEvent.moduleName` call, and are wrapped in a simple `if`/`else` stanza that matches the called event type (NOTE: when several event types are defined, `switch`/`case` can faster than `if`/`else`).
 To keep the `doEvent.moduleName` code block as clear and readable as possible, keep the definitions of each event type minimal, using functions (defined outside of the block) for the details of what is happening for each event.
 
-```{r event-types, echo=FALSE, eval=TRUE, results="asis"}
+```{r event-types, echo=FALSE, results="asis"}
 cat(c(
   "```",
   "## sample event type definitions for the default `caribouMovement` module",
@@ -239,7 +240,7 @@ Note that every module requires an `"init"` event type, which defines the initia
 As such, the `Init()` function is required for initialization.
 Modules may also include `"save"` and `"plot"` events, though these are optional.
 
-```{r event-functions, echo=FALSE, eval=TRUE, results="asis"}
+```{r event-functions, echo=FALSE, results="asis"}
 cat(c(
   "```",
   "## sample Init event function from the default `caribouMovement` module",
@@ -257,7 +258,6 @@ Each module appears in a colour-coded row, within which each event for that modu
 Note that only the start time of the event is meaningful is these figures: the width of the bar associated with a particular module's event corresponds to the module's timestep unit, not the event's "duration".
 
 ```{r sim-eventDiagram, eval=hasSuggests, echo=FALSE, message=FALSE, warning=FALSE}
-library(magrittr)
 library(SpaDES.core)
 
 parameters <- list(
@@ -274,22 +274,23 @@ parameters <- list(
 ftmp <- tempfile("spades_vignetteOutputs", fileext = ".pdf")
 pdf(ftmp)
 clearPlot()
-mySim <- simInit(
-  times = list(start = 0.0, end = 2.0, timeunit = "year"),
+
+# run just 1 year for vignette
+mySim <- simInitAndSpades(
+  times = list(start = 0.0, end = 1.0, timeunit = "year"),
   params = parameters,
   modules = list("randomLandscapes", "fireSpread", "caribouMovement"),
   objects = list(),
-  paths = list(modulePath = system.file("sampleModules", package = "SpaDES.core"))
-  ) %>% 
-  spades()
+  paths = list(modulePath = getSampleModules(tempdir()))
+)
 dev.off()
 unlink(normalizePath(ftmp))
 ```
   
 ```{r eventDiagram, echo=FALSE, eval=hasSuggests, fig.height=10, fig.width=7}
 # overview of the events in the simulation
-if (requireNamespace("DiagrammeR"))
-  eventDiagram(mySim, "0000-06-01", n = 200, width = 720)
+# Needs DiagrammeR package
+eventDiagram(mySim, "0000-06-01", n = 200, width = 720)
 ```
 
 ## Module documentation (`moduleName.Rmd`)
@@ -383,15 +384,19 @@ Note that modules need not be inter-dependent on one another: module B may depen
 
 To view the dependencies for a simulation:
 
-```{r module-object-diagrams, eval=hasSuggests, echo=TRUE, message=FALSE, fig.width=7}
+```{r module-object-diagrams, echo=TRUE, message=FALSE, fig.width=7}
+## NOTE: Suggested packages SpaDES.tools and NLMR packages must be installed
+#install.packages("SpaDES.taols")
+#install.packages("NLMR", repos = "https://predictiveecology.r-universe.dev/")
+
 library(SpaDES.core)
 
-times <- list(start = 0.0, end = 20)
+times <- list(start = 0.0, end = 1.0)
 parameters <- list(
   .globals = list(stackName = "landscape", burnStats = "nPixelsBurned")
 )
 modules <- list("SpaDES_sampleModules")
-paths <- list(modulePath = system.file("sampleModules", package = "SpaDES.core"))
+paths <- list(modulePath = getSampleModules(tempdir()))
 
 mySim <- simInit(times = times, params = parameters, modules = modules, paths = paths)
 
@@ -447,16 +452,16 @@ All objects in the global environment including the state of the random number g
 Checkpoint frequency and filename can be passed as parameters to the simulation object as illustrated below.
 By default, checkpointing is not used unless the `interval` parameter is provided; the simulation checkpoint file (if one exists) is loaded if the `file` parameter is specified.
 
-```{r checkpoints, echo=TRUE, eval=hasSuggests, message=FALSE}
+```{r checkpoints, echo=TRUE, message=FALSE}
 # initialize a new simulation, setting the checkpoint interval and filename.
-times <- list(start = 0, end = 30)
+times <- list(start = 0, end = 5)
 parameters <- list(
   .globals = list(stackName = "landscape"),
-  .checkpoint = list(interval = 10, file = "chkpnt.RData")
+  .checkpoint = list(interval = 2, file = "chkpnt.RData")
 )
 modules <- list("randomLandscapes", "caribouMovement")
 paths <- list(
-  modulePath = system.file("sampleModules", package = "SpaDES.core")
+  modulePath = getSampleModules(tempdir())
 )
 
 mySim <- simInit(times = times, params = parameters, modules = modules, paths = paths)
@@ -470,13 +475,13 @@ checkpointInterval(mySim)
 
 Schedule updates to the simulation progress bar.
 
-```{r progress, echo=TRUE, eval=hasSuggests, message=FALSE}
+```{r progress, echo=TRUE, message=FALSE}
 # initialize a new simulation, setting the progress parameters
-mySim <- simInit(times = list(start = 0.0, end = 100.0),
+mySim <- simInit(times = list(start = 0.0, end = 10.0),
                  params = list(.globals = list(stackName = "landscape"),
-                               .progress = list(type = "text", interval = 10)),
+                               .progress = list(type = "text", interval = 1)),
                  modules = list("randomLandscapes"),
-                 paths = list(modulePath = system.file("sampleModules", package = "SpaDES.core")))
+                 paths = list(modulePath = getSampleModules(tempdir())))
 
 # retrieve the checkpoint params from the simulation object
 progressType(mySim)
@@ -498,7 +503,7 @@ Modules are not required to have the following parameters set, but when using `n
 &nbsp;                  | Used to schedule save events.
 **`.saveObjects`**      | Character vector naming the objects to be saved.
 
-### `inputs` argument to simInit
+### `inputs` argument to `simInit`
 Alternatively, objects can be read in during the `simInit` function call by passing a data.frame to the `input` argument. 
 For `inputs()`, the `data.frame` must consist of, minimally, a column named `file` listing the absolute or relative filepaths of the files to be loaded.
 Additional columns can also be provided:
@@ -520,7 +525,7 @@ Additional columns can also be provided:
 &nbsp;          | If there is only one list, then it is assumed to apply to all load attempts and will be
 &nbsp;          | repeated for each load function.
 
-### `outputs` argument to simInit
+### `outputs` argument to `simInit`
 
 Objects to be saved can be specified using the `output` argument, by passing a data.frame analogous to the `.load` module. 
 This `data.frame` is passed via the `outputs` argument in the `simInit` call or via a `outputs(mySim) <- data.frame()`.
@@ -542,21 +547,19 @@ Therefore, a call to `outputs(mySim)` will indicate which objects have been save
 
 There is partial string matching of these names, so if the `fun` requires arguments to be passed to it, use `outputArgs()`, and it must be the same length as the `outputs()` `data.frame`.
 
-```{r load-save, echo=TRUE, eval=hasSuggests, message=FALSE}
+```{r load-save, echo=TRUE, message=FALSE}
 # initialize a new simulation, setting the load and save parameters
-library(data.table)
-
 outputDir <- file.path(tempdir(), "simOutputs")
-mySim <- simInit(times = list(start = 0.0, end = 10),
+mySim <- simInit(times = list(start = 0, end = 5),
                  params = list(
                    .globals = list(stackName = "landscape"),
                    randomLandscapes = list(
-                     .saveInitialTime = 0, .saveInterval = 10,
+                     .saveInitialTime = 0, .saveInterval = 2,
                      .saveObjects = c("landscape"),
                      .savePath = file.path(outputDir, "randomLandscapes"))
                    ),
                  modules = list("randomLandscapes"),
-                 paths = list(modulePath = system.file("sampleModules", package = "SpaDES.core"),
+                 paths = list(modulePath = getSampleModules(tempdir()),
                               outputPath = outputDir),
                  outputs = data.frame(objectName = "landscape")
 )
@@ -576,9 +579,9 @@ mySim2 <- spades(mySim)
 
 # More sophisticated, passing arguments to outputs()
 outputs(mySim) <- data.frame(
-  objectName = "landscape", fun = "writeRaster", package = "raster",
+  objectName = "landscape", fun = "writeRaster", package = "terra",
   saveTime = c(3,6), arguments = I(lapply(c(3,6), function(x) {
-    list(datatype = "FLT4S", format = "raster", overwrite = TRUE)
+    list(datatype = "FLT4S", filetype = "GTiff", overwrite = TRUE)
 })))
 mySim2 <- spades(mySim)
 dev.off()
@@ -604,13 +607,13 @@ Plotting events can be scheduled similarly to save events, by passing module-spe
 
 ```{r plotting, echo=TRUE, eval=FALSE, message=FALSE}
 # initialize a new simulation, setting the load and save parameters
-mySim <- simInit(times = list(start = 0.0, end = 100),
+mySim <- simInit(times = list(start = 0, end = 5),
                  params = list(
                    .globals = list(stackName = "landscape"),
                    randomLandscapes = list(.plotInitialTime = 0, .plotInterval = 1)
                  ),
                  modules = list("randomLandscapes"),
-                 paths = list(modulePath = system.file("sampleModules", package = "SpaDES.core"))
+                 paths = list(modulePath = getSampleModules(tempdir()))
 )
 
 # retrieve the plotting params from the simulation object
@@ -644,12 +647,12 @@ See the `SpaDES` wiki ([https://github.com/PredictiveEcology/SpaDES/wiki](https:
 
 ## Included sample modules
 
-Use `system.file("sampleModules", package = "SpaDES.core")` to get the path to the `sampleModules` directory.
+Use `getSampleModules(tempdir())` to get the path to a copy of the `sampleModules` directory.
 To view the contents of a module, use the `openModules` function.
 Note that you should not edit the sample modules directly, but save them as a copy in another location.
 
 ```{r caribouMovement, echo=TRUE, eval=FALSE}
-openModules(system.file("sampleModules", package = "SpaDES.core"), "moduleName")
+openModules(getSampleModules(tempdir()), "moduleName")
 ```
 
 1. `randomLandscapes`:
@@ -736,7 +739,7 @@ parameters <- list(
 modules <- list("SpaDES_sampleModules")
 objects <- list()
 paths <- list(
-  modulePath = system.file("sampleModules", package = "SpaDES.core"),
+  modulePath = getSampleModules(tempdir()),
   outputPath = outputDir
 )
 
@@ -779,6 +782,6 @@ Additionally, `zipModule()` can be used to build the `.zip` file corresponding t
 To submit your module for inclusion in our GitHub repository, login to GitHub with your account and initiate a pull request to the repository.
 See the [GitHub help documentation](https://docs.github.com/articles/creating-a-pull-request/) for more details.
 
-```{r cleanup, eval=hasSuggests, echo=FALSE}
+```{r cleanup, echo=FALSE}
 unlink(outputDir, recursive = TRUE)
 ```

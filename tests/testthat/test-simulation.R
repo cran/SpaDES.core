@@ -1,10 +1,6 @@
 test_that("simulation runs with simInit and spades with set.seed; events arg", {
-  skip_if_not_installed("NLMR")
-
-  testInitOut <- testInit()
-  on.exit({
-    testOnExit(testInitOut)
-  }, add = TRUE)
+  skip_on_cran() # too long
+  testInit(sampleModReqdPkgs)
 
   set.seed(42)
 
@@ -17,7 +13,7 @@ test_that("simulation runs with simInit and spades with set.seed; events arg", {
   )
   modules <- list("randomLandscapes", #"caribouMovement",
                   "fireSpread")
-  paths <- list(modulePath = system.file("sampleModules", package = "SpaDES.core"))
+  paths <- list(modulePath = getSampleModules(tmpdir))
 
   set.seed(123)
   mySim <- simInit(times, params, modules, objects = list(), paths) %>%
@@ -138,15 +134,9 @@ test_that("simulation runs with simInit and spades with set.seed; events arg", {
 })
 
 test_that("spades calls - diff't signatures", {
-  skip_if_not_installed("NLMR")
 
-  testInitOut <- testInit()
-  on.exit({
-    testOnExit(testInitOut)
-  }, add = TRUE)
+  testInit(sampleModReqdPkgs, verbose = TRUE)
 
-  #innerClasses <<- 1
-  #browser()
   a <- simInit()
   a1 <- Copy(a)
   opts <- options(spades.saveSimOnExit = FALSE)
@@ -164,8 +154,8 @@ test_that("spades calls - diff't signatures", {
     expect_message(spades(Copy(a), debug = list(debug = list("current", "events")), .plotInitialTime = NA),
         "eventTime *moduleName *eventType *eventPriority")
   } else {
-    expect_warning(expect_message(spades(Copy(a), debug = list(debug = list("current", "events")), .plotInitialTime = NA),
-                   "eventTime *moduleName *eventType *eventPriority"))
+    expect_message(spades(Copy(a), debug = list(debug = list("current", "events")), .plotInitialTime = NA),
+                   "eventTime *moduleName *eventType *eventPriority")
   }
   expect_message(spades(a, debug = c("current", "events"), .plotInitialTime = NA), "moduleName")
   expect_message(spades(a, debug = "simList", .plotInitialTime = NA), "Completed Events")
@@ -199,7 +189,7 @@ test_that("spades calls - diff't signatures", {
     randomLandscapes = list(nx = 20, ny = 20)
   )
   modules <- list("randomLandscapes", "fireSpread")
-  paths <- list(modulePath = system.file("sampleModules", package = "SpaDES.core"))
+  paths <- list(modulePath = getSampleModules(tmpdir))
 
   for (i in 1:2) {
     a <- simInit(times, params, modules, paths = paths)
@@ -224,10 +214,7 @@ test_that("spades calls - diff't signatures", {
 test_that("simInit with R subfolder scripts", {
   skip_if_not_installed("NLMR")
 
-  testInitOut <- testInit()
-  on.exit({
-    testOnExit(testInitOut)
-  }, add = TRUE)
+  testInit()
 
   newModule("child1", ".", open = FALSE)
   cat(file = file.path("child1", "R", "script.R"),
@@ -242,12 +229,7 @@ test_that("simInit with R subfolder scripts", {
 })
 
 test_that("simulation runs with simInit with duplicate modules named", {
-  skip_if_not_installed("NLMR")
-
-  testInitOut <- testInit()
-  on.exit({
-    testOnExit(testInitOut)
-  }, add = TRUE)
+  testInit(sampleModReqdPkgs)
 
   set.seed(42)
 
@@ -257,7 +239,7 @@ test_that("simulation runs with simInit with duplicate modules named", {
     caribouMovement = list(.plotInitialTime = NA, .plotInterval = NA, torus = TRUE)
   )
   modules <- list("randomLandscapes", "randomLandscapes", "caribouMovement")
-  paths <- list(modulePath = system.file("sampleModules", package = "SpaDES.core"))
+  paths <- list(modulePath = getSampleModules(tmpdir))
 
   expect_true(any(grepl(capture_messages({
     mySim <- simInit(times, params, modules, objects = list(), paths)
@@ -269,10 +251,7 @@ test_that("simulation runs with simInit with duplicate modules named", {
 test_that("simulation runs with simInit with duplicate modules named", {
   skip("benchmarking DES")
 
-  testInitOut <- testInit()
-  on.exit({
-    testOnExit(testInitOut)
-  }, add = TRUE)
+  testInit()
 
   newModule("test", tmpdir, open = FALSE)
   newModule("test2", tmpdir, open = FALSE)
@@ -285,10 +264,10 @@ test_that("simulation runs with simInit with duplicate modules named", {
       name = "test",
       description = "insert module description here",
       keywords = c("insert key words here"),
-      authors = person(c("Eliot", "J", "B"), "McIntire", email = "eliot.mcintire@canada.ca", role = c("aut", "cre")),
+      authors = person(c("Eliot", "J", "B"), "McIntire", email = "eliot.mcintire@nrcan-rncan.gc.ca", role = c("aut", "cre")),
       childModules = character(0),
       version = list(SpaDES.core = "0.1.0", test = "0.0.1"),
-      spatialExtent = raster::extent(rep(NA_real_, 4)),
+      spatialExtent = terra::ext(rep(0, 4)),
       timeframe = as.POSIXlt(c(NA, NA)),
       timeunit = "second",
       citation = list("citation.bib"),
@@ -320,10 +299,10 @@ test_that("simulation runs with simInit with duplicate modules named", {
       name = "test2",
       description = "insert module description here",
       keywords = c("insert key words here"),
-      authors = person(c("Eliot", "J", "B"), "McIntire", email = "eliot.mcintire@canada.ca", role = c("aut", "cre")),
+      authors = person(c("Eliot", "J", "B"), "McIntire", email = "eliot.mcintire@nrcan-rncan.gc.ca", role = c("aut", "cre")),
       childModules = character(0),
       version = list(SpaDES.core = "0.1.0", test2 = "0.0.1"),
-      spatialExtent = raster::extent(rep(NA_real_, 4)),
+      spatialExtent = terra::ext(rep(0, 4)),
       timeframe = as.POSIXlt(c(NA, NA)),
       timeunit = "second",
       citation = list("citation.bib"),
@@ -432,10 +411,7 @@ test_that("simulation runs with simInit with duplicate modules named", {
 })
 
 test_that("conflicting function types", {
-  testInitOut <- testInit(smcc = TRUE)
-  on.exit({
-    testOnExit(testInitOut)
-  }, add = TRUE)
+  testInit(sampleModReqdPkgs, smcc = TRUE)
 
   m <- "child4"
   newModule(m, tmpdir, open = FALSE)
@@ -659,6 +635,13 @@ paste0("      url1 <- extractURL('ei4', sim = sim, module = \"",m,"\")"),"
     "child4: inputObjects: b, co3 are used from sim inside .inputObjects, but are not declared in metadata inputObjects"
   )
 
+  # Test moduleMetadata without `sim` and where there is a `sim` in the module metadata,
+  #   so needs to load it. A non-error is good enough for now.
+  md1 <- moduleMetadata(module = m, path = tmpdir) # no sim in metadata
+  md2 <- moduleMetadata(path = getSampleModules(tmpdir),
+                        module = "randomLandscapes")
+
+
   mm <- capture_messages({
     mySim <- simInit(paths = list(modulePath = tmpdir), modules = m)
   })
@@ -690,11 +673,7 @@ paste0("      url1 <- extractURL('ei4', sim = sim, module = \"",m,"\")"),"
 })
 
 test_that("scheduleEvent with NA logical in a non-standard parameter", {
-  testInitOut <- testInit(smcc = TRUE)
-  on.exit({
-    testOnExit(testInitOut)
-  }, add = TRUE)
-
+  testInit("ggplot2", smcc = TRUE)
   m <- "test"
   newModule(m, tmpdir, open = FALSE)
   fileName <- file.path(m, paste0(m, ".R"))#child4/child4.R"
@@ -715,10 +694,7 @@ test_that("scheduleEvent with NA logical in a non-standard parameter", {
 })
 
 test_that("messaging with multiple modules", {
-  testInitOut <- testInit(smcc = TRUE)
-  on.exit({
-    testOnExit(testInitOut)
-  }, add = TRUE)
+  testInit("ggplot2", smcc = TRUE)
 
   m1 <- "test"
   m2 <- "test2"
@@ -854,7 +830,8 @@ test_that("messaging with multiple modules", {
   for (y in 3:4) {
     cat(xxx1[[y]], sep = "\n", fill = FALSE, file = fileNames[y])
   }
-
+  opts <- options("spades.allowInitDuringSimInit" = FALSE)
+  on.exit(options(opts), add = TRUE)
   mm1 <- capture_messages(simInit(paths = list(modulePath = tmpdir), modules = as.list(m)))
   mm1 <- cleanMessage(mm1)
   expect_true(all(unlist(lapply(fullMessage,
@@ -864,10 +841,7 @@ test_that("messaging with multiple modules", {
 })
 
 test_that("Module code checking -- pipe with matrix product with backtick & data.table", {
-  testInitOut <- testInit(smcc = TRUE)
-  on.exit({
-    testOnExit(testInitOut)
-  }, add = TRUE)
+  testInit("ggplot2", smcc = TRUE)
 
   m <- "child4"
   newModule(m, tmpdir, open = FALSE)
@@ -943,12 +917,8 @@ test_that("Module code checking -- pipe with matrix product with backtick & data
 })
 
 test_that("simInitAndSpades", {
-  skip_if_not_installed("NLMR")
 
-  testInitOut <- testInit(opts = list("spades.moduleCodeChecks" = FALSE))
-  on.exit({
-    testOnExit(testInitOut)
-  }, add = TRUE)
+  testInit(sampleModReqdPkgs)
 
   set.seed(42)
 
@@ -960,7 +930,7 @@ test_that("simInitAndSpades", {
     fireSpread = list(.plotInitialTime = NA, .plotInterval = NA)
   )
   modules <- list("randomLandscapes", "caribouMovement", "fireSpread")
-  paths <- list(modulePath = system.file("sampleModules", package = "SpaDES.core"))
+  paths <- list(modulePath = getSampleModules(tmpdir))
   set.seed(123)
   mySim <- simInitAndSpades(times = times, params = params,
                             modules = modules, objects = list(), paths = paths, debug = FALSE)
@@ -974,10 +944,7 @@ test_that("simInitAndSpades", {
 })
 
 test_that("scheduleEvent with invalid values for eventTime", {
-  testInitOut <- testInit()
-  on.exit({
-    testOnExit(testInitOut)
-  }, add = TRUE)
+  testInit()
   s <- simInit(times = list(start = 1, end = 10))
   expect_error({
     s <- scheduleEvent(s, eventTime = -1, eventType = "test1", moduleName = "test")
@@ -991,13 +958,8 @@ test_that("scheduleEvent with invalid values for eventTime", {
 })
 
 test_that("debug using logging", {
-  skip_if_not_installed("logging")
-  skip_if_not_installed("NLMR")
 
-  testInitOut <- testInit(tmpFileExt = "log")
-  on.exit({
-    testOnExit(testInitOut)
-  }, add = TRUE)
+  testInit(c(sampleModReqdPkgs, "logging"), tmpFileExt = "log")
 
   set.seed(42)
 
@@ -1009,7 +971,7 @@ test_that("debug using logging", {
     fireSpread = list(.plotInitialTime = NA, .plotInterval = NA)
   )
   modules <- list("randomLandscapes")
-  paths <- list(modulePath = system.file("sampleModules", package = "SpaDES.core"))
+  paths <- list(modulePath = getSampleModules(tmpdir))
 
   set.seed(123)
   mySim <- simInit(times, params, modules, objects = list(), paths) #%>%

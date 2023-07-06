@@ -88,12 +88,14 @@
 #' @rdname newModule
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
+#'   tmpdir <- tempdir2("exampleNewModule")
 #'   ## create a "myModule" module in the "modules" subdirectory.
-#'   newModule("myModule", "modules")
+#'   newModule("myModule", tmpdir)
 #'
 #'   ## create a new parent module in the "modules" subdirectory.
-#'   newModule("myParentModule", "modules", type = "parent", children = c("child1", "child2"))
+#'   newModule("myParentModule", tmpdir, type = "parent", children = c("child1", "child2"))
+#'   unlink(tmpdir, recursive = TRUE)
 #' }
 #'
 setGeneric("newModule", function(name, path, ...) {
@@ -102,7 +104,7 @@ setGeneric("newModule", function(name, path, ...) {
 
 #' @export
 #' @rdname newModule
-#' @importFrom Require checkPath
+#' @importFrom reproducible checkPath
 setMethod(
   "newModule",
   signature = c(name = "character", path = "character"),
@@ -156,7 +158,8 @@ setMethod(
     }
 
     ### Make R Markdown file for module documentation
-    newModuleDocumentation(name = name, path = path, open = isTRUE(open) || endsWith(tolower(open), "rmd"),
+    newModuleDocumentation(name = name, path = path,
+                           open = isTRUE(open) || endsWith(tolower(open), "rmd"),
                            type = type, children = children)
 })
 
@@ -186,6 +189,8 @@ setMethod(
 #' @param children   Required when `type = "parent"`. A character vector
 #'                   specifying the names of child modules.
 #'
+#' @return Nothing is returned. Invoked for its side effect of creating new module code files.
+#'
 #' @author Eliot McIntire and Alex Chubaty
 #' @export
 #' @rdname newModuleCode
@@ -195,7 +200,8 @@ setGeneric("newModuleCode", function(name, path, open, type, children) {
 
 #' @export
 #' @family module creation helpers
-#' @importFrom Require checkPath
+#' @importFrom crayon bold green yellow
+#' @importFrom reproducible checkPath
 #' @importFrom whisker whisker.render
 #' @rdname newModuleCode
 # igraph exports %>% from magrittr
@@ -231,11 +237,11 @@ setMethod(
     } else {
       SpaDES.core.pkgName <- "SpaDES.core"
     }
-    SpaDES.core.Fullname <- paste0(SpaDES.core.pkgName, " (>=",SpaDES.core.version,")")
+    SpaDES.core.Fullname <- paste0(SpaDES.core.pkgName, " (>= ", SpaDES.core.version, ")")
 
     modulePartialMeta <- list(
-      reqdPkgs = deparse(c(SpaDES.core.Fullname,
-                                moduleDefaults[["reqdPkgs"]]))
+      reqdPkgs = deparse1(append(list(SpaDES.core.Fullname), moduleDefaults[["reqdPkgs"]]),
+                          collapse = "")
     )
     modulePartialMetaTemplate <- readLines(file.path(.pkgEnv[["templatePath"]],
                                                      "modulePartialMeta.R.template"))
@@ -276,7 +282,19 @@ setMethod(
     moduleTemplate <- readLines(file.path(.pkgEnv[["templatePath"]], "module.R.template"))
     writeLines(whisker.render(moduleTemplate, moduleData), filenameR)
 
-    message(crayon::green(paste0("New module, '", name, "', made in ", dirname(nestedPath))))
+    ## help the user with next steps
+    message(crayon::bold(paste(
+      crayon::green("New module"),
+      crayon::yellow(name),
+      crayon::green("created at"),
+      crayon::yellow(dirname(nestedPath))
+    )))
+    message(crayon::green("* edit module code in", crayon::yellow(paste0(name, ".R"))))
+    message(crayon::green("* write tests for your module code in", crayon::yellow("tests/")))
+    message(crayon::green("* describe and document your module in", crayon::yellow(paste0(name, ".Rmd"))))
+    message(crayon::green("* tell others how to cite your module by editing", crayon::yellow("citation.bib")))
+    message(crayon::green("* choose a license for your module; see", crayon::yellow("LICENSE.md")))
+
     if (isTRUE(open)) {
       openModules(name, nestedPath)
     }
@@ -286,8 +304,10 @@ setMethod(
 #'
 #' @inheritParams newModuleCode
 #'
+#' @return Nothing is returned. Invoked for its side effect of creating new module code files.
+#'
 #' @author Eliot McIntire and Alex Chubaty
-#' @importFrom Require checkPath
+#' @importFrom reproducible checkPath
 #' @export
 #' @family module creation helpers
 #' @rdname newModuleDocumentation
@@ -307,7 +327,8 @@ setMethod(
     nestedPath <- file.path(path, name) %>% checkPath(create = TRUE)
     filenameRmd <- file.path(nestedPath, paste0(name, ".Rmd"))
     filenameCitation <- file.path(nestedPath, "citation.bib")
-    filenameLICENSE <- file.path(nestedPath, "LICENSE")
+    filenameLICENSE <- file.path(nestedPath, "LICENSE.md")
+    filenameNEWS <- file.path(nestedPath, "NEWS.md")
     filenameREADME <- file.path(nestedPath, "README.md")
 
     moduleRmd <- list(
@@ -334,18 +355,22 @@ setMethod(
     licenseTemplate <- readLines(file.path(.pkgEnv[["templatePath"]], "LICENSE.template"))
     writeLines(whisker.render(licenseTemplate), filenameLICENSE)
 
+    ### Make NEWS file
+    newsTemplate <- readLines(file.path(.pkgEnv[["templatePath"]], "NEWS.template"))
+    writeLines(whisker.render(newsTemplate, moduleRmd), filenameNEWS)
+
     ### Make README file
-    ReadmeTemplate <- readLines(file.path(.pkgEnv[["templatePath"]], "README.template"))
-    writeLines(whisker.render(ReadmeTemplate), filenameREADME)
+    filenameMd <- paste0(tools::file_path_sans_ext(filenameRmd), ".md")
+    success <- tryCatch({
+      linkOrCopy(filenameMd, filenameREADME, verbose = FALSE)
+    }, error = function(e) FALSE)
+    if (isFALSE(success)) {
+      ReadmeTemplate <- readLines(file.path(.pkgEnv[["templatePath"]], "README.template"))
+      writeLines(whisker.render(ReadmeTemplate, moduleRmd), filenameREADME)
+    }
 
     if (open) {
-      # use tryCatch: RStudio bug causes file open to fail on Windows (#209)
       openModules(basename(filenameRmd), nestedPath)
-
-      # tryCatch(file.edit(filenameRmd), error = function(e) {
-      #   warning("A bug in RStudio for Windows prevented the opening of the file:\n",
-      #           filenameRmd, "\nPlease open it manually.")
-      # })
     }
 
     return(invisible(NULL))
@@ -382,6 +407,8 @@ setMethod("newModuleDocumentation",
 #' @param name module name
 #' @param path module path
 #'
+#' @return Invoked for its side effect of creating new GitHub Actions workflow files.
+#'
 #' @export
 #' @importFrom reproducible checkPath
 #' @importFrom whisker whisker.render
@@ -410,8 +437,10 @@ use_gha <- function(name, path) {
 #'                  If `TRUE` (default), creates suitable configuration files (e.g.,
 #'                  \file{.gitignore}) and configures basic GitHub actions for module code checking.
 #'
+#' @return Nothing is returned. Invoked for its side effect of creating new module test files.
+#'
 #' @author Eliot McIntire and Alex Chubaty
-#' @importFrom Require checkPath
+#' @importFrom reproducible checkPath
 #' @export
 #' @family module creation helpers
 #' @rdname newModuleTests
@@ -459,7 +488,7 @@ setMethod(
 #' directory name identical to its filename. Thus, this must be case sensitive.
 #'
 #' @param name  Character vector with names of modules to open. If missing, then
-#'              all modules will be opened within the basedir.
+#'              all modules will be opened within the base directory.
 #'
 #' @param path  Character string of length 1. The base directory within which
 #'              there are only module subdirectories.
@@ -473,12 +502,14 @@ setMethod(
 #'
 #' @author Eliot McIntire
 #' @export
-#' @importFrom raster extension
-#' @importFrom Require checkPath
+#' @importFrom reproducible checkPath
 #' @rdname openModules
 #'
 #' @examples
-#' \dontrun{openModules("~/path/to/my/modules")}
+#' \donttest{
+#' if (interactive())
+#'   openModules("modules")
+#' }
 #'
 setGeneric("openModules", function(name, path) {
   standardGeneric("openModules")
@@ -491,7 +522,7 @@ setMethod(
   signature = c(name = "character", path = "character"),
   definition = function(name, path) {
     basedir <- checkPath(path, create = FALSE)
-    fileExtension <- sub(extension(name), pattern = ".", replacement = "")
+    fileExtension <- tools::file_ext(name)
     if (length(unique(fileExtension)) > 1) {
       stop("Can only open one file type at a time.")
     }
@@ -576,10 +607,6 @@ setMethod("openModules",
 #' @author Alex Chubaty
 #' @export
 #' @rdname copyModule
-#'
-#' @examples
-#' \dontrun{copyModule(from, to)}
-#'
 setGeneric("copyModule", function(from, to, path, ...) {
   standardGeneric("copyModule")
 })
@@ -660,9 +687,11 @@ setMethod("copyModule",
 #'                e.g., add `"-q"` using `flags="-q -r9X"`
 #'                (the default flags are `"-r9X"`).
 #'
+#' @return Nothing is returned. Invoked for its side effect of zipping module files.
+#'
 #' @author Eliot McIntire and Alex Chubaty
 #' @export
-#' @importFrom Require checkPath
+#' @importFrom reproducible checkPath
 #' @importFrom utils zip
 #' @rdname zipModule
 #'

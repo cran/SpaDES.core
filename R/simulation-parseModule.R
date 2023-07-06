@@ -31,12 +31,11 @@ setMethod(
 #' @param filename The filename of the module to be parsed.
 #'
 #' @param defineModuleElement Character string indicating which of the list
-#'                            elements in defineModule should be extracted
+#'                            elements in `defineModule` should be extracted
 #' @param envir Optional environment in which to store parsed code. This may be
 #'              useful if the same file is being parsed multiple times. This
-#'              function will check in that envir for the parsed file before
-#'              parsing again. If the `envir` is transient, then this will
-#'              have no effect.
+#'              function will check in that environment for the parsed file before
+#'              parsing again. If the `envir` is transient, then this will have no effect.
 #'
 #' @return `.parseModulePartial` extracts just the individual element
 #' requested from the module. This can be useful if parsing the whole module
@@ -77,18 +76,32 @@ setMethod(
         out <- list()
       }
 
-      out <- tryCatch(
-        eval(out),
-        error = function(x) {
-          if (any(grepl("bind_rows", out))) { # historical artifact
-            if (!require("dplyr", quietly = TRUE))
-              stop("To read module: '", gsub("\\.R", "", basename(filename)),
-                   "', please install dplyr: \ninstall.packages('dplyr', lib.loc = '",.libPaths()[1],"')")
-            out <- eval(out)
-          }
-          out
+      out1 <- try(eval(out), silent = TRUE)
+      if (is(out1, "try-error")) {
+        if (any(grepl("bind_rows", out))) { # historical artifact
+          if (!require("dplyr", quietly = TRUE))
+            stop("To read module: '", gsub("\\.R", "", basename(filename)),
+                 "', please install dplyr: \ninstall.packages('dplyr', lib.loc = '", .libPaths()[1], "')")
+          out1 <- eval(out)
         }
-      )
+        if (is(out1, "try-error")) {
+          # possibly there was a sim that was not defined, e.g., with downloadData example, only "filename" provided.
+          if (any(grep("\\<sim\\>", out))) {
+            opts <- options(spades.moduleCodeChecks = FALSE, reproducible.useCache = FALSE,
+                            spades.dotInputObjects = FALSE)
+            on.exit(options(opts))
+            m <- tmp[["pf"]][[1]][[3]]$name
+            suppressMessages({
+              sim <- simInit(modules = m, paths = list(modulePath = dirname(dirname(filename))))
+            })
+            newEnv <- new.env(parent = sim@.xData$.mods[[m]])
+            newEnv$sim <- sim
+            out1 <- eval(out, envir = newEnv)
+          }
+        }
+      }
+      out <- out1
+
     } else {
       out <- NULL
     }
@@ -152,17 +165,18 @@ setMethod(
 #'
 #' @param userSuppliedObjNames Character string (or `NULL`, the default)
 #'                             indicating the names of objects that user has passed
-#'                             into simInit via objects or inputs.
-#'                             If all module inputObject dependencies are provided by user,
+#'                             into `simInit` via objects or inputs.
+#'                             If all module `inputObject` dependencies are provided by user,
 #'                             then the `.inputObjects` code will be skipped.
 #'
-#' @param notOlderThan Passed to `Cache` that may be used for .inputObjects function call.
+#' @param notOlderThan Passed to `Cache` that may be used for `.inputObjects` function call.
 #'
 #' @param ... All `simInit` parameters.
 #'
 #' @return A `simList` simulation object.
 #'
 #' @author Alex Chubaty and Eliot McIntire
+#' @importFrom crayon blue green
 #' @importFrom reproducible Cache
 #' @include environment.R
 #' @include module-dependencies-class.R
@@ -171,10 +185,9 @@ setMethod(
 #' @rdname parseModule
 #'
 setGeneric(".parseModule",
-           function(sim, modules, userSuppliedObjNames = NULL, envir = NULL,
-                    notOlderThan, ...) {
+           function(sim, modules, userSuppliedObjNames = NULL, envir = NULL, notOlderThan, ...) {
              standardGeneric(".parseModule")
-           })
+})
 
 #' @rdname parseModule
 setMethod(
@@ -225,18 +238,20 @@ setMethod(
         # sim@.xData$.mods[[mBase]] <- new.env(parent = asNamespace("SpaDES.core"))
         tmp <- .parseConditional(envir = envir, filename = filename)
         activeCode <- list()
-        sim@.xData$.mods[[mBase]] <- new.env(parent = asNamespace("SpaDES.core"))
-        attr(sim@.xData$.mods[[mBase]], "name") <- mBase
-        sim@.xData$.mods[[mBase]]$.objects <- new.env(parent = emptyenv())
+        sim <- newEnvsByModule(sim, mBase)  # sets up the module environment and the .objects sub environment
+        # sim@.xData$.mods[[mBase]] <- new.env(parent = asNamespace("SpaDES.core"))
+        # attr(sim@.xData$.mods[[mBase]], "name") <- mBase
+        # sim@.xData$.mods[[mBase]]$.objects <- new.env(parent = emptyenv())
 
         if (.isPackage(m, sim)) {
           if (!requireNamespace("pkgload")) stop("Please install.packages(c('pkgload', 'roxygen2'))")
-          if (isTRUE(getOption("spades.moduleDocument", NULL))) {
+          if (!requireNamespace("roxygen2")) stop("Please install.packages(c('roxygen2'))")
+          namespaceFile <- dir(m, pattern = "NAMESPACE")
+          if (isTRUE(getOption("spades.moduleDocument", NULL)) || length(namespaceFile) == 0) {
+            message(crayon::blue("    To skip rebuilding documentation, set options('spades.moduleDocument' = FALSE)"))
             roxygen2::roxygenise(m, roclets = NULL) # This builds documentation, but also exports all functions ...
             pkgload::dev_topic_index_reset(m)
             pkgload::unload(.moduleNameNoUnderscore(mBase)) # so, unload here before reloading without exporting
-          } else {
-            message(crayon::blue("    To rebuild documentation, set options('spades.moduleDocument' = TRUE)"))
           }
           pkgload::load_all(m, export_all = FALSE)
 
@@ -268,11 +283,11 @@ setMethod(
 
           # evaluate the rest of the parsed file
           if (doesntUseNamespacing) {
-            stop("Module ",crayon::green(mBase)," still uses the old way of function naming.\n  ",
-                    "It is now recommended to define functions that are not prefixed with the module name\n  ",
-                    "and to no longer call the functions with sim$functionName.\n  ",
-                    "Simply call functions in your module with their name: e.g.,\n  ",
-                    "sim <- Init(sim), rather than sim <- sim$myModule_Init(sim)")
+            stop("Module ", crayon::green(mBase), " still uses the old way of function naming.\n  ",
+                 "It is now recommended to define functions that are not prefixed with the module name\n  ",
+                 "and to no longer call the functions with sim$functionName.\n  ",
+                 "Simply call functions in your module with their name: e.g.,\n  ",
+                 "`sim <- Init(sim)`, rather than `sim <- sim$myModule_Init(sim)`.")
             #lockBinding(mBase, sim@.envir) ## guard against clobbering from module code (#80)
             out1 <- evalWithActiveCode(tmp[["parsedFile"]][!tmp[["defineModuleItem"]]],
                                        sim@.xData$.mods,
@@ -339,9 +354,10 @@ setMethod(
             try(mess)
         })
 
-        mess <- capture.output({
+        #mess <- capture.output({
           out <- try(eval(pf, envir = env))
-        }, type = "message")
+        #}, type = "message")
+          mess <- NULL
         if (is(out, "try-error")) stop(out)
         opt <- getOption("spades.moduleCodeChecks")
         if (length(mess) && (isTRUE(opt) || length(names(opt)) > 1)) {
@@ -598,3 +614,9 @@ evalWithActiveCode <- function(parsedModuleNoDefineModule, envir, parentFrame = 
   return(isPack)
 }
 
+newEnvsByModule <- function(sim, modu) {
+  sim@.xData$.mods[[modu]] <- new.env(parent = asNamespace("SpaDES.core"))
+  attr(sim@.xData$.mods[[modu]], "name") <- modu
+  sim@.xData$.mods[[modu]]$.objects <- new.env(parent = emptyenv())
+  sim
+}
