@@ -14,8 +14,8 @@ Description: Provides the core framework for a discrete event system to
     (<https://PredictiveEcology.r-universe.dev>).
 URL: https://spades-core.predictiveecology.org/,
         https://github.com/PredictiveEcology/SpaDES.core
-Date: 2023-07-05
-Version: 2.0.2
+Date: 2023-11-09
+Version: 2.0.3
 Authors@R: c(
     person("Alex M", "Chubaty", , "achubaty@for-cast.ca", role = c("aut"),
            comment = c(ORCID = "0000-0001-7146-8135")),
@@ -27,16 +27,16 @@ Authors@R: c(
            comment = c(ORCID = "0000-0003-4036-977X")),
     person("His Majesty the King in Right of Canada, as represented by the Minister of Natural Resources Canada", role = "cph")
   )
-Depends: R (>= 4.1), quickPlot (>= 1.0.2), reproducible (>= 2.0.5)
-Imports: crayon, data.table (>= 1.11.0), igraph (>= 1.0.1), lobstr,
-        methods, qs (>= 0.21.1), Require (>= 0.3.1), stats, terra,
-        utils, whisker
+Depends: R (>= 4.1), quickPlot (>= 1.0.2), reproducible (>= 2.0.9)
+Imports: crayon, data.table (>= 1.11.0), fs, igraph (>= 1.0.1), lobstr,
+        methods, qs (>= 0.21.1), Require (>= 0.3.1), stats, terra (>=
+        1.7-46), utils, whisker
 Suggests: archive, CircStats, codetools, covr, DiagrammeR (>= 0.8.2),
-        dplyr, future, future.callr, ggplot2, ggplotify, httr, knitr,
-        lattice, logging, magrittr, NLMR (>= 1.1.1), pkgload, png,
-        RColorBrewer (>= 1.1-2), raster (>= 2.5-8), rmarkdown,
-        roxygen2, RSQLite, rstudioapi, sp, SpaDES.tools (>= 2.0.0),
-        tcltk, testthat (>= 1.0.2), withr
+        future, future.callr, ggplot2, ggplotify, httr, knitr, lattice,
+        logging, magrittr, NLMR (>= 1.1.1), pkgload, png, RColorBrewer
+        (>= 1.1-2), raster (>= 2.5-8), rmarkdown, roxygen2, RSQLite,
+        rstudioapi, sp, SpaDES.tools (>= 2.0.0), tcltk, testthat (>=
+        1.0.2), withr
 Additional_repositories: https://predictiveecology.r-universe.dev/
 Encoding: UTF-8
 Language: en-CA
@@ -60,7 +60,7 @@ Collate: 'module-dependencies-class.R' 'misc-methods.R' 'environment.R'
         'spades-core-package.R' 'suppliedElsewhere.R' 'zzz.R'
 RoxygenNote: 7.2.3
 NeedsCompilation: no
-Packaged: 2023-07-05 16:10:15 UTC; emcintir
+Packaged: 2023-11-09 15:43:52 UTC; emcintir
 Author: Alex M Chubaty [aut] (<https://orcid.org/0000-0001-7146-8135>),
   Eliot J B McIntire [aut, cre] (<https://orcid.org/0000-0002-6914-8316>),
   Yong Luo [ctb],
@@ -70,4 +70,4 @@ Author: Alex M Chubaty [aut] (<https://orcid.org/0000-0001-7146-8135>),
     of Natural Resources Canada [cph]
 Maintainer: Eliot J B McIntire <eliot.mcintire@canada.ca>
 Repository: CRAN
-Date/Publication: 2023-07-06 12:53:16 UTC
+Date/Publication: 2023-11-10 10:20:02 UTC
