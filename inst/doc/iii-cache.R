@@ -97,12 +97,12 @@ map <- loadFromCache(cacheId = cacheDB$cacheId, cachePath = cachePath(mySim))
 clearPlot()
 Plot(map)
 
-## ---- eval=FALSE, echo=TRUE---------------------------------------------------
+## ----eval=FALSE, echo=TRUE----------------------------------------------------
 #  simInit() --> many .inputObjects calls
 #  
 #  spades() call --> many module calls --> many event calls --> many function calls
 
-## ---- eval=FALSE, echo=TRUE---------------------------------------------------
+## ----eval=FALSE, echo=TRUE----------------------------------------------------
 #  parameters = list(
 #    FireModule = list(.useCache = TRUE)
 #  )
