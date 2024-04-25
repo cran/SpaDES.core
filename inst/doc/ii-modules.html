@@ -157,7 +157,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1 class="title toc-ignore">02 Building <code>SpaDES</code>
 modules</h1>
 <h4 class="author">Alex M. Chubaty</h4>
-<h4 class="date">April 15 2024</h4>
+<h4 class="date">April 25 2024</h4>
 
 
 <div id="TOC">
@@ -662,19 +662,19 @@ parameter list to <code>simInit</code>.</p>
 <span id="cb9-23"><a href="#cb9-23" tabindex="-1"></a>                 <span class="at">objects =</span> objects, <span class="at">paths =</span> paths)</span></code></pre></div>
 <pre><code>## Setting:
 ##   options(
-##     spades.outputPath = &#39;/tmp/RtmpxXKc8K/simOutputs&#39;
-##     spades.modulePath = &#39;/tmp/RtmpxXKc8K/sampleModules&#39;
+##     spades.outputPath = &#39;/tmp/Rtmp1lp0ye/simOutputs&#39;
+##     spades.modulePath = &#39;/tmp/Rtmp1lp0ye/sampleModules&#39;
 ##   )</code></pre>
 <pre><code>## Paths set to:
 ##   options(
-##     rasterTmpDir = &#39;/tmp/RtmpxXKc8K/SpaDES/scratch/raster&#39;
-##     reproducible.cachePath = &#39;/tmp/RtmpxXKc8K/reproducible/cache&#39;
-##     spades.inputPath = &#39;/tmp/RtmpxXKc8K/SpaDES/inputs&#39;
-##     spades.outputPath = &#39;/tmp/RtmpxXKc8K/simOutputs&#39;
-##     spades.modulePath = &#39;/tmp/RtmpxXKc8K/sampleModules&#39;
-##     spades.scratchPath = &#39;/tmp/RtmpxXKc8K/SpaDES/scratch&#39;
+##     rasterTmpDir = &#39;/tmp/Rtmp1lp0ye/SpaDES/scratch/raster&#39;
+##     reproducible.cachePath = &#39;/tmp/Rtmp1lp0ye/reproducible/cache&#39;
+##     spades.inputPath = &#39;/tmp/Rtmp1lp0ye/SpaDES/inputs&#39;
+##     spades.outputPath = &#39;/tmp/Rtmp1lp0ye/simOutputs&#39;
+##     spades.modulePath = &#39;/tmp/Rtmp1lp0ye/sampleModules&#39;
+##     spades.scratchPath = &#39;/tmp/Rtmp1lp0ye/SpaDES/scratch&#39;
 ##   )
-##   terra::terraOptions(tempdir = &#39;/tmp/RtmpxXKc8K/SpaDES/scratch/terra&#39;</code></pre>
+##   terra::terraOptions(tempdir = &#39;/tmp/Rtmp1lp0ye/SpaDES/scratch/terra&#39;</code></pre>
 <pre><code>## Loading required package: RColorBrewer</code></pre>
 <pre><code>## Loading required package: terra</code></pre>
 <pre><code>## terra 1.7.71</code></pre>
@@ -700,15 +700,15 @@ parameter list to <code>simInit</code>.</p>
 ##     depth</code></pre>
 <pre><code>## Loading required package: sf</code></pre>
 <pre><code>## Linking to GEOS 3.10.2, GDAL 3.4.3, PROJ 8.2.0; sf_use_s2() is TRUE</code></pre>
-<pre><code>## Apr15 18:08:03 simInit Using setDTthreads(1). To change: &#39;options(spades.DTthreads = X)&#39;.</code></pre>
-<pre><code>## Apr15 18:08:03 simInit The following .globals were used:</code></pre>
-<pre><code>## Apr15 18:08:03 simInit Key: &lt;global, module&gt;</code></pre>
-<pre><code>## Apr15 18:08:03 simInit              module    global</code></pre>
-<pre><code>## Apr15 18:08:03 simInit              &lt;char&gt;    &lt;char&gt;</code></pre>
-<pre><code>## Apr15 18:08:03 simInit 1:  caribouMovement stackName</code></pre>
-<pre><code>## Apr15 18:08:03 simInit 2:       fireSpread stackName</code></pre>
-<pre><code>## Apr15 18:08:03 simInit 3: randomLandscapes stackName</code></pre>
-<pre><code>## Elpsed time for simInit: 0.5416307 secs</code></pre>
+<pre><code>## Apr25 09:21:21 simInit Using setDTthreads(1). To change: &#39;options(spades.DTthreads = X)&#39;.</code></pre>
+<pre><code>## Apr25 09:21:21 simInit The following .globals were used:</code></pre>
+<pre><code>## Apr25 09:21:21 simInit Key: &lt;global, module&gt;</code></pre>
+<pre><code>## Apr25 09:21:21 simInit              module    global</code></pre>
+<pre><code>## Apr25 09:21:21 simInit              &lt;char&gt;    &lt;char&gt;</code></pre>
+<pre><code>## Apr25 09:21:21 simInit 1:  caribouMovement stackName</code></pre>
+<pre><code>## Apr25 09:21:21 simInit 2:       fireSpread stackName</code></pre>
+<pre><code>## Apr25 09:21:21 simInit 3: randomLandscapes stackName</code></pre>
+<pre><code>## Elpsed time for simInit: 0.6631474 secs</code></pre>
 <div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a><span class="do">## Access parameters</span></span>
 <span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a><span class="fu">P</span>(mySim)                    <span class="co"># shows all parameters</span></span>
 <span id="cb34-3"><a href="#cb34-3" tabindex="-1"></a><span class="fu">P</span>(mySim, <span class="at">module =</span> <span class="st">&quot;caribouMovement&quot;</span>) <span class="co"># only parameters in caribouMovement module</span></span>
@@ -856,8 +856,8 @@ associated with a particular module’s event corresponds to the module’s
 timestep unit, not the event’s “duration”.</p>
 <pre><code>## png 
 ##   2</code></pre>
-<div id="htmlwidget-d67abd7fa83a489db952" style="width:720px;height:650px;" class="DiagrammeR html-widget"></div>
-<script type="application/json" data-for="htmlwidget-d67abd7fa83a489db952">{"x":{"diagram":"gantt\ndateFormat  YYYY-MM-DD\ntitle SpaDES event diagram\nsection  checkpoint \n init:done,checkpoint1,0-06-01,0-06-07\nsection  save \n init:done,save1,0-06-01,0-06-07\nsection  load \n init:done,load1,0-06-01,0-06-07\nsection  randomLandscapes \n init:done,randomLandscapes1,0-06-01,0-06-07\nplot:crit,randomLandscapes2,0-06-01,0-06-07\nsection  fireSpread \n init:done,fireSpread1,0-06-01,0-06-07\nburn:active,fireSpread2,0-06-01,0-06-07\nstats:active,fireSpread3,0-06-01,0-06-07\nplot.init:active,fireSpread4,0-06-01,0-06-07\nburn:active,fireSpread5,1-06-01,1-06-07\nstats:active,fireSpread6,1-06-01,1-06-07\nsection  caribouMovement \n init:done,caribouMovement1,0-06-01,0-06-07\nplot.init:active,caribouMovement2,0-07-01,0-07-07\nplot:crit,caribouMovement3,0-07-31,0-08-07\nplot:crit,caribouMovement4,0-08-31,0-09-06\nplot:crit,caribouMovement5,0-09-30,0-10-07\nplot:crit,caribouMovement6,0-10-31,0-11-06\nplot:crit,caribouMovement7,0-11-30,0-12-06\nplot:crit,caribouMovement8,0-12-31,1-01-06\nplot:crit,caribouMovement9,1-01-30,1-02-05\nplot:crit,caribouMovement10,1-03-01,1-03-08\nplot:crit,caribouMovement11,1-04-01,1-04-07\nplot:crit,caribouMovement12,1-05-01,1-05-08\nmove:active,caribouMovement13,1-06-01,1-06-07\nplot:crit,caribouMovement14,1-06-01,1-06-07\n"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-6949f7c8ad92b5621fc3" style="width:720px;height:650px;" class="DiagrammeR html-widget"></div>
+<script type="application/json" data-for="htmlwidget-6949f7c8ad92b5621fc3">{"x":{"diagram":"gantt\ndateFormat  YYYY-MM-DD\ntitle SpaDES event diagram\nsection  checkpoint \n init:done,checkpoint1,0-06-01,0-06-07\nsection  save \n init:done,save1,0-06-01,0-06-07\nsection  load \n init:done,load1,0-06-01,0-06-07\nsection  randomLandscapes \n init:done,randomLandscapes1,0-06-01,0-06-07\nplot:crit,randomLandscapes2,0-06-01,0-06-07\nsection  fireSpread \n init:done,fireSpread1,0-06-01,0-06-07\nburn:active,fireSpread2,0-06-01,0-06-07\nstats:active,fireSpread3,0-06-01,0-06-07\nplot.init:active,fireSpread4,0-06-01,0-06-07\nburn:active,fireSpread5,1-06-01,1-06-07\nstats:active,fireSpread6,1-06-01,1-06-07\nsection  caribouMovement \n init:done,caribouMovement1,0-06-01,0-06-07\nplot.init:active,caribouMovement2,0-07-01,0-07-07\nplot:crit,caribouMovement3,0-07-31,0-08-07\nplot:crit,caribouMovement4,0-08-31,0-09-06\nplot:crit,caribouMovement5,0-09-30,0-10-07\nplot:crit,caribouMovement6,0-10-31,0-11-06\nplot:crit,caribouMovement7,0-11-30,0-12-06\nplot:crit,caribouMovement8,0-12-31,1-01-06\nplot:crit,caribouMovement9,1-01-30,1-02-05\nplot:crit,caribouMovement10,1-03-01,1-03-08\nplot:crit,caribouMovement11,1-04-01,1-04-07\nplot:crit,caribouMovement12,1-05-01,1-05-08\nmove:active,caribouMovement13,1-06-01,1-06-07\nplot:crit,caribouMovement14,1-06-01,1-06-07\n"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <div id="module-documentation-modulename.rmd" class="section level2"
@@ -1026,18 +1026,18 @@ without module A depending on module B.</p>
 ## 6: randomLandscapes      fireSpread     landscape SpatRaster</code></pre>
 <div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" tabindex="-1"></a><span class="fu">clearPlot</span>()</span></code></pre></div>
 <p><img
-src="/tmp/RtmpcjXEbT/Rbuild2de60bb08b4d6/SpaDES.core/vignettes/ii-modules_files/figure-html/module-object-diagrams-1.png" /><!-- --></p>
+src="/tmp/RtmpTGo3Bj/Rbuild38cec74f95eb65/SpaDES.core/vignettes/ii-modules_files/figure-html/module-object-diagrams-1.png" /><!-- --></p>
 <div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" tabindex="-1"></a><span class="fu">moduleDiagram</span>(mySim)            <span class="co"># simplified visual representation of modules</span></span></code></pre></div>
 <p><img
-src="/tmp/RtmpcjXEbT/Rbuild2de60bb08b4d6/SpaDES.core/vignettes/ii-modules_files/figure-html/module-object-diagrams-2.png" /><!-- --></p>
+src="/tmp/RtmpTGo3Bj/Rbuild38cec74f95eb65/SpaDES.core/vignettes/ii-modules_files/figure-html/module-object-diagrams-2.png" /><!-- --></p>
 <div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" tabindex="-1"></a><span class="fu">clearPlot</span>()</span>
 <span id="cb43-2"><a href="#cb43-2" tabindex="-1"></a><span class="fu">moduleDiagram</span>(mySim, <span class="at">showParents =</span> <span class="cn">TRUE</span>) <span class="co"># similar, but showing parent module grouping</span></span></code></pre></div>
 <p><img
-src="/tmp/RtmpcjXEbT/Rbuild2de60bb08b4d6/SpaDES.core/vignettes/ii-modules_files/figure-html/module-object-diagrams-3.png" /><!-- --></p>
+src="/tmp/RtmpTGo3Bj/Rbuild38cec74f95eb65/SpaDES.core/vignettes/ii-modules_files/figure-html/module-object-diagrams-3.png" /><!-- --></p>
 <div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" tabindex="-1"></a><span class="co"># detailed visual representation of objects</span></span>
 <span id="cb44-2"><a href="#cb44-2" tabindex="-1"></a><span class="fu">objectDiagram</span>(mySim, <span class="at">width =</span> <span class="dv">720</span>)</span></code></pre></div>
-<div id="htmlwidget-8d392238a62b82fa7223" style="width:720px;height:288px;" class="DiagrammeR html-widget"></div>
-<script type="application/json" data-for="htmlwidget-8d392238a62b82fa7223">{"x":{"diagram":"sequenceDiagram\ncaribouMovement ->> caribouMovement : caribou\nfireSpread ->> caribouMovement : landscape\nfireSpread ->> fireSpread : landscape\nfireSpread ->> fireSpread : nPixelsBurned\nrandomLandscapes ->> caribouMovement : landscape\nrandomLandscapes ->> fireSpread : landscape\n"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-f3bf96f7bd3e14932c65" style="width:720px;height:288px;" class="DiagrammeR html-widget"></div>
+<script type="application/json" data-for="htmlwidget-f3bf96f7bd3e14932c65">{"x":{"diagram":"sequenceDiagram\ncaribouMovement ->> caribouMovement : caribou\nfireSpread ->> caribouMovement : landscape\nfireSpread ->> fireSpread : landscape\nfireSpread ->> fireSpread : nPixelsBurned\nrandomLandscapes ->> caribouMovement : landscape\nrandomLandscapes ->> fireSpread : landscape\n"},"evals":[],"jsHooks":[]}</script>
 <p>The output of the <code>depsEdgeList</code> is an edgelist describing
 the relationships between each module. In the example above, line 2 of
 the output indicates that the <code>fireSpread</code> module relies on
@@ -1438,7 +1438,7 @@ objects have been saved.</p>
 ## &lt;0 rows&gt; (or 0-length row.names)</code></pre>
 <div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" tabindex="-1"></a><span class="fu">outputs</span>(mySim)   <span class="co"># shows all files and objects that are &quot;outputs&quot;</span></span></code></pre></div>
 <pre><code>##   objectName                                           file     fun package
-## 1  landscape /tmp/RtmpxXKc8K/simOutputs/landscape_year5.rds saveRDS    base
+## 1  landscape /tmp/Rtmp1lp0ye/simOutputs/landscape_year5.rds saveRDS    base
 ##   saveTime saved arguments
 ## 1        5    NA        NA</code></pre>
 <div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" tabindex="-1"></a><span class="fu">params</span>(mySim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>.saveInitialTime</span></code></pre></div>
@@ -1448,7 +1448,7 @@ objects have been saved.</p>
 <div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" tabindex="-1"></a><span class="fu">params</span>(mySim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>.saveObjects</span></code></pre></div>
 <pre><code>## [1] &quot;landscape&quot;</code></pre>
 <div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" tabindex="-1"></a><span class="fu">params</span>(mySim)<span class="sc">$</span>randomLandscapes<span class="sc">$</span>.savePath</span></code></pre></div>
-<pre><code>## [1] &quot;/tmp/RtmpxXKc8K/simOutputs/randomLandscapes&quot;</code></pre>
+<pre><code>## [1] &quot;/tmp/Rtmp1lp0ye/simOutputs/randomLandscapes&quot;</code></pre>
 <div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" tabindex="-1"></a>ftmp <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">pattern =</span> <span class="st">&quot;spades_vignetteOutputs&quot;</span>, <span class="at">fileext =</span> <span class="st">&quot;.pdf&quot;</span>)</span>
 <span id="cb65-2"><a href="#cb65-2" tabindex="-1"></a><span class="fu">pdf</span>(ftmp)</span>
 <span id="cb65-3"><a href="#cb65-3" tabindex="-1"></a><span class="fu">clearPlot</span>()</span>
@@ -1462,7 +1462,7 @@ objects have been saved.</p>
 <span id="cb65-11"><a href="#cb65-11" tabindex="-1"></a>})))</span>
 <span id="cb65-12"><a href="#cb65-12" tabindex="-1"></a>mySim2 <span class="ot">&lt;-</span> <span class="fu">spades</span>(mySim)</span></code></pre></div>
 <pre><code>## Warning in x@cpp$writeRaster(opt): GDAL Error 6:
-## /tmp/RtmpxXKc8K/simOutputs/landscape_year3.tif, band 1: SetColorTable() not
+## /tmp/Rtmp1lp0ye/simOutputs/landscape_year3.tif, band 1: SetColorTable() not
 ## supported for multi-sample TIFF files.</code></pre>
 <pre><code>## Warning: [writeRaster] change datatype to INT1U to write the color-table
 ## could not write the color table</code></pre>
