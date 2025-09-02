@@ -102,7 +102,7 @@ restartSpades <- function(sim = NULL, module = NULL, numEvents = Inf, restart = 
   numMods <- min(length(sim$.recoverableObjs), numEvents)
   if (numMods > 0) {
     com <- completed(sim)
-    etSecs <- sum(com[, et := difftime(._clockTime, ._prevEventTimeFinish, units = "secs"),
+    etSecs <- sum(com[, et := difftime(clockTime, ._prevEventTimeFinish, units = "secs"),
                       by = seq_len(NROW(com))]$et)
 
     # remove the times of the completed events - 1 because the restartSpaDES includes the incompleted event
@@ -169,7 +169,8 @@ restartSpades <- function(sim = NULL, module = NULL, numEvents = Inf, restart = 
           fd1 <- fd1[!unlist(unname(fd1)) %in% unlist(unname(fd2))]
         }
         # move the changed ones to the simList
-        list2env(objsToCopy[names(fd1)], envir = sim@.xData)
+        if (NROW(fd1))
+          list2env(objsToCopy[names(fd1)], envir = sim@.xData)
       }
 
       modObjNames <- names(sim$.recoverableModObjs[[event]])

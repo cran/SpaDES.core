@@ -386,7 +386,7 @@ setMethod(
       sim <- elapsedTimeInSimInit(._startClockTime, sim)
       ._startClockTime <- Sys.time()
       dt <- difftime(._startClockTime, ._startClockTime - sim$._simInitElapsedTime)
-      message("Elpsed time for simInit: ", format(dt, format = "auto"))
+      message("Elapsed time for simInit: ", format(dt, format = "auto"))
     }, add = TRUE)
 
     paths <- lapply(paths, function(p) {
@@ -1057,6 +1057,37 @@ setMethod(
 
     return(invisible(sim))
 })
+
+
+#' `simInit2` is a convenience wrapper for `do.call(simInit, listOfArgs)`,
+#' i.e., a user can pass a list of all the arguments.
+#'
+#' @export
+#' @rdname simInit
+#' @param l A list of arguments to passed to `simInit`.
+simInit2 <- function(l) {
+  do.call(simInit, l)
+}
+
+#' `spades2` is a convenience wrapper for `do.call(spades, listOfArgs)`,
+#' i.e., a user can pass a list of all the arguments.
+#'
+#' @export
+#' @rdname spades
+#' @param l A list of arguments to passed to `spades`.
+spades2 <- function(l) {
+  do.call(spades, l)
+}
+
+#' `simInitAndSpades2` is a convenience wrapper for `do.call(simInitAndSpades, listOfArgs)`,
+#' i.e., a user can pass a list of all the arguments.
+#'
+#' @export
+#' @rdname simInitAndSpades
+#' @param l A list of arguments to passed to `simInitAndSpades`.
+simInitAndSpades2 <- function(l) {
+  do.call(simInitAndSpades, l)
+}
 
 #' Call `simInit` and `spades` together
 #'

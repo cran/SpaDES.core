@@ -1,5 +1,31 @@
+# SpaDES.core 2.1.6
+
+* drop support for R 4.2;
+* fixed issue with `Plots()` where plots were discarded if no filename was specified;
+* fixed timeunit test failures (#297);
+* add package anchors to Rd links (#300);
+* minor documentation improvements;
+
+# SpaDES.core 2.1.5
+
+* fix issue with Windows short paths in tests;
+* improved documentation;
+* removal of `globals(sim)` in Sample modules
+
+# SpaDES.core 2.1.2
+
+* fixed bug in `restartSpades()`;
+
+# SpaDES.core 2.1.1
+
+## Bugfixes
+* `newModule`, new `events` argument bugs that caused unwanted objects to be put in the module. Fixed.
+* `.wrap.simList` did not anticipate objects with pointers in the metadata, so recovery from Cache failed if there was, e.g., a `SpatExtent` object in the metadata. Fixed.
+* improved loading of `simList` objects, when loading e.g., lists of lists;
+
 # SpaDES.core 2.1.0
 
+* "sequential caching" can now be turned on with `options("spades.allowSequentialCaching" = TRUE)`. When a series of events of events in sequence are cached, setting this option will treat them as a single Cache, so it may be much faster. Experimental and should be used with caution.
 * fix issue with event queue `colnames` in `completed<-` and `all.equal.simList` (#272);
 * fixed issue saving `simList` objects when multiple paths were used (e.g., `length(modulePath) > 1`);
 * events can be defined directly in calls to `newModule()`;

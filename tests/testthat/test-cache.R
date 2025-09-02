@@ -315,7 +315,7 @@ test_that("test .robustDigest for simLists", {
                      "Setting", "Paths", "using dataPath", "Using setDTthreads",
                      "with user supplied tags",
                      "There is no similar item in the cachePath",
-                     "Saving", "Done", "Elpsed time for", sep = "|")
+                     "Saving", "Done", "Elapsed time for", sep = "|")
   expect_true(all(grepl(msgGrep11, mess1)))
 
   msgGrep <- "Running .input|loaded cached copy|module code|Setting|Paths"
@@ -676,4 +676,24 @@ test_that("multifile cache saving", {
   s$ras <- randomPolyToDisk2(tmpfile)
   s2 <- Cache(spades(s))
   expect_true(identical(Filenames(s2), Filenames(s)))
+})
+
+
+
+test_that("cache of terra objects in the depends", {
+  testInit(sampleModReqdPkgs)
+
+  times <- list(start = 0.0, end = 10)
+  params <- list(.globals = list(burnStats = "npixelsburned", stackName = "landscape"))
+  modules <- list("randomLandscapes", "caribouMovement", "fireSpread")
+
+  # test for mixture of named and unnamed
+  paths <- list(modulePath = getSampleModules(tmpdir), tmpdir)
+  for (i in 1:2) {
+    mySim <- simInit(times, params, modules, objects = list(), paths) |> Cache()
+    err <- capture_error(
+      mySim@depends@dependencies$randomLandscapes@spatialExtent + 0
+    )
+    expect_false(is(err, "simpleError"))
+  }
 })
