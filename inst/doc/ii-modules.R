@@ -1,12 +1,24 @@
 ## ----setup, include=FALSE-----------------------------------------------------
-SuggestedPkgsNeeded <- c("DiagrammeR", "NLMR", "SpaDES.tools", "knitr", "CircStats")
-hasSuggests <- all(sapply(SuggestedPkgsNeeded, require, character.only = TRUE, quietly = TRUE))
-useSuggests <- !(tolower(Sys.getenv("_R_CHECK_DEPENDS_ONLY_")) == "true")
+# Packages used in this vignette
+vignette_pkgs <- c("DiagrammeR", "NLMR", "SpaDES.tools", "knitr", "CircStats")
 
-knitr::opts_chunk$set(eval = hasSuggests && useSuggests)
+# Check availability without attaching
+hasSuggests <- function(pkgs) all(vapply(pkgs, requireNamespace, quietly = TRUE, FUN.VALUE = logical(1)))
 
-options("spades.moduleCodeChecks" = FALSE,
-        "spades.useRequire" = FALSE)
+# CRAN sets NOT_CRAN = "false"; devtools sets it to "true" locally
+not_cran <- identical(Sys.getenv("NOT_CRAN"), "true")
+evalTRUE <- not_cran && hasSuggests(vignette_pkgs)
+# Evaluate chunks only if NOT_CRAN and all vignette packages are available
+knitr::opts_chunk$set(
+  eval = evalTRUE,
+  message = FALSE,
+  warning = FALSE
+)
+
+options(
+  spades.moduleCodeChecks = FALSE,
+  spades.useRequire = FALSE
+)
 
 
 ## ----module-metadata, echo=FALSE, results="asis"------------------------------
@@ -18,7 +30,7 @@ options("spades.moduleCodeChecks" = FALSE,
 #   ), sep = "\n")
 
 ## ----passing-params, echo=TRUE------------------------------------------------
-#   library(SpaDES.core)
+# library(SpaDES.core)
 # 
 # outputDir <- file.path(tempdir(), "simOutputs")
 # times <- list(start = 0.0, end = 5.0)
@@ -72,8 +84,7 @@ options("spades.moduleCodeChecks" = FALSE,
 #   "```"
 #   ), sep = "\n")
 
-## ----sim-eventDiagram, eval=hasSuggests, echo=FALSE, message=FALSE, warning=FALSE----
-# library(SpaDES.core)
+## ----sim-eventDiagram, eval=evalTRUE, echo=FALSE, message=FALSE, warning=FALSE----
 # 
 # parameters <- list(
 #   .globals = list(stackName = "landscape", burnStats = "nPixelsBurned"),
@@ -101,7 +112,7 @@ options("spades.moduleCodeChecks" = FALSE,
 # dev.off()
 # unlink(normalizePath(ftmp))
 
-## ----eventDiagram, echo=FALSE, eval=hasSuggests, fig.height=10, fig.width=7----
+## ----eventDiagram, echo=FALSE, fig.height=10, fig.width=7---------------------
 # # overview of the events in the simulation
 # # Needs DiagrammeR package
 # eventDiagram(mySim, "0000-06-01", n = 200, width = 720)
